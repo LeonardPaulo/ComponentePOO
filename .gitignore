@@ -1,0 +1,21 @@
+# Archivo .gitignore
+# ======================================================
+
+# Entorno virtual de Python
+.venv/
+venv/
+env/
+ENV/
+
+# Archivos de caché de Python
+__pycache__/
+
+# Archivos de configuración de PyCharm y VS Code
+.idea/
+.vscode/
+
+# Archivos de construcción de Tailwind CSS
+theme/static/css/dist/
+
+# Archivos de configuración de Git (archivos de respaldo)
+.gitignore~

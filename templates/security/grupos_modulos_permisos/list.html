@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+<title>{% block title %}{{ title }}{% endblock %}</title>
+{% block content %}
+{% load static %}
+
+<section class="mt-6 max-w-7xl mx-auto px-4">
+    <div class="text-center mb-8" data-aos="fade-up" data-aos-delay="200">
+        <h1 class="inline-block rounded-2xl bg-blue-600 px-6 py-2 text-white uppercase text-4xl font-bold font-[Orbitron]">
+            {{ title1 }}
+        </h1>
+    </div>
+
+    <!-- Barra de búsqueda -->
+    <div class="flex justify-center mb-6">
+        <form method="GET" class="w-full max-w-xl">
+            <label for="table-search" class="sr-only">Buscar</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    </svg>
+                </div>
+                <input
+                    type="text"
+                    name="q"
+                    id="table-search"
+                    placeholder="Buscar grupo-módulo-permiso..."
+                    value="{{ request.GET.q }}"
+                    class="w-full pl-10 pr-4 py-2 rounded-lg border border-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla -->
+    <div class="overflow-x-auto rounded-lg shadow-lg border border-gray-300">
+        <table class="w-full text-left text-sm font-mono text-gray-800">
+            <thead class="bg-gray-100 border-b border-gray-300">
+                <tr>
+                    <th class="px-6 py-3 w-20 font-semibold">ID Grupo</th>
+                    <th class="px-6 py-3 w-40 font-semibold">Grupo</th>
+                    <th class="px-6 py-3 w-48 font-semibold">Módulo</th>
+                    <th class="px-6 py-3 font-semibold">Permisos</th>
+                    <th class="px-6 py-3 w-40 font-semibold text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in GroupModulePermissions %}
+                <tr class="border-b border-gray-200 hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-semibold">{{ item.group.id }}</td>
+                    <td class="px-6 py-4 font-semibold">{{ item.group.name }}</td>
+                    <td class="px-6 py-4 flex items-center gap-2">
+                        <i class="{{ item.module.icon }} text-xl text-blue-600"></i>
+                        <span>{{ item.module.name }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">
+                            {% for perm in item.permissions.all %}
+                                {{ perm.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 flex justify-center gap-3">
+                        {% if permissions.change_groupmodulepermission %}
+                        <a href="{% url 'security:group_module_permission_update' item.id %}" 
+                           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-lg shadow-md transition flex items-center justify-center gap-1"
+                           title="Editar">
+                            <i class="fa-solid fa-edit"></i>
+                        </a>
+                        {% endif %}
+                        {% if permissions.delete_groupmodulepermission %}
+                        <button type="button" 
+                                onclick="openDeleteModal('{{ item.id }}', '{{ item.group.name }} - {{ item.module.name }}')"
+                                class="text-red-600 dark:text-red-500 hover:text-red-800 mx-1"                              
+                                title="Eliminar">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-6 text-gray-500 italic">No hay registros.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="flex justify-center mt-6">
+        <nav aria-label="Page navigation">
+            <ul class="inline-flex space-x-1">
+                {% if page_obj.has_previous %}
+                <li>
+                    <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                       class="block px-4 py-2 rounded-l-md border border-gray-300 bg-white hover:bg-blue-100 hover:text-blue-700 text-gray-700 font-semibold">
+                        &laquo; Primero
+                    </a>
+                </li>
+                <li>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                       class="block px-4 py-2 border border-gray-300 bg-white hover:bg-blue-100 hover:text-blue-700 text-gray-700 font-semibold">
+                        &lsaquo; Anterior
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+                    <li>
+                        <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                           class="block px-4 py-2 border border-gray-300 hover:bg-blue-100 hover:text-blue-700 font-semibold {% if num == page_obj.number %}bg-blue-600 text-white{% else %}bg-white text-gray-700{% endif %}">
+                            {{ num }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li>
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                       class="block px-4 py-2 border border-gray-300 bg-white hover:bg-blue-100 hover:text-blue-700 text-gray-700 font-semibold">
+                        Siguiente &rsaquo;
+                    </a>
+                </li>
+                <li>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                       class="block px-4 py-2 rounded-r-md border border-gray-300 bg-white hover:bg-blue-100 hover:text-blue-700 text-gray-700 font-semibold">
+                        Último &raquo;
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Botones inferiores -->
+        <div class="flex justify-center mb-12 mt-6">
+        {% if permissions.add_groupmodulepermission %}
+        <a href="{% url 'security:group_module_permission_create' %}"
+           class="w-full md:w-64 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl shadow-lg text-center transition">
+            <i class="fa-solid fa-plus mr-2"></i> Crear otro
+        </a>
+        {% endif %}
+        <a href="{% url 'home' %}"
+           class="w-full md:w-64 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl shadow-lg text-center transition">
+            <i class="fa-solid fa-house mr-2"></i> Inicio
+        </a>
+    </div>
+</section>
+
+<!-- Modal eliminar -->
+{% include 'fragments/delete.html' %}
+
+<script>
+function openDeleteModal(id, name) {
+    const deleteForm = document.getElementById('deleteForm');
+    deleteForm.action = "{% url 'security:group_module_permission_delete' 0 %}".replace('0', id);
+    document.getElementById('Description').textContent = `ID: ${id} - ${name}`;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteForm = document.getElementById('deleteForm');
+    if (deleteForm) {
+        deleteForm.addEventListener('submit', function(e) {
+            const submitBtn = deleteForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+                submitBtn.disabled = true;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -28,6 +28,9 @@ from applications.doctor.views.marcamedicamento import (
     MarcaMedicamentoUpdateView,
     MarcaMedicamentoDeleteView
 )
+from applications.doctor.views import tiposgasto as tipogasto_views
+from applications.doctor.views import gastomensual as gastomensual_views
+from applications.doctor.views import fotopaciente as fotopaciente_views
 
 app_name = 'doctor'
 
@@ -67,4 +70,21 @@ urlpatterns = [
     path('marcasmedicamento/nuevo/', MarcaMedicamentoCreateView.as_view(), name='marcamedicamento_create'),
     path('marcasmedicamento/editar/<int:pk>/', MarcaMedicamentoUpdateView.as_view(), name='marcamedicamento_update'),
     path('marcasmedicamento/eliminar/<int:pk>/', MarcaMedicamentoDeleteView.as_view(), name='marcamedicamento_delete'),
+
+    # Tipos de Gastos
+    path('tipos_gasto/', tipogasto_views.tipogasto_list, name='tipogasto_list'),
+    path('tipos_gasto/crear/', tipogasto_views.tipogasto_create, name='tipogasto_create'),
+    path('tipos_gasto/editar/<int:pk>/', tipogasto_views.tipogasto_update, name='tipogasto_update'),
+    path('tipos_gasto/eliminar/<int:pk>/', tipogasto_views.tipogasto_delete, name='tipogasto_delete'),
+
+    # Gastos Mensuales
+    path('gastos_mensuales/', gastomensual_views.gastomensual_list, name='gastomensual_list'),
+    path('gastos_mensuales/crear/', gastomensual_views.gastomensual_create, name='gastomensual_create'),
+    path('gastos_mensuales/editar/<int:pk>/', gastomensual_views.gastomensual_update, name='gastomensual_update'),
+    path('gastos_mensuales/eliminar/<int:pk>/', gastomensual_views.gastomensual_delete, name='gastomensual_delete'),
+
+    path('fotos_paciente/', fotopaciente_views.fotopaciente_list, name='fotopaciente_list'),
+    path('fotos_paciente/crear/', fotopaciente_views.fotopaciente_create, name='fotopaciente_create'),
+    path('fotos_paciente/editar/<int:pk>/', fotopaciente_views.fotopaciente_update, name='fotopaciente_update'),
+    path('fotos_paciente/eliminar/<int:pk>/', fotopaciente_views.fotopaciente_delete, name='fotopaciente_delete'),
 ]

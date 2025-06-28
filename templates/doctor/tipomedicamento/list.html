@@ -1,0 +1,242 @@
+{# applications/doctor/templates/doctor/tipomedicamento/list.html #}
+
+{% extends 'home.html' %} {# Asegúrate de que 'home.html' sea tu plantilla base #}
+{% load static %} {# Para cargar archivos estáticos si los necesitas #}
+
+{% block title %}{{ title }}{% endblock %} {# El título se pasa desde la vista #}
+
+{% block content %}
+    {# Incluye el fragmento de mensajes de Django para mostrar alerts #}
+    {% include 'fragments/messages.html' %} 
+
+    <section class="dark:bg-principal mt-2">
+        <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="sm:pt-8 lg:pt-4">
+                <h1 class="rounded-2xl bg-emerald-600 px-2 py-1 text-blue-800 uppercase text-4xl">
+                    {{ title1 }} {# Otro título que puedes pasar desde la vista, ej: "Tipos de Medicamentos" #}
+                </h1>
+            </div>
+
+            <div class="lg:p-2 rounded-3xl" data-aos="fade-up" data-aos-delay="200">
+                {# Barra de búsqueda #}
+                <div class="p-4 flex justify-center">
+                    <label for="table-search" class="sr-only">Buscar Tipo de Medicamento</label>
+                    <div class="relative mt-1">
+                        <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        <form method="GET">
+                            <input type="text" name="q" id="table-search"
+                                class="text-center pl-10 shadow-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block p-2.5 pr-12 dark:bg-principal dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-emerald-500 dark:focus:border-emerald-500 dark:shadow-sm-light"
+                                placeholder="Buscar tipo de medicamento..." value="{{ request.GET.q }}">
+                        </form>
+                    </div>
+                </div>
+
+                {# Tabla de Tipos de Medicamento #}
+                <div class="overflow-x-auto shadow-lg rounded-lg">
+                    <table class="w-full text-center text-sm" id="tiposMedicamentoTable">
+                        <thead class="uppercase font-Tiny5 bg-emerald-50 dark:bg-secundario dark:text-emerald-300 text-emerald-800">
+                            <tr>
+                                <th scope="col" class="px-4 py-4">ID</th>
+                                <th scope="col" class="px-4 py-4">Tipo de Medicamento</th>
+                                <th scope="col" class="px-4 py-4">Descripción</th>
+                                <th scope="col" class="px-4 py-4">Activo</th>
+                                <th scope="col" class="px-4 py-4">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {# Itera sobre los objetos TipoMedicamento paginados #}
+                            {% for tipo_medicamento in page_obj %}
+                            <tr class="dark:text-gray-300 bg-white border-b dark:bg-[#0b1121] dark:border-secundario hover:bg-emerald-50 dark:hover:bg-[#121c33] transition-colors duration-200">
+                                <td class="px-4 py-4 font-medium text-emerald-600 dark:text-emerald-400">
+                                    #{{ tipo_medicamento.id }}
+                                </td>
+                                <td class="px-4 py-4">
+                                    {{ tipo_medicamento.nombre }}
+                                </td>
+                                <td class="px-4 py-4">
+                                    {# Muestra "N/A" si la descripción está vacía #}
+                                    {{ tipo_medicamento.descripcion|default:"N/A" }}
+                                </td>
+                                <td class="px-4 py-4">
+                                    {% if tipo_medicamento.activo %}
+                                        <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Sí</span>
+                                    {% else %}
+                                        <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">No</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex justify-center space-x-2">
+                                        {# Enlace para editar (solo si tiene permiso) #}
+                                        {% if permissions.change_tipomedicamento %}
+                                        <a href="{% url 'doctor:tiposmedicamento_update' pk=tipo_medicamento.pk %}"
+                                            class="text-blue-600 dark:text-blue-500 hover:text-blue-800 p-1 rounded transition-colors"
+                                            title="Editar">
+                                            <i class="fa-solid fa-edit text-lg"></i>
+                                        </a>
+                                        {% endif %}
+                                        {# Enlace para eliminar (solo si tiene permiso) - Abre el modal #}
+                                        {% if permissions.delete_tipomedicamento %}
+                                        <a href="#"
+                                            class="text-red-600 dark:text-red-500 hover:text-red-800 p-1 rounded transition-colors"
+                                            onclick="openDeleteModal('{{ tipo_medicamento.id }}', '{{ tipo_medicamento.nombre }}')"
+                                            title="Eliminar">
+                                            <i class="fa-solid fa-trash text-lg"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            {# Mensaje si no hay tipos de medicamento #}
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                    <div class="flex flex-col items-center">
+                                        <i class="fa-solid fa-pills text-4xl mb-2 text-gray-300"></i> {# Ícono de pastillas #}
+                                        <p class="text-lg">No se encontraron tipos de medicamentos</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {# Controles de Paginación #}
+                {% if page_obj.paginator.num_pages > 1 %}
+                <div class="flex justify-center mt-6">
+                    <nav aria-label="Navegación de páginas">
+                        <ul class="inline-flex -space-x-px shadow-sm rounded-lg">
+                            {# Botón "Anterior" #}
+                            {% if page_obj.has_previous %}
+                            <li>
+                                <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                                    class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-[#0b1121] dark:border-secundario dark:text-gray-400 dark:hover:bg-[#121c33] dark:hover:text-white transition-colors">
+                                    <i class="fa-solid fa-chevron-left mr-1"></i>Anterior
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {# Números de página #}
+                            {% for num in page_obj.paginator.page_range %}
+                            <li>
+                                <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                                    class="flex items-center justify-center px-3 h-8 leading-tight {% if num == page_obj.number %}text-emerald-600 bg-emerald-50 border border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-secundario dark:border-principal dark:text-emerald-300{% else %}text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-[#0b1121] dark:border-secundario dark:text-gray-400 dark:hover:bg-[#121c33] dark:hover:text-white{% endif %} transition-colors">
+                                    {{ num }}
+                                </a>
+                            </li>
+                            {% endfor %}
+
+                            {# Botón "Siguiente" #}
+                            {% if page_obj.has_next %}
+                            <li>
+                                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                                    class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-[#0b1121] dark:border-secundario dark:text-gray-400 dark:hover:bg-[#121c33] dark:hover:text-white transition-colors">
+                                    Siguiente<i class="fa-solid fa-chevron-right ml-1"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+
+                {# Botones de acción general (Nuevo y Volver al Inicio) #}
+                <div class="flex flex-col md:flex-row justify-center items-center gap-3 p-6">
+                    {% if permissions.add_tipomedicamento %}
+                    <a class="bg-emerald-700 hover:bg-emerald-800 text-black py-3 px-6 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        href="{% url 'doctor:tiposmedicamento_create' %}">
+                        <i class="fa-solid fa-plus-circle mr-2"></i> Nuevo Tipo de Medicamento
+                    </a>
+                    {% endif %}
+
+                    <a class="bg-gray-600 hover:bg-gray-700 text-black py-3 px-4 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        href="{% url 'home' %}"> {# Asegúrate que 'home' es el nombre de tu URL de inicio #}
+                        <i class="fa-solid fa-house"></i>
+                    </a>
+                </div>
+
+                {# Sección de estadísticas (opcional, como en tus otras listas) #}
+                <div class="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <h4 class="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+                                Total Tipos de Medicamentos
+                            </h4>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                {{ page_obj.paginator.count }}
+                            </p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <h4 class="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                                Página Actual
+                            </h4>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                            </p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <h4 class="text-lg font-semibold text-purple-600 dark:text-purple-400">
+                                Mostrando
+                            </h4>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                {{ page_obj|length }} registros
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# Incluye el fragmento del modal de eliminación. Asumo que tienes un 'fragments/delete.html' #}
+    {% include 'fragments/delete.html' %} 
+
+    <script>
+        {# Función para abrir el modal de eliminación y configurar su URL y descripción #}
+        function openDeleteModal(id, tipoMedicamentoNombre) {
+            const deleteForm = document.getElementById('deleteForm');
+            // Reemplaza '0' con el ID real en la URL de eliminación
+            deleteForm.action = `{% url 'doctor:tiposmedicamento_delete' 0 %}`.replace('0', id); 
+            // Actualiza la descripción en el modal
+            document.getElementById('Description').textContent = `Tipo de Medicamento: ${tipoMedicamentoNombre}`;
+            // Muestra el modal (asumiendo que tiene la clase 'hidden' inicialmente)
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        {# Función para cerrar el modal de eliminación #}
+        function closeModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            {# Para deshabilitar el botón de envío y mostrar un spinner al eliminar #}
+            const deleteForm = document.getElementById('deleteForm');
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function(e) {
+                    const submitBtn = deleteForm.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+                        submitBtn.disabled = true;
+                    }
+                });
+            }
+
+            {# Para enviar el formulario de búsqueda al presionar Enter #}
+            const searchInput = document.getElementById('table-search');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function(e) {
+                    if (e.key === 'Enter') {
+                        this.form.submit();
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{# applications/doctor/templates/doctor/marcamedicamento/form.html #}
+
+{% extends 'home.html' %} {# Asegúrate de que 'home.html' sea tu plantilla base #}
+{% load static %} {# Para cargar archivos estáticos si los necesitas #}
+
+{% block title %}
+    {% if form.instance.pk %}Editar Marca de Medicamento{% else %}Añadir Marca de Medicamento{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="dark:bg-principal mt-4">
+    <div class="flex justify-center items-center h-full">
+        <div class="w-full max-w-lg bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-6">
+                {% if form.instance.pk %}Editar Marca de Medicamento{% else %}Añadir Marca de Medicamento{% endif %}
+            </h1>
+
+            <form method="post" class="space-y-4">
+                {% csrf_token %} {# Token CSRF para seguridad en formularios #}
+
+                {# Itera sobre los campos del formulario para renderizarlos dinámicamente #}
+                {% for field in form %}
+                <div class="mb-4">
+                    {# Si el campo NO es el checkbox 'activo', renderiza la etiqueta arriba #}
+                    {% if field.name != 'activo' %}
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {{ field.label }}
+                        </label>
+                        {{ field }} {# Esto renderiza el widget del campo con sus clases y atributos #}
+                    {% else %}
+                        {# Para el campo 'activo', renderiza el checkbox y su etiqueta en la misma línea #}
+                        <div class="flex items-center">
+                            {{ field }} {# Esto renderiza el input checkbox HTML con sus clases y el estado checked #}
+                            <label for="{{ field.id_for_label }}" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {{ field.label }}
+                            </label>
+                        </div>
+                    {% endif %}
+                    
+                    {# Mostrar texto de ayuda y errores de validación para cada campo #}
+                    {% if field.help_text %}
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                
+                {# Botones de Guardar y Cancelar #}
+                <div class="flex justify-between items-center mt-6">
+                    <button type="submit"
+                        class="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-700">
+                        Guardar Marca de Medicamento
+                    </button>
+                    <button type="button" onclick="window.history.back()" {# Vuelve a la página anterior #}
+                        class="px-6 py-2 leading-5 text-gray-700 transition-colors duration-200 transform bg-gray-300 rounded-md hover:bg-gray-400 focus:outline-none focus:bg-gray-400 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-700">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

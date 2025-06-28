@@ -98,7 +98,7 @@
                     </div>
                     <div>
                         <label for="{{ form.sexo.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Género *</label>
-                        {{ form.sexo }} {# CORREGIDO: Usar 'sexo' en lugar de 'genero' #}
+                        {{ form.sexo }}
                         {% if form.sexo.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.sexo.errors }}</p>
                         {% endif %}
@@ -110,13 +110,7 @@
                             <p class="text-red-500 text-xs mt-1">{{ form.tipo_sangre.errors }}</p>
                         {% endif %}
                     </div>
-                    <div>
-                        <label for="{{ form.ocupacion.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Ocupación</label>
-                        {{ form.ocupacion }}
-                        {% if form.ocupacion.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.ocupacion.errors }}</p>
-                        {% endif %}
-                    </div>
+                    {# ELIMINADA LA REFERENCIA AL CAMPO OCUPACION #}
                     <div>
                         <label for="{{ form.estado_civil.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Estado Civil</label>
                         {{ form.estado_civil }}
@@ -233,29 +227,21 @@
 
 {% block js %}
 <script>
-    // Script para aplicar clases de Tailwind a los campos del formulario de Django
-    // ¡Este script ya no es estrictamente necesario si los widgets están definidos en forms.py,
-    // pero no hace daño tenerlo si quieres añadir más clases dinámicamente o para otros elementos.
-    // Sin embargo, las clases principales de estilo deberían venir de los widgets!
     document.addEventListener('DOMContentLoaded', function() {
         const fields = [
-            'nombres', 'apellidos', 'cedula_ecuatoriana', 'fecha_nacimiento', 'telefono', 'email', // CORREGIDO
-            'direccion', 'sexo', 'tipo_sangre', 'ocupacion', 'estado_civil', 'foto', // CORREGIDO
+            'nombres', 'apellidos', 'cedula_ecuatoriana', 'fecha_nacimiento', 'telefono', 'email',
+            'direccion', 'sexo', 'tipo_sangre', 'estado_civil', 'foto', // ELIMINADA 'ocupacion'
             'antecedentes_personales', 'antecedentes_quirurgicos', 'antecedentes_familiares',
             'alergias', 'medicamentos_actuales', 'habitos_toxicos', 'vacunas',
-            'antecedentes_gineco_obstetricos'
+            'antecedentes_gineco_obstetricos', 'dni' // Agregado 'dni' si lo necesitas para JS
         ];
 
         fields.forEach(fieldName => {
             const element = document.getElementById(`id_${fieldName}`);
             if (element) {
-                // Aplica clases base para inputs y textareas
                 if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
-                    // Estas clases ya están en forms.py. Este JS es redundante para ellas,
-                    // pero útil si quieres añadir más o para casos no cubiertos por widgets.
                     element.classList.add('w-full', 'p-3', 'border', 'border-gray-300', 'rounded-lg', 'focus:ring-2', 'focus:ring-blue-500', 'focus:border-transparent', 'text-gray-700', 'bg-white');
                 }
-                // Ajustes específicos para tipo file (foto)
                 if (element.type === 'file') {
                     element.classList.add('file:mr-4', 'file:py-2', 'file:px-4', 'file:rounded-full', 'file:border-0', 'file:text-sm', 'file:font-semibold', 'file:bg-blue-50', 'file:text-blue-700', 'hover:file:bg-blue-100');
                 }

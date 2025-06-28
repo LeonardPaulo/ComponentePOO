@@ -10,12 +10,12 @@ from django.utils import timezone
 """Modelo que representa los diferentes tipos de sangre."""
 class TipoSangre(models.Model):
     tipo = models.CharField(max_length=10, verbose_name="Tipo de Sangre", unique=True)
-    descripcion = models.CharField(max_length=100, verbose_name="Descripcion")
+    descripcion = models.CharField(max_length=100, verbose_name="Descripcion", blank=True, null=True)
 
     class Meta:
-        # Nombre en singular y plural del modelo en la interfaz de administración
         verbose_name = "Tipo de Sangre"
         verbose_name_plural = "Tipos de Sangre"
+        ordering = ['tipo']
 
     def __str__(self):
         return self.tipo

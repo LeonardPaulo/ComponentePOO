@@ -1,289 +1,53 @@
+{# applications/doctor/templates/doctor/diagnostico/form.html #}
+
 {% extends 'home.html' %}
 {% load static %}
 
 {% block title %}
-    {% if paciente %}Editar Paciente{% else %}Nuevo Paciente{% endif %}
-{% endblock %}
-
-{% block css %}
-    <script src="https://cdn.tailwindcss.com"></script>
-    {# Puedes añadir estilos CSS específicos para tu formulario de paciente aquí si es necesario #}
-    <style>
-        /* Estilos para el switch del checkbox */
-        input[type="checkbox"].sr-only + div {
-            @apply bg-gray-300;
-        }
-        input[type="checkbox"].sr-only:checked + div {
-            @apply bg-blue-600; /* O el color que prefieras para el switch activado */
-        }
-        input[type="checkbox"].sr-only:checked + div > div {
-            @apply translate-x-4; /* Mueve el círculo del switch */
-        }
-    </style>
+    {% if object %}Editar Diagnóstico{% else %}Añadir Diagnóstico{% endif %}
 {% endblock %}
 
 {% block content %}
-<section class="bg-gray-50 min-h-screen py-8">
-    <div class="container mx-auto px-6">
-        <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">
-            {% if paciente %}Editar Paciente{% else %}Registrar Nuevo Paciente{% endif %}
-        </h1>
+<section class="dark:bg-principal mt-2">
+    <div class="text-center data-aos="fade-up" data-aos-delay="200">
+        <div class="pt-8 lg:pt-4">
+            <h1 class="rounded-2xl bg-emerald-600 px-2 py-1 text-blue-800 uppercase text-4xl">
+                {% if object %}EDITAR DIAGNÓSTICO{% else %}AÑADIR DIAGNÓSTICO{% endif %}
+            </h1>
+        </div>
+    </div>
 
-        <form method="post" enctype="multipart/form-data" class="space-y-8 max-w-4xl mx-auto">
-            {% csrf_token %}
+    <div class="flex justify-center mt-8">
+        <div class="w-full max-w-md bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
 
-            {# Sección: Datos Personales del Paciente #}
-            <div class="bg-white rounded-2xl shadow-xl p-8">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                    </div>
-                    Datos Personales
-                </h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {# Aquí irán tus campos del formulario de Paciente #}
-                    {# ¡NOMBRES DE LOS CAMPOS CORREGIDOS PARA COINCIDIR CON forms.py! #}
-
-                    <div>
-                        <label for="{{ form.nombres.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Nombre *</label>
-                        {{ form.nombres }}
-                        {% if form.nombres.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.nombres.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.apellidos.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Apellido *</label>
-                        {{ form.apellidos }}
-                        {% if form.apellidos.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.apellidos.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.cedula_ecuatoriana.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Cédula *</label>
-                        {{ form.cedula_ecuatoriana }}
-                        {% if form.cedula_ecuatoriana.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.cedula_ecuatoriana.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.fecha_nacimiento.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Fecha de Nacimiento *</label>
-                        {{ form.fecha_nacimiento }}
-                        {% if form.fecha_nacimiento.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.fecha_nacimiento.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.telefono.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Teléfono</label>
-                        {{ form.telefono }}
-                        {% if form.telefono.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.telefono.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                        {{ form.email }}
-                        {% if form.email.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.email.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="{{ form.direccion.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Dirección *</label>
-                        {{ form.direccion }}
-                        {% if form.direccion.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.direccion.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.sexo.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Género *</label>
-                        {{ form.sexo }}
-                        {% if form.sexo.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.sexo.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.tipo_sangre.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Sangre</label>
-                        {{ form.tipo_sangre }}
-                        {% if form.tipo_sangre.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.tipo_sangre.errors }}</p>
-                        {% endif %}
-                    </div>
-                    {# ELIMINADA LA REFERENCIA AL CAMPO OCUPACION #}
-                    <div>
-                        <label for="{{ form.estado_civil.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Estado Civil</label>
-                        {{ form.estado_civil }}
-                        {% if form.estado_civil.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.estado_civil.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.foto.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Foto de Perfil</label>
-                        {{ form.foto }}
-                        {% if form.foto.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.foto.errors }}</p>
-                        {% endif %}
-                        {% if paciente.foto %}
-                            <img src="{{ paciente.foto.url }}" alt="Foto actual" class="w-24 h-24 rounded-full mt-2 object-cover">
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            {# Sección: Historia Clínica (Textareas) #}
-            <div class="bg-white rounded-2xl shadow-xl p-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                    </div>
-                    Historia Clínica
-                </h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="{{ form.antecedentes_personales.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Antecedentes Personales</label>
-                        {{ form.antecedentes_personales }}
-                        {% if form.antecedentes_personales.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.antecedentes_personales.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.antecedentes_quirurgicos.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Antecedentes Quirúrgicos</label>
-                        {{ form.antecedentes_quirurgicos }}
-                        {% if form.antecedentes_quirurgicos.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.antecedentes_quirurgicos.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.antecedentes_familiares.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Antecedentes Familiares</label>
-                        {{ form.antecedentes_familiares }}
-                        {% if form.antecedentes_familiares.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.antecedentes_familiares.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.alergias.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Alergias</label>
-                        {{ form.alergias }}
-                        {% if form.alergias.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.alergias.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.medicamentos_actuales.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Medicamentos Actuales</label>
-                        {{ form.medicamentos_actuales }}
-                        {% if form.medicamentos_actuales.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.medicamentos_actuales.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.habitos_toxicos.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Hábitos Tóxicos</label>
-                        {{ form.habitos_toxicos }}
-                        {% if form.habitos_toxicos.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.habitos_toxicos.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.vacunas.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Vacunas</label>
-                        {{ form.vacunas }}
-                        {% if form.vacunas.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.vacunas.errors }}</p>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <label for="{{ form.antecedentes_gineco_obstetricos.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Antecedentes Gineco-Obstétricos</label>
-                        {{ form.antecedentes_gineco_obstetricos }}
-                        {% if form.antecedentes_gineco_obstetricos.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.antecedentes_gineco_obstetricos.errors }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            {# Botones de acción #}
-            <div class="bg-white rounded-2xl shadow-xl p-8 mt-8">
-                <div class="flex justify-center space-x-4">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 flex items-center space-x-3">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        <span>{% if paciente %}Actualizar Paciente{% else %}Guardar Paciente{% endif %}</span>
+                <div class="flex justify-between mt-6">
+                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        {% if object %}Actualizar Diagnóstico{% else %}Guardar Diagnóstico{% endif %}
                     </button>
-                    <a href="{% url 'doctor:paciente_list' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 flex items-center space-x-3">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        <span>Cancelar</span>
-                    </a>
+                    {# CAMBIO AQUÍ: 'doctor_app' a 'doctor' #}
+                    <a href="{% url 'doctor:diagnostico_list' %}" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Cancelar</a>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </section>
 
-{% endblock content %}
 
-{% block js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const fields = [
-            'nombres', 'apellidos', 'cedula_ecuatoriana', 'fecha_nacimiento', 'telefono', 'email',
-            'direccion', 'sexo', 'tipo_sangre', 'estado_civil', 'foto', // ELIMINADA 'ocupacion'
-            'antecedentes_personales', 'antecedentes_quirurgicos', 'antecedentes_familiares',
-            'alergias', 'medicamentos_actuales', 'habitos_toxicos', 'vacunas',
-            'antecedentes_gineco_obstetricos', 'dni' // Agregado 'dni' si lo necesitas para JS
-        ];
-
-        fields.forEach(fieldName => {
-            const element = document.getElementById(`id_${fieldName}`);
-            if (element) {
-                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
-                    element.classList.add('w-full', 'p-3', 'border', 'border-gray-300', 'rounded-lg', 'focus:ring-2', 'focus:ring-blue-500', 'focus:border-transparent', 'text-gray-700', 'bg-white');
-                }
-                if (element.type === 'file') {
-                    element.classList.add('file:mr-4', 'file:py-2', 'file:px-4', 'file:rounded-full', 'file:border-0', 'file:text-sm', 'file:font-semibold', 'file:bg-blue-50', 'file:text-blue-700', 'hover:file:bg-blue-100');
-                }
-            }
-        });
-    });
-
-    // Función para manejar el botón Cancelar (redirecciona a la lista de pacientes)
-    function redirectToPacienteList() {
-        window.location.href = "{% url 'doctor:paciente_list' %}";
-    }
-</script>
-<script>
-    // Script para aplicar clases de Tailwind a los campos del formulario de Django
-    document.addEventListener('DOMContentLoaded', function() {
-        const fields = [
-            'nombre', 'apellido', 'cedula', 'fecha_nacimiento', 'telefono', 'email',
-            'direccion', 'genero', 'tipo_sangre', 'ocupacion', 'estado_civil', 'foto',
-            'antecedentes_personales', 'antecedentes_quirurgicos', 'antecedentes_familiares',
-            'alergias', 'medicamentos_actuales', 'habitos_toxicos', 'vacunas',
-            'antecedentes_gineco_obstetricos'
-        ];
-
-        fields.forEach(fieldName => {
-            const element = document.getElementById(`id_${fieldName}`);
-            if (element) {
-                // Aplica clases base para inputs y textareas
-                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
-                    element.classList.add('w-full', 'p-3', 'border', 'border-gray-300', 'rounded-lg', 'focus:ring-2', 'focus:ring-blue-500', 'focus:border-transparent', 'text-gray-700', 'bg-white');
-                }
-                // Ajustes específicos para tipo file (foto)
-                if (element.type === 'file') {
-                    element.classList.add('file:mr-4', 'file:py-2', 'file:px-4', 'file:rounded-full', 'file:border-0', 'file:text-sm', 'file:font-semibold', 'file:bg-blue-50', 'file:text-blue-700', 'hover:file:bg-blue-100');
-                }
-            }
-        });
-    });
-
-    // Función para manejar el botón Cancelar (redirecciona a la lista de pacientes)
-    function redirectToPacienteList() {
-        window.location.href = "{% url 'doctor:paciente_list' %}";
-    }
+    
 </script>
 
 

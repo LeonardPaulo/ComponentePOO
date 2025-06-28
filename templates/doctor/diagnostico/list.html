@@ -1,0 +1,251 @@
+{# applications/doctor/templates/doctor/diagnostico/list.html #}
+
+{% extends 'home.html' %}
+{% load static %}
+
+{% block title %}Listado de Diagnósticos{% endblock %}
+
+{% block content %}
+    {% include 'fragments/messages.html' %} {# Asegúrate de incluir tus mensajes #}
+    <section class="dark:bg-principal mt-2">
+        <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="pt-8 lg:pt-4">
+                <h1 class="rounded-2xl bg-emerald-600 px-2 py-1 text-blue-800 uppercase text-4xl">Listado de Diagnósticos</h1>
+            </div>
+
+            <div class="lg:p-2 rounded-3xl" data-aos="fade-up" data-aos-delay="200">
+                <div class="p-4 flex justify-center">
+                    <label for="table-search" class="sr-only">Buscar Diagnóstico</label>
+                    <div class="relative mt-1">
+                        <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        
+                        {# CAMBIO CLAVE AQUÍ: ENVOLVEMOS EL INPUT EN UN FORMULARIO GET #}
+                        <form method="GET" action="{% url 'doctor:diagnostico_list' %}" class="flex"> {# Añadido 'flex' para mantener el layout #}
+                            <input type="text" id="table-search" name="q" {# Añadido name="q" #}
+                                class="text-center pl-10 shadow-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block p-2.5 pr-12 dark:bg-principal dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-emerald-500 dark:focus:border-emerald-500 dark:shadow-sm-light"
+                                placeholder="Buscar diagnóstico..." value="{{ search_query|default:'' }}"> {# Añadido value para mantener el término de búsqueda #}
+                            
+                            <button type="submit" class="btn btn-outline-secondary ml-2 px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
+                                Buscar
+                            </button>
+                            {% if search_query %}
+                                <a href="{% url 'doctor:diagnostico_list' %}" class="btn btn-outline-danger ml-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors">
+                                    Limpiar
+                                </a>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto shadow-lg rounded-lg">
+                    <table class="w-full text-center text-sm"> {# Puedes añadir un ID aquí si necesitas el JS local para otra cosa, pero para la búsqueda de Django ya no es necesario #}
+                        <thead class="uppercase font-Tiny5 bg-emerald-50 dark:bg-secundario dark:text-emerald-300 text-emerald-800">
+                            <tr>
+                                <th scope="col" class="px-4 py-4">Código</th>
+                                <th scope="col" class="px-4 py-4">Descripción</th>
+                                <th scope="col" class="px-4 py-4">Datos Adicionales</th>
+                                <th scope="col" class="px-4 py-4">Activo</th>
+                                <th scope="col" class="px-4 py-4">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for diagnostico in diagnosticos %}
+                            <tr class="dark:text-gray-300 bg-white border-b dark:bg-[#0b1121] dark:border-secundario hover:bg-emerald-50 dark:hover:bg-[#121c33] transition-colors duration-200">
+                                <td class="px-4 py-4 font-medium text-emerald-600 dark:text-emerald-400">
+                                    {{ diagnostico.codigo }}
+                                </td>
+                                <td class="px-4 py-4">
+                                    {{ diagnostico.descripcion }}
+                                </td>
+                                <td class="px-4 py-4">
+                                    {{ diagnostico.datos_adicionales|default:"N/A" }}
+                                </td>
+                                <td class="px-4 py-4">
+                                    {% if diagnostico.activo %}
+                                        <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Sí</span>
+                                    {% else %}
+                                        <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">No</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex justify-center space-x-2">
+                                        {# Enlace para editar #}
+                                        <a href="{% url 'doctor:diagnostico_update' pk=diagnostico.pk %}"
+                                            class="text-blue-600 dark:text-blue-500 hover:text-blue-800 p-1 rounded transition-colors"
+                                            title="Editar">
+                                            <i class="fa-solid fa-edit text-lg"></i>
+                                        </a>
+                                        
+                                        {# Enlace para eliminar #}
+                                        <a href="#"
+                                            class="text-red-600 dark:text-red-500 hover:text-red-800 p-1 rounded transition-colors"
+                                            onclick="openDeleteModal('{{ diagnostico.pk }}', '{{ diagnostico.codigo }}')"
+                                            title="Eliminar">
+                                            <i class="fa-solid fa-trash text-lg"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                    <div class="flex flex-col items-center">
+                                        <i class="fa-solid fa-notes-medical text-4xl mb-2 text-gray-300"></i>
+                                        <p class="text-lg">No se encontraron diagnósticos</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {# Paginación #}
+                {% if page_obj.paginator.num_pages > 1 %}
+                <div class="flex justify-center mt-6">
+                    <nav aria-label="Navegación de páginas">
+                        <ul class="inline-flex -space-x-px shadow-sm rounded-lg">
+                            {% if page_obj.has_previous %}
+                            <li>
+                                <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}"
+                                    class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-[#0b1121] dark:border-secundario dark:text-gray-400 dark:hover:bg-[#121c33] dark:hover:text-white transition-colors">
+                                    <i class="fa-solid fa-chevron-left mr-1"></i>Anterior
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                            <li>
+                                <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}"
+                                    class="flex items-center justify-center px-3 h-8 leading-tight {% if num == page_obj.number %}text-emerald-600 bg-emerald-50 border border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 dark:bg-secundario dark:border-principal dark:text-emerald-300{% else %}text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-[#0b1121] dark:border-secundario dark:text-gray-400 dark:hover:bg-[#121c33] dark:hover:text-white{% endif %} transition-colors">
+                                    {{ num }}
+                                </a>
+                            </li>
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                            <li>
+                                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}"
+                                    class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-[#0b1121] dark:border-secundario dark:text-gray-400 dark:hover:bg-[#121c33] dark:hover:text-white transition-colors">
+                                    Siguiente<i class="fa-solid fa-chevron-right ml-1"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+
+                <div class="flex flex-col md:flex-row justify-center items-center gap-3 p-6">
+                    <a class="bg-blue-700 hover:bg-blue-800 text-white py-3 px-6 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        href="{% url 'doctor:diagnostico_create' %}">
+                        <i class="fa-solid fa-plus-circle mr-2"></i> Añadir Nuevo Diagnóstico
+                    </a>
+
+                    <a class="bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        href="{% url 'home' %}">
+                        <i class="fa-solid fa-house"></i>
+                    </a>
+                </div>
+
+                {# Stats section #}
+                <div class="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <h4 class="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+                                Total Diagnósticos
+                            </h4>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                {{ page_obj.paginator.count }}
+                            </p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <h4 class="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                                Página Actual
+                            </h4>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                            </p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <h4 class="text-lg font-semibold text-purple-600 dark:text-purple-400">
+                                Mostrando
+                            </h4>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                {{ page_obj|length }} registros
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# INCLUYE EL FRAGMENTO DEL MODAL AQUÍ #}
+    {% include 'fragments/delete.html' %} 
+
+    <script>
+        // Función para filtrar la tabla (ESTA FUNCIÓN YA NO ES NECESARIA SI LA BÚSQUEDA ES EN DJANGO)
+        // La comentamos o eliminamos ya que la búsqueda se gestiona en el backend.
+        /*
+        function filterTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("table-search");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("diagnosticosTable"); 
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0]; 
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        */
+
+        // Funciones del modal de eliminación - COPIA EXACTA DE TIPO DE SANGRE
+        function openDeleteModal(id, diagnosticoCodigo) {
+            const deleteForm = document.getElementById('deleteForm');
+            // Reemplaza 'tiposangre_delete' con 'diagnostico_delete'
+            deleteForm.action = `{% url 'doctor:diagnostico_delete' 0 %}`.replace('0', id); 
+            document.getElementById('Description').textContent = `Diagnóstico con código: ${diagnosticoCodigo}`;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        // Script para el submit del formulario del modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteForm = document.getElementById('deleteForm');
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function(e) {
+                    const submitBtn = deleteForm.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
+                        submitBtn.disabled = true;
+                    }
+                });
+            }
+
+            // Removimos la lógica de 'keyup' con 'Enter' porque ahora el formulario se envía con el botón "Buscar".
+            // Si quieres que Enter también envíe el formulario, el input debe estar dentro del <form> y puedes añadir:
+            // document.getElementById('table-search').addEventListener('keyup', function(e) {
+            //     if (e.key === 'Enter') {
+            //         this.closest('form').submit(); 
+            //     }
+            // });
+        });
+    </script>
+{% endblock %}

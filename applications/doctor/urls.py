@@ -31,6 +31,7 @@ from applications.doctor.views.marcamedicamento import (
 from applications.doctor.views import tiposgasto as tipogasto_views
 from applications.doctor.views import gastomensual as gastomensual_views
 from applications.doctor.views import fotopaciente as fotopaciente_views
+from applications.doctor.views import serviciosadicionales
 
 app_name = 'doctor'
 
@@ -87,4 +88,9 @@ urlpatterns = [
     path('fotos_paciente/crear/', fotopaciente_views.fotopaciente_create, name='fotopaciente_create'),
     path('fotos_paciente/editar/<int:pk>/', fotopaciente_views.fotopaciente_update, name='fotopaciente_update'),
     path('fotos_paciente/eliminar/<int:pk>/', fotopaciente_views.fotopaciente_delete, name='fotopaciente_delete'),
+
+    path('serviciosadicionales/', serviciosadicionales.serviciosadicionales_list, name='serviciosadicionales_list'),
+    path('serviciosadicionales/create/', serviciosadicionales.serviciosadicionales_create, name='serviciosadicionales_create'),
+    path('serviciosadicionales/<int:pk>/update/', serviciosadicionales.serviciosadicionales_update, name='serviciosadicionales_update'),
+    path('serviciosadicionales/<int:pk>/delete/', serviciosadicionales.serviciosadicionales_delete, name='serviciosadicionales_delete'),
 ]

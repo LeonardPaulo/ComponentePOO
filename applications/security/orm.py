@@ -7,7 +7,7 @@ from applications.security.models import GroupModulePermission, Menu, Module, Us
 menu1 = Menu(
     name='Registros',
     icon='bi bi-person',
-    order=7
+    order=1
 )
 menu1.save()
 
@@ -21,7 +21,7 @@ menu2 = Menu.objects.create(
 menu3 = Menu.objects.create(
     name='Auditores',
     icon='bi bi-gear',
-    order=4
+    order=3
 )
 
 # Create Modules using bulk_create

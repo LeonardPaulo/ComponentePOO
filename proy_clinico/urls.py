@@ -22,6 +22,7 @@ from applications.security.views.home import ModuloTemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('chatbot/', include('applications.chatbot.urls')),
     path('', ModuloTemplateView.as_view(), name='home'),
     path('security/', include('applications.security.urls', namespace='security')),
     path('core/', include('applications.core.urls', namespace='core')),

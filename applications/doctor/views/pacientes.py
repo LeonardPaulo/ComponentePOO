@@ -4,11 +4,14 @@ from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.db.models import Q
-from applications.core.models import Paciente
+from applications.core.models import Paciente, FotoPaciente
 from applications.doctor.forms.paciente import PacienteForm
 from applications.security.components.mixin_crud import (
     CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
 )
+import shutil
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 
 class PacienteListView(PermissionMixin, ListViewMixin, ListView):
     template_name = 'doctor/pacientes/list.html'
@@ -41,7 +44,47 @@ class PacienteCreateView(PermissionMixin, CreateViewMixin, CreateView):
         context = super().get_context_data()
         context['grabar'] = 'Grabar Paciente'
         context['back_url'] = self.success_url
+        # Agregar datos de fotos para JavaScript
+        context['fotos_data'] = self._get_fotos_json()
         return context
+
+    def _get_fotos_json(self):
+        """Genera JSON con datos de fotos para JavaScript"""
+        fotos = FotoPaciente.objects.filter(imagen__isnull=False).select_related('paciente')
+        fotos_data = {}
+        for foto in fotos:
+            fotos_data[str(foto.pk)] = {
+                'url': foto.imagen.url,
+                'paciente': str(foto.paciente),
+                'descripcion': foto.descripcion or '',
+                'fecha': foto.fecha_subida.strftime('%d/%m/%Y')
+            }
+        return json.dumps(fotos_data)
+
+    def form_valid(self, form):
+        # Asegurar que el paciente se cree como activo
+        form.instance.activo = True
+        # Manejar selección de foto existente
+        foto_existente_id = form.cleaned_data.get('foto_existente')
+        if foto_existente_id and not form.cleaned_data.get('foto'):
+            # Copiar la imagen de FotoPaciente al campo foto del paciente
+            foto_paciente = FotoPaciente.objects.get(pk=foto_existente_id.pk)
+            if foto_paciente.imagen:
+                # Copiar archivo
+                original_file = foto_paciente.imagen
+                file_content = original_file.read()
+                file_name = f"paciente_perfil_{form.cleaned_data['cedula_ecuatoriana']}_{original_file.name.split('/')[-1]}"
+                
+                # Guardar en el paciente
+                form.instance.foto.save(
+                    file_name,
+                    ContentFile(file_content),
+                    save=False
+                )
+        
+        response = super().form_valid(form)
+        messages.success(self.request, f'Paciente {self.object.nombres} {self.object.apellidos} creado exitosamente.')
+        return response
 
 
 class PacienteUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
@@ -55,24 +98,59 @@ class PacienteUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
         context = super().get_context_data()
         context['grabar'] = 'Actualizar Paciente'
         context['back_url'] = self.success_url
+        # Agregar datos de fotos para JavaScript
+        context['fotos_data'] = self._get_fotos_json()
         return context
+
+    def _get_fotos_json(self):
+        """Genera JSON con datos de fotos para JavaScript"""
+        fotos = FotoPaciente.objects.filter(imagen__isnull=False).select_related('paciente')
+        fotos_data = {}
+        for foto in fotos:
+            fotos_data[str(foto.pk)] = {
+                'url': foto.imagen.url,
+                'paciente': str(foto.paciente),
+                'descripcion': foto.descripcion or '',
+                'fecha': foto.fecha_subida.strftime('%d/%m/%Y')
+            }
+        return json.dumps(fotos_data)
+
+    def form_valid(self, form):
+        # Manejar selección de foto existente
+        foto_existente_id = form.cleaned_data.get('foto_existente')
+        if foto_existente_id and not form.cleaned_data.get('foto'):
+            # Copiar la imagen de FotoPaciente al campo foto del paciente
+            foto_paciente = FotoPaciente.objects.get(pk=foto_existente_id.pk)
+            if foto_paciente.imagen:
+                # Eliminar foto anterior si existe
+                if self.object.foto:
+                    default_storage.delete(self.object.foto.path)
+                
+                # Copiar archivo
+                original_file = foto_paciente.imagen
+                file_content = original_file.read()
+                file_name = f"paciente_perfil_{form.cleaned_data['cedula_ecuatoriana']}_{original_file.name.split('/')[-1]}"
+                
+                # Guardar en el paciente
+                form.instance.foto.save(
+                    file_name,
+                    ContentFile(file_content),
+                    save=False
+                )
+        
+        response = super().form_valid(form)
+        messages.success(self.request, f'Paciente {self.object.nombres} {self.object.apellidos} actualizado exitosamente.')
+        return response
 
 
 class PacienteDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
     model = Paciente
-    template_name = 'core/delete.html'
+    template_name = 'doctor/pacientes/delete.html'
     success_url = reverse_lazy('doctor:paciente_list')
     permission_required = 'delete_paciente'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['grabar'] = 'Eliminar Paciente'
-        context['description'] = f"¿Desea eliminar al paciente: {self.object}?"
         context['back_url'] = self.success_url
         return context
-
-    def form_valid(self, form):
-        paciente_nombre = self.object
-        response = super().form_valid(form)
-        messages.success(self.request, f"Paciente {paciente_nombre} eliminado correctamente.")
-        return response

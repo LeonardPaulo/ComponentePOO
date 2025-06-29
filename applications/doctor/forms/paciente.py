@@ -2,12 +2,23 @@
 
 from django import forms
 from django.forms import ModelForm
-from applications.core.models import Paciente 
+from applications.core.models import Paciente, FotoPaciente
 
 class PacienteForm(ModelForm):
+    # Campo adicional para seleccionar foto existente
+    foto_existente = forms.ModelChoiceField(
+        queryset=FotoPaciente.objects.all(),
+        required=False,
+        empty_label="-- Seleccionar foto existente --",
+        widget=forms.Select(attrs={
+            'class': 'form-select w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200',
+            'onchange': 'mostrarFotoSeleccionada(this.value)'
+        }),
+        help_text="Selecciona una foto existente de la galería de pacientes"
+    )
+    
     class Meta:
         model = Paciente
-        # EXCLUYE 'ocupacion' al listar explícitamente los campos
         fields = [
             'nombres', 'apellidos', 'cedula_ecuatoriana', 'dni',
             'fecha_nacimiento', 'telefono', 'email', 'sexo',
@@ -16,7 +27,7 @@ class PacienteForm(ModelForm):
             'antecedentes_personales', 'antecedentes_quirurgicos',
             'antecedentes_familiares', 'alergias', 'medicamentos_actuales',
             'habitos_toxicos', 'vacunas', 'antecedentes_gineco_obstetricos',
-            'activo', # Si quieres que el campo 'activo' sea editable
+            'activo',
         ]
 
         widgets = {
@@ -64,6 +75,11 @@ class PacienteForm(ModelForm):
             'longitud': forms.NumberInput(attrs={
                 'class': 'form-input w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200'
             }),
+            'foto': forms.FileInput(attrs={
+                'class': 'form-input w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200',
+                'accept': 'image/*',
+                'onchange': 'mostrarVistaPrevia(this)'
+            }),
             'antecedentes_personales': forms.Textarea(attrs={'class': 'form-textarea w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200', 'rows': 3}),
             'antecedentes_quirurgicos': forms.Textarea(attrs={'class': 'form-textarea w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200', 'rows': 3}),
             'antecedentes_familiares': forms.Textarea(attrs={'class': 'form-textarea w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200', 'rows': 3}),
@@ -77,3 +93,25 @@ class PacienteForm(ModelForm):
                 'placeholder': 'DNI internacional (opcional)'
             }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filtrar solo fotos que tienen imagen válida
+        self.fields['foto_existente'].queryset = FotoPaciente.objects.filter(
+            imagen__isnull=False
+        ).select_related('paciente').order_by('-fecha_subida')
+        
+        # Personalizar el label de cada opción para mostrar paciente y fecha
+        choices = [('', '-- Seleccionar foto existente --')]
+        for foto in self.fields['foto_existente'].queryset:
+            label = f"{foto.paciente} - {foto.fecha_subida.strftime('%d/%m/%Y')}"
+            if foto.descripcion:
+                label += f" ({foto.descripcion[:30]}...)" if len(foto.descripcion) > 30 else f" ({foto.descripcion})"
+            choices.append((foto.pk, label))
+        
+        self.fields['foto_existente'].choices = choices
+
+        # IMPORTANTE: Asegurar que el campo activo esté siempre marcado como True por defecto
+        # y esté oculto para que el usuario no lo modifique accidentalmente
+        self.fields['activo'].widget = forms.HiddenInput()
+        self.fields['activo'].initial = True

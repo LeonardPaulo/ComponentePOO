@@ -96,6 +96,16 @@ class Paciente(models.Model):
         blank=True,
         help_text="Imagen de perfil del paciente (opcional)."
     )
+    # NUEVO CAMPO - Agregar esto:
+    foto_referencia = models.ForeignKey(
+        'FotoPaciente',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Foto de Referencia",
+        help_text="Referencia a una foto del módulo Fotos de Pacientes",
+        related_name="pacientes_que_usan_foto"
+    )
     # === Historia Clínica ===
     # Enfermedades previas diagnosticadas por un médico.
     # Ejemplo: "Diabetes tipo 2 desde hace 5 años, hipertensión controlada"
@@ -180,9 +190,19 @@ class Paciente(models.Model):
 
     @property
     def get_image(self):
-        if self.foto and hasattr(self.foto, 'url'):
+        # Priorizar foto_referencia sobre foto directa
+        if self.foto_referencia and self.foto_referencia.imagen:
+            return self.foto_referencia.imagen.url
+        elif self.foto and hasattr(self.foto, 'url'):
             return self.foto.url
         return '/static/img/usuario_anonimo.png'
+
+    @property
+    def get_foto_actual(self):
+        """Devuelve la foto actual del paciente (referencia o directa)"""
+        if self.foto_referencia and self.foto_referencia.imagen:
+            return self.foto_referencia.imagen
+        return self.foto
 
     @property
     def edad(self):

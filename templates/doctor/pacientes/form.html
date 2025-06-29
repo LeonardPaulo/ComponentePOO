@@ -10,13 +10,13 @@
     <style>
         /* Estilos para el switch del checkbox */
         input[type="checkbox"].sr-only + div {
-            @apply bg-gray-300;
+            background-color: #d1d5db; /* bg-gray-300 */
         }
         input[type="checkbox"].sr-only:checked + div {
-            @apply bg-blue-600;
+            background-color: #2563eb; /* bg-blue-600 */
         }
         input[type="checkbox"].sr-only:checked + div > div {
-            @apply translate-x-4;
+            transform: translateX(1rem); /* translate-x-4 */
         }
         
         /* Estilos para tabs de foto */
@@ -30,7 +30,8 @@
         }
         
         .foto-galeria.ring-2 {
-            ring-color: #2563eb;
+            --tw-ring-color: #2563eb;
+            box-shadow: 0 0 0 2px var(--tw-ring-color);
         }
     </style>
 {% endblock %}
@@ -158,9 +159,9 @@
                             {% if form.foto.errors %}
                                 <p class="text-red-500 text-xs mt-1">{{ form.foto.errors }}</p>
                             {% endif %}
-                            {% if paciente.foto %}
+                            {% if paciente.get_image %}
                                 <div class="mt-2">
-                                    <img src="{{ paciente.foto.url }}" alt="Foto actual" class="w-24 h-24 rounded-full object-cover border-2 border-gray-200">
+                                    <img src="{{ paciente.get_image }}" alt="Foto actual" class="w-24 h-24 rounded-full object-cover border-2 border-gray-200">
                                     <p class="text-xs text-gray-500 mt-1">Foto actual</p>
                                 </div>
                             {% endif %}
@@ -294,7 +295,7 @@
 
 <script>
 // Datos de fotos desde el contexto de Django
-const fotosData = {{ fotos_data|safe }};
+const fotosData = JSON.parse('{{ fotos_data|default:"{}"|escapejs }}');
 
 // Función para cambiar entre tabs
 function cambiarTab(tab) {

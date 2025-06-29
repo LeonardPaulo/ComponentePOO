@@ -12,6 +12,7 @@ from applications.security.components.mixin_crud import (
 import shutil
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+import os
 
 class PacienteListView(PermissionMixin, ListViewMixin, ListView):
     template_name = 'doctor/pacientes/list.html'
@@ -62,26 +63,24 @@ class PacienteCreateView(PermissionMixin, CreateViewMixin, CreateView):
         return json.dumps(fotos_data)
 
     def form_valid(self, form):
-        # Asegurar que el paciente se cree como activo
+        # IMPORTANTE: Asegurar que el paciente se cree como activo
         form.instance.activo = True
+    
         # Manejar selección de foto existente
         foto_existente_id = form.cleaned_data.get('foto_existente')
-        if foto_existente_id and not form.cleaned_data.get('foto'):
-            # Copiar la imagen de FotoPaciente al campo foto del paciente
-            foto_paciente = FotoPaciente.objects.get(pk=foto_existente_id.pk)
-            if foto_paciente.imagen:
-                # Copiar archivo
-                original_file = foto_paciente.imagen
-                file_content = original_file.read()
-                file_name = f"paciente_perfil_{form.cleaned_data['cedula_ecuatoriana']}_{original_file.name.split('/')[-1]}"
-                
-                # Guardar en el paciente
-                form.instance.foto.save(
-                    file_name,
-                    ContentFile(file_content),
-                    save=False
-                )
-        
+        foto_nueva = form.cleaned_data.get('foto')
+    
+        # Si se seleccionó una foto existente
+        if foto_existente_id:
+            # Asignar la referencia a la foto existente
+            form.instance.foto_referencia = foto_existente_id
+            # Limpiar el campo foto directa para evitar conflictos
+            form.instance.foto = None
+        elif foto_nueva:
+            # Si se sube una foto nueva, limpiar la referencia
+            form.instance.foto_referencia = None
+            # La foto nueva se maneja automáticamente por Django
+    
         response = super().form_valid(form)
         messages.success(self.request, f'Paciente {self.object.nombres} {self.object.apellidos} creado exitosamente.')
         return response
@@ -118,26 +117,19 @@ class PacienteUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
     def form_valid(self, form):
         # Manejar selección de foto existente
         foto_existente_id = form.cleaned_data.get('foto_existente')
-        if foto_existente_id and not form.cleaned_data.get('foto'):
-            # Copiar la imagen de FotoPaciente al campo foto del paciente
-            foto_paciente = FotoPaciente.objects.get(pk=foto_existente_id.pk)
-            if foto_paciente.imagen:
-                # Eliminar foto anterior si existe
-                if self.object.foto:
-                    default_storage.delete(self.object.foto.path)
-                
-                # Copiar archivo
-                original_file = foto_paciente.imagen
-                file_content = original_file.read()
-                file_name = f"paciente_perfil_{form.cleaned_data['cedula_ecuatoriana']}_{original_file.name.split('/')[-1]}"
-                
-                # Guardar en el paciente
-                form.instance.foto.save(
-                    file_name,
-                    ContentFile(file_content),
-                    save=False
-                )
-        
+        foto_nueva = form.cleaned_data.get('foto')
+    
+        # Si se seleccionó una foto existente
+        if foto_existente_id:
+            # Asignar la referencia a la foto existente
+            form.instance.foto_referencia = foto_existente_id
+            # Limpiar el campo foto directa para evitar conflictos
+            form.instance.foto = None
+        elif foto_nueva:
+            # Si se sube una foto nueva, limpiar la referencia
+            form.instance.foto_referencia = None
+            # La foto nueva se maneja automáticamente por Django
+    
         response = super().form_valid(form)
         messages.success(self.request, f'Paciente {self.object.nombres} {self.object.apellidos} actualizado exitosamente.')
         return response

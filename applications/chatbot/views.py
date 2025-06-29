@@ -6,7 +6,7 @@ import json
 import cohere
 from deep_translator import GoogleTranslator
 
-COHERE_API_KEY = "dHgB5WmdB6Rwb9TYtvVFUVKdS6dYlmfzZhzsc4Gl"  # Reemplaza con tu API Key de Cohere
+COHERE_API_KEY = "Api_en_el_grupo"  # Reemplaza con tu API Key de Cohere
 
 co = cohere.Client(COHERE_API_KEY)
 

@@ -33,6 +33,25 @@ from applications.doctor.views import gastomensual as gastomensual_views
 from applications.doctor.views import fotopaciente as fotopaciente_views
 from applications.doctor.views import serviciosadicionales
 
+from .views.cita_medica import (
+    CitaMedicaListView,
+    CitaMedicaCreateView,
+    CitaMedicaUpdateView,
+    CitaMedicaDeleteView,
+)
+
+from applications.doctor.views.pago import (
+    PagoListView, PagoCreateView, PagoUpdateView, PagoDeleteView
+)
+
+from applications.doctor.views.detalle_pago import (
+    DetallePagoListView, DetallePagoCreateView, DetallePagoUpdateView, DetallePagoDeleteView
+)
+
+from applications.doctor.views.horario_atencion import (
+    HorarioAtencionListView, HorarioAtencionCreateView, HorarioAtencionUpdateView, HorarioAtencionDeleteView
+)
+
 app_name = 'doctor'
 
 urlpatterns = [
@@ -93,4 +112,28 @@ urlpatterns = [
     path('serviciosadicionales/create/', serviciosadicionales.serviciosadicionales_create, name='serviciosadicionales_create'),
     path('serviciosadicionales/<int:pk>/update/', serviciosadicionales.serviciosadicionales_update, name='serviciosadicionales_update'),
     path('serviciosadicionales/<int:pk>/delete/', serviciosadicionales.serviciosadicionales_delete, name='serviciosadicionales_delete'),
+
+    # Citas Médicas
+    path('citas/', CitaMedicaListView.as_view(), name='cita_list'),
+    path('citas/crear/', CitaMedicaCreateView.as_view(), name='cita_create'),
+    path('citas/editar/<int:pk>/', CitaMedicaUpdateView.as_view(), name='cita_update'),
+    path('citas/eliminar/<int:pk>/', CitaMedicaDeleteView.as_view(), name='cita_delete'),
+
+    # Pagos
+    path('pagos/', PagoListView.as_view(), name='pago_list'),
+    path('pagos/crear/', PagoCreateView.as_view(), name='pago_create'),
+    path('pagos/editar/<int:pk>/', PagoUpdateView.as_view(), name='pago_update'),
+    path('pagos/eliminar/<int:pk>/', PagoDeleteView.as_view(), name='pago_delete'),
+
+    # Detalles de Pago
+    path('detalle_pago/', DetallePagoListView.as_view(), name='detalle_pago_list'),
+    path('detalle_pago/crear/', DetallePagoCreateView.as_view(), name='detalle_pago_create'),
+    path('detalle_pago/editar/<int:pk>/', DetallePagoUpdateView.as_view(), name='detalle_pago_update'),
+    path('detalle_pago/eliminar/<int:pk>/', DetallePagoDeleteView.as_view(), name='detalle_pago_delete'),
+
+    #Horario de atención
+    path('horario_atencion/', HorarioAtencionListView.as_view(), name='horario_atencion_list'),
+    path('horario_atencion/crear/', HorarioAtencionCreateView.as_view(), name='horario_atencion_create'),
+    path('horario_atencion/editar/<int:pk>/', HorarioAtencionUpdateView.as_view(), name='horario_atencion_update'),
+    path('horario_atencion/eliminar/<int:pk>/', HorarioAtencionDeleteView.as_view(), name='horario_atencion_delete'),
 ]

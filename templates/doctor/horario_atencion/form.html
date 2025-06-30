@@ -1,0 +1,110 @@
+{% extends 'home.html' %}
+{% block title %}{{ title|default:"Horario de Atención" }}{% endblock %}
+
+{% block content %}
+    {% load static %}
+    {% include 'fragments/messages.html' %}
+    <section class="bg-gray-50 mt-2 flex justify-center items-center min-h-[calc(100vh-100px)]">
+        <div class="w-full max-w-xl bg-white rounded-lg shadow-xl p-8 border-2 border-black transform transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl"
+            data-aos="fade-up" data-aos-delay="200">
+            <h1 class="text-center rounded-2xl bg-blue-100 px-2 py-1 text-blue-800 uppercase text-3xl mb-6 font-bold">
+                {{ grabar|default:"Registrar Horario de Atención" }}
+            </h1>
+            
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="bg-red-100 text-red-700 p-2 rounded mb-4 text-center font-semibold">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border border-black rounded-lg p-4">
+                        <label for="{{ form.dia_semana.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
+                            {{ form.dia_semana.label }}
+                        </label>
+                        {{ form.dia_semana }}
+                        {% if form.dia_semana.errors %}
+                            {% for error in form.dia_semana.errors %}
+                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="border border-black rounded-lg p-4">
+                        <label for="{{ form.hora_inicio.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
+                            {{ form.hora_inicio.label }}
+                        </label>
+                        {{ form.hora_inicio }}
+                        {% if form.hora_inicio.errors %}
+                            {% for error in form.hora_inicio.errors %}
+                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="border border-black rounded-lg p-4">
+                        <label for="{{ form.hora_fin.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
+                            {{ form.hora_fin.label }}
+                        </label>
+                        {{ form.hora_fin }}
+                        {% if form.hora_fin.errors %}
+                            {% for error in form.hora_fin.errors %}
+                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="border border-black rounded-lg p-4">
+                        <label for="{{ form.intervalo_desde.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
+                            {{ form.intervalo_desde.label }}
+                        </label>
+                        {{ form.intervalo_desde }}
+                        {% if form.intervalo_desde.errors %}
+                            {% for error in form.intervalo_desde.errors %}
+                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="border border-black rounded-lg p-4">
+                        <label for="{{ form.intervalo_hasta.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
+                            {{ form.intervalo_hasta.label }}
+                        </label>
+                        {{ form.intervalo_hasta }}
+                        {% if form.intervalo_hasta.errors %}
+                            {% for error in form.intervalo_hasta.errors %}
+                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="border border-black rounded-lg p-4">
+                        <label for="{{ form.activo.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
+                            {{ form.activo.label }}
+                        </label>
+                        {{ form.activo }}
+                        {% if form.activo.errors %}
+                            {% for error in form.activo.errors %}
+                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 justify-center mt-4">
+                    <button type="submit"
+                        class="w-full md:w-auto px-6 py-3 bg-blue-700 text-white font-medium rounded-full shadow-lg hover:bg-blue-800 transition duration-300 transform hover:scale-105">
+                        Guardar Horario
+                    </button>
+                    <a href="{{ back_url|default:request.META.HTTP_REFERER }}"
+                        class="w-full md:w-auto px-6 py-3 bg-gray-600 text-white font-medium rounded-full shadow-lg hover:bg-gray-700 transition duration-300 transform hover:scale-105 text-center">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </section>
+{% endblock %}

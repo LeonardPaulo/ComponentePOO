@@ -28,8 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# APIS a usar
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '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')
 
 # Application de djang
 INSTALLED_APPS = [
@@ -104,8 +102,8 @@ WSGI_APPLICATION = 'proy_clinico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'medicos',
-        'USER': 'postgres',
+        'NAME': 'Doctor',
+        'USER': 'Joseph',
         'PASSWORD': '123',
         'HOST': 'localhost',  # o la IP del servidor de base de datos
         'PORT': '5432',        # puerto por defecto de PostgreSQL

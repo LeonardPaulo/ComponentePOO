@@ -1,192 +1,607 @@
 {% extends 'home.html' %}
-<title>{% block title %}{{title|default:"Gestión de Asignación de Permisos"}}{% endblock %}</title>
+<title>{% block title %}Asignar Permisos por Grupo{% endblock %}</title>
 {% load static %}
+
 {% block content %}
-<div id="messages-container"></div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-body { background: #fff !important; color: #111 !important; }
-#messages-container { z-index: 100; position: relative; }
-.perm-checkbox { accent-color: #3b82f6; }
-button, a.bg-blue-500, a.bg-blue-600 {
-    min-width: 200px !important;
-    font-size: 1rem;
-    padding: 1rem 2rem;
-}
-table {
-    width: 100%;
-    table-layout: fixed;
-}
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .header-section {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .header-title {
+        color: #1f2937;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .group-selector {
+        max-width: 400px;
+        margin: 0 auto;
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .group-select-label {
+        display: block;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .group-select {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: white;
+        transition: all 0.3s ease;
+    }
+    
+    .group-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        outline: none;
+    }
+    
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+        min-height: 500px;
+    }
+    
+    .modules-section {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .permissions-section {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f3f4f6;
+    }
+    
+    .module-item {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .module-item:hover {
+        border-color: #3b82f6;
+        background: #eff6ff;
+        transform: translateX(4px);
+    }
+    
+    .module-item.selected {
+        border-color: #3b82f6;
+        background: #dbeafe;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+    
+    .module-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .module-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    
+    .module-name {
+        font-weight: 600;
+        color: #1f2937;
+    }
+    
+    .permissions-badge {
+        background: #10b981;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .permissions-badge.zero {
+        background: #6b7280;
+    }
+    
+    .permission-item {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.2s ease;
+    }
+    
+    .permission-item:hover {
+        background: #f3f4f6;
+    }
+    
+    .permission-checkbox {
+        width: 18px;
+        height: 18px;
+        accent-color: #3b82f6;
+    }
+    
+    .permission-label {
+        flex: 1;
+        font-weight: 500;
+        color: #374151;
+    }
+    
+    .permission-code {
+        font-size: 0.8rem;
+        color: #6b7280;
+        background: #f3f4f6;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-family: monospace;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #6b7280;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .back-button-section {
+        text-align: center;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .back-button {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        padding: 0.875rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+    
+    .back-button:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .toast {
+        background: #10b981;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease;
+    }
+    
+    .toast.error {
+        background: #ef4444;
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .header-title {
+            font-size: 2rem;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
 </style>
 
-<section class="min-h-screen py-8 bg-white">
-    <div class="container mx-auto px-4">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center font-[Orbitron]">Gestión de Asignación de Permisos</h1>
-        <form id="asignacion-form">
-            <div class="overflow-x-auto">
-                <table class="min-w-[1200px] bg-white border border-gray-200 rounded-xl shadow-lg">
-                    <thead>
-                        <tr class="bg-gray-100 text-gray-900">
-                            <th class="py-3 px-4 text-left font-bold" style="width: 200px;">Grupo</th>
-                            <th class="py-3 px-4 text-left font-bold" style="width: 250px;">Módulo</th>
-                            <th class="py-3 px-4 text-left font-bold" style="width: auto; min-width: 450px;">Permisos</th>
-                        </tr>
-                    </thead>
-                    <tbody id="asignacion-tbody" class="text-gray-900">
-                        <!-- Se llena por JS -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="flex flex-row items-center justify-center mt-8 gap-8">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition-all flex items-center justify-center">
-                    <i class="fa-solid fa-save mr-2"></i>Guardar Todo
-                </button>
-                <a href="{% url 'security:group_module_permission_list' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition-all flex items-center justify-center">
-                    <i class="fa-solid fa-xmark mr-2"></i>Cancelar
-                </a>
-            </div>
-        </form>
+<div class="main-container">
+    <!-- Header -->
+    <div class="header-section">
+        <h1 class="header-title">
+            <i class="fas fa-users-cog"></i>
+            Asignar Permisos por Grupo
+        </h1>
+        
+        <!-- Selector de Grupo -->
+        <div class="group-selector">
+            <label for="group-select" class="group-select-label">
+                <i class="fas fa-users"></i> Seleccionar Grupo
+            </label>
+            <select id="group-select" class="group-select">
+                <option value="">-- Seleccione un grupo --</option>
+                {% for group in groups %}
+                    <option value="{{ group.id }}">{{ group.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
-</section>
 
-<!-- Alert box -->
-<div id="alert-box" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-100 border border-green-400 text-green-700 px-6 py-3 rounded-lg shadow-lg hidden z-50"></div>
+    <!-- Contenido Principal -->
+    <div class="content-grid">
+        <!-- Panel de Módulos -->
+        <div class="modules-section">
+            <h2 class="section-title">
+                <i class="fas fa-cubes"></i>
+                Módulos Disponibles
+            </h2>
+            <div id="modules-container">
+                <div class="empty-state">
+                    <i class="fas fa-arrow-up"></i>
+                    <p>Seleccione un grupo para ver los módulos disponibles</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de Permisos -->
+        <div class="permissions-section">
+            <h2 class="section-title">
+                <i class="fas fa-key"></i>
+                Permisos del Módulo
+            </h2>
+            <div id="permissions-panel">
+                <div class="empty-state">
+                    <i class="fas fa-hand-pointer"></i>
+                    <p>Seleccione un módulo para configurar sus permisos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de Regreso -->
+    <div class="back-button-section">
+        <a href="{% url 'security:group_module_permission_list' %}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Volver al Listado
+        </a>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" style="position: fixed; top: 1rem; right: 1rem; z-index: 1000;"></div>
 
 <script>
-const groupsData = JSON.parse('{{ groups_data|safe|escapejs }}');
-const modulePermissions = JSON.parse('{{ module_permissions|safe|escapejs }}');
-
-function renderPermisosHTML(permisos) {
-    let permisosToShow = [...permisos];
-    while (permisosToShow.length < 4) {
-        permisosToShow.push(null);
-    }
-    return permisosToShow.map(p =>
-        p ? `<label class="inline-flex items-center gap-2 mr-2 mb-1">
-                <input type="checkbox" class="perm-checkbox h-4 w-4" name="perms_TEMP[]" value="${p.id}" checked>
-                <span class="text-sm">${p.name}</span>
-            </label>`
-          : `<span class="inline-block w-24 h-6"></span>`
-    ).join('');
-}
-
-function renderAsignacionTabla() {
-    const tbody = document.getElementById('asignacion-tbody');
-    tbody.innerHTML = '';
-    groupsData.forEach(group => {
-        const availableModules = group.available_modules;
-        tbody.insertAdjacentHTML('beforeend', `
-            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td class="py-3 px-4 font-semibold">${group.name}</td>
-                <td class="py-3 px-4">
-                    <select class="modulo-select border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 w-full" name="modulo_${group.id}" data-group-id="${group.id}">
-                        <option value="">Seleccione módulo</option>
-                        ${availableModules.map(m => `<option value="${m.id}">${m.name}</option>`).join('')}
-                    </select>
-                </td>
-                    <td class="py-3 px-4 permisos-td" data-group-id="${group.id}" style="width: 450px;">
-
-                    <div class="flex flex-wrap gap-2 justify-center"></div>
-                </td>
-            </tr>
-        `);
-    });
-    groupsData.forEach(group => updatePermisosTd(group.id, ''));
-}
-
-function updatePermisosTd(groupId, moduloId) {
-    const permisosTd = document.querySelector(`.permisos-td[data-group-id="${groupId}"] > div`);
-    let permisos = [];
-    if (moduloId && modulePermissions[moduloId]) {
-        permisos = modulePermissions[moduloId];
-    }
-    permisosTd.innerHTML = renderPermisosHTML(permisos).replaceAll('perms_TEMP', `perms_${groupId}`);
-}
-
-function showAlert(msg, success = true) {
-    const box = document.getElementById('alert-box');
-    box.classList.remove('hidden');
-    box.className = success
-        ? "fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-100 border border-green-400 text-green-700 px-6 py-3 rounded-lg shadow-lg z-50"
-        : "fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-100 border border-red-400 text-red-700 px-6 py-3 rounded-lg shadow-lg z-50";
-    box.textContent = msg;
-    setTimeout(() => box.classList.add('hidden'), 4000);
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    renderAsignacionTabla();
+    const groupSelect = document.getElementById('group-select');
+    const modulesContainer = document.getElementById('modules-container');
+    const permissionsPanel = document.getElementById('permissions-panel');
+    
+    let currentGroupId = null;
+    let currentModuleId = null;
 
-    document.querySelectorAll('.modulo-select').forEach(select => {
-        select.addEventListener('change', function() {
-            const groupId = this.getAttribute('data-group-id');
-            updatePermisosTd(groupId, this.value);
-        });
-    });
+    // Función para mostrar toast
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            ${message}
+        `;
+        
+        document.getElementById('toast-container').appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
 
-    document.getElementById('asignacion-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const data = [];
-        groupsData.forEach(group => {
-            const modulo = document.querySelector(`select[name="modulo_${group.id}"]`).value;
-            const permisos = Array.from(document.querySelectorAll(`input[name="perms_${group.id}[]"]:checked`)).map(cb => parseInt(cb.value));
-            if (modulo && permisos.length > 0) {
-                data.push({ group_id: group.id, module_id: modulo, permission_ids: permisos });
-            }
-        });
+    // Función para mostrar loading
+    function showLoading(container) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="loading-spinner"></div>
+                <p>Cargando...</p>
+            </div>
+        `;
+    }
 
-        if (data.length === 0) {
-            showAlert('Seleccione al menos un módulo y un permiso.', false);
+    // Cuando cambia la selección de grupo
+    groupSelect.addEventListener('change', function() {
+        const groupId = this.value;
+        currentGroupId = groupId;
+        currentModuleId = null;
+        
+        // Limpiar panel de permisos
+        permissionsPanel.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-hand-pointer"></i>
+                <p>Seleccione un módulo para configurar sus permisos</p>
+            </div>
+        `;
+        
+        if (!groupId) {
+            modulesContainer.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-arrow-up"></i>
+                    <p>Seleccione un grupo para ver los módulos disponibles</p>
+                </div>
+            `;
             return;
         }
+        
+        // Mostrar loading
+        showLoading(modulesContainer);
+        
+        // Cargar módulos
+        fetch(`/security/api/modules-with-permissions/?group_id=${groupId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                if (data.modules.length === 0) {
+                    modulesContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No hay módulos disponibles</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Renderizar módulos
+                const modulesHtml = data.modules.map(module => `
+                    <div class="module-item" data-module-id="${module.id}">
+                        <div class="module-info">
+                            <div class="module-icon">
+                                <i class="${module.icon}"></i>
+                            </div>
+                            <div class="module-name">${module.name}</div>
+                        </div>
+                        <div class="permissions-badge ${module.assigned_permissions === 0 ? 'zero' : ''}">
+                            ${module.assigned_permissions}/${module.total_permissions}
+                        </div>
+                    </div>
+                `).join('');
+                
+                modulesContainer.innerHTML = modulesHtml;
+                
+                // Agregar event listeners a los módulos
+                document.querySelectorAll('.module-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const moduleId = this.dataset.moduleId;
+                        selectModule(moduleId);
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                modulesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error al cargar módulos: ${error.message}</p>
+                    </div>
+                `;
+                showToast('Error al cargar módulos', 'error');
+            });
+    });
 
-        const btn = this.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>Guardando...';
+    // Función para seleccionar módulo
+    function selectModule(moduleId) {
+        currentModuleId = moduleId;
+        
+        // Actualizar UI
+        document.querySelectorAll('.module-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        document.querySelector(`[data-module-id="${moduleId}"]`).classList.add('selected');
+        
+        // Mostrar loading en permisos
+        showLoading(permissionsPanel);
+        
+        // Cargar permisos del módulo
+        fetch(`/security/api/module-permissions/?module_id=${moduleId}&group_id=${currentGroupId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                if (data.permissions.length === 0) {
+                    permissionsPanel.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-lock"></i>
+                            <p>Este módulo no tiene permisos configurados</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Renderizar permisos
+                const permissionsHtml = `
+                    <div style="margin-bottom: 1rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                        <h3 style="margin: 0; color: #1e40af; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="${data.module_icon}"></i>
+                            ${data.module_name}
+                        </h3>
+                    </div>
+                    ${data.permissions.map(permission => `
+                        <div class="permission-item">
+                            <input type="checkbox" 
+                                   class="permission-checkbox" 
+                                   id="perm-${permission.id}"
+                                   data-permission-id="${permission.id}"
+                                   ${permission.is_assigned ? 'checked' : ''}>
+                            <label for="perm-${permission.id}" class="permission-label">${permission.name}</label>
+                            <span class="permission-code">${permission.codename}</span>
+                        </div>
+                    `).join('')}
+                    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+                        <button onclick="savePermissions()" style="
+                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                            color: white;
+                            padding: 0.75rem 1.5rem;
+                            border: none;
+                            border-radius: 6px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            width: 100%;
+                            transition: all 0.3s ease;
+                        " onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <i class="fas fa-save"></i> Guardar Permisos
+                        </button>
+                    </div>
+                `;
+                
+                permissionsPanel.innerHTML = permissionsHtml;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                permissionsPanel.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error al cargar permisos: ${error.message}</p>
+                    </div>
+                `;
+                showToast('Error al cargar permisos', 'error');
+            });
+    }
 
-        fetch('{% url "security:group_module_permission_ajax" %}', {
+    // Función para guardar permisos
+    window.savePermissions = function() {
+        if (!currentGroupId || !currentModuleId) {
+            showToast('Error: No hay grupo o módulo seleccionado', 'error');
+            return;
+        }
+        
+        // Obtener permisos seleccionados
+        const selectedPermissions = Array.from(document.querySelectorAll('.permission-checkbox:checked'))
+            .map(checkbox => parseInt(checkbox.dataset.permissionId));
+        
+        // Enviar al servidor
+        fetch('/security/api/save-module-permissions/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken'),
             },
-            body: JSON.stringify({ assignments: data })
+            body: JSON.stringify({
+                group_id: currentGroupId,
+                module_id: currentModuleId,
+                permission_ids: selectedPermissions
+            })
         })
-        .then(r => r.json())
-        .then(resp => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-save mr-2"></i>Guardar Todo';
-            if (resp.success) {
-                showAlert(resp.message || 'Asignaciones guardadas correctamente.', true);
-                setTimeout(() => {
-                    window.location.href = '{% url "security:group_module_permission_list" %}';
-                }, 2000);
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                
+                // Actualizar el contador en el módulo
+                const moduleItem = document.querySelector(`[data-module-id="${currentModuleId}"]`);
+                const badge = moduleItem.querySelector('.permissions-badge');
+                badge.textContent = badge.textContent.replace(/^\d+/, data.assigned_count);
+                badge.className = `permissions-badge ${data.assigned_count === 0 ? 'zero' : ''}`;
             } else {
-                showAlert(resp.message || 'No se pudo guardar.', false);
+                showToast(data.message, 'error');
             }
         })
-        .catch(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-save mr-2"></i>Guardar Todo';
-            showAlert('Error de conexión.', false);
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error al guardar permisos', 'error');
         });
-    });
+    };
 });
 </script>
-{% endblock %}
+
+{% endblock content %}

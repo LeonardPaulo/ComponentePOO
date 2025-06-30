@@ -5,7 +5,11 @@ from applications.security.views.menu import MenuCreateView, MenuDeleteView, Men
 from applications.security.views.module import ModuleCreateView, ModuleDeleteView, ModuleListView, ModuleUpdateView
 from applications.security.views.usuarios import UserCreateView, UserDeleteView, UserListView, UserUpdateView
 from applications.security.views.grupo import GroupListView, GroupUpdateView, GroupCreateView, GroupDeleteView
-from applications.security.views.grupo_modulo_permisos import GroupModulePermissionListView, GroupModulePermissionCreateView, GroupModulePermissionUpdateView, GroupModulePermissionDeleteView, GroupModulePermissionAjaxView
+from applications.security.views.grupo_modulo_permisos import (
+    GroupModulePermissionListView, GroupModulePermissionCreateView, GroupModulePermissionUpdateView, 
+    GroupModulePermissionDeleteView, 
+    GetModulesWithPermissionsView, GetModulePermissionsView, SaveModulePermissionsView
+)
 
 app_name='security' # define un espacio de nombre para la aplicacion
 urlpatterns = [
@@ -44,7 +48,8 @@ path('group_module_permission_list/', GroupModulePermissionListView.as_view(), n
 path('group_module_permission_create/', GroupModulePermissionCreateView.as_view(), name="group_module_permission_create"),
 path('group_module_permission_update/<int:pk>/', GroupModulePermissionUpdateView.as_view(), name='group_module_permission_update'),
 path('group_module_permission_delete/<int:pk>/', GroupModulePermissionDeleteView.as_view(), name='group_module_permission_delete'),
-path('group_module_permission_ajax/', GroupModulePermissionAjaxView.as_view(), name='group_module_permission_ajax'),
-path('group_module_permission_ajax/<int:pk>/', GroupModulePermissionAjaxView.as_view(), name='group_module_permission_ajax_delete'),
 
+path('api/modules-with-permissions/', GetModulesWithPermissionsView.as_view(), name='get_modules_with_permissions'),
+path('api/module-permissions/', GetModulePermissionsView.as_view(), name='get_module_permissions'),
+path('api/save-module-permissions/', SaveModulePermissionsView.as_view(), name='save_module_permissions'),
 ]

@@ -1,181 +1,619 @@
-{% extends 'base.html' %}
-<title>{% block title %}{{ title }}{% endblock %}</title>
-{% block content %}
+{% extends 'home.html' %}
 {% load static %}
 
-<section class="mt-6 max-w-7xl mx-auto px-4">
-    <div class="text-center mb-8" data-aos="fade-up" data-aos-delay="200">
-        <h1 class="inline-block rounded-2xl bg-blue-600 px-6 py-2 text-white uppercase text-4xl font-bold font-[Orbitron]">
-            {{ title1 }}
+{% block title %}Gestión de Permisos por Grupo{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .header-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    
+    .header-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .header-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border-left: 4px solid;
+        transition: transform 0.2s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .stat-card.groups { border-left-color: #ef4444; }
+    .stat-card.modules { border-left-color: #10b981; }
+    .stat-card.assignments { border-left-color: #3b82f6; }
+    .stat-card.permissions { border-left-color: #f59e0b; }
+    
+    .stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+    
+    .stat-icon.groups { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .stat-icon.modules { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.assignments { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .stat-icon.permissions { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .controls-section {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .search-form {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .search-input {
+        padding: 0.875rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        outline: none;
+    }
+    
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+    
+    .btn-search {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+    }
+    
+    .btn-search:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+    
+    .btn-create:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-back {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: white;
+    }
+    
+    .btn-back:hover {
+        background: linear-gradient(135deg, #4b5563, #374151);
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .assignments-grid {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .assignment-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 1px solid #f3f4f6;
+    }
+    
+    .assignment-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .assignment-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 1.5rem;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .group-info, .module-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+    }
+    
+    .group-icon {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    
+    .module-icon {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+    
+    .info-text h4 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+    
+    .info-text p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+    
+    .permissions-summary {
+        text-align: center;
+    }
+    
+    .permissions-count {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin-bottom: 0.25rem;
+    }
+    
+    .permissions-label {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+    
+    .actions-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-sm {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+    
+    .btn-edit {
+        background: #f59e0b;
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background: #d97706;
+        color: white;
+    }
+    
+    .btn-delete {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .btn-delete:hover {
+        background: #dc2626;
+        color: white;
+    }
+    
+    .permissions-detail {
+        border-top: 1px solid #f3f4f6;
+        padding-top: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .permissions-toggle {
+        background: #f8fafc;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+    }
+    
+    .permissions-toggle:hover {
+        background: #f1f5f9;
+        color: #1f2937;
+    }
+    
+    .permissions-list {
+        display: none;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .permissions-list.show {
+        display: block;
+    }
+    
+    .permissions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .permission-tag {
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6b7280;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+        color: #d1d5db;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #374151;
+    }
+    
+    .empty-state p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .back-section {
+        text-align: center;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .header-title {
+            font-size: 2rem;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .search-form {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        
+        .assignment-header {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+    }
+</style>
+
+<div class="main-container">
+    <!-- Header -->
+    <div class="header-section">
+        <h1 class="header-title">
+            <i class="fas fa-users-cog"></i>
+            Gestión de Permisos por Grupo
         </h1>
+        <p class="header-subtitle">
+            Administra las asignaciones de permisos a grupos de usuarios
+        </p>
     </div>
 
-    <!-- Barra de búsqueda -->
-    <div class="flex justify-center mb-6">
-        <form method="GET" class="w-full max-w-xl">
-            <label for="table-search" class="sr-only">Buscar</label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                    </svg>
+    <!-- Estadísticas -->
+    <div class="stats-grid">
+        <div class="stat-card groups">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-number">{{ stats.unique_groups|default:0 }}</div>
+                    <div class="stat-label">Grupos Únicos</div>
                 </div>
-                <input
-                    type="text"
-                    name="q"
-                    id="table-search"
-                    placeholder="Buscar grupo-módulo-permiso..."
-                    value="{{ request.GET.q }}"
-                    class="w-full pl-10 pr-4 py-2 rounded-lg border border-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div class="stat-icon groups">
+                    <i class="fas fa-users"></i>
+                </div>
             </div>
+        </div>
+        
+        <div class="stat-card modules">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-number">{{ stats.unique_modules|default:0 }}</div>
+                    <div class="stat-label">Módulos Únicos</div>
+                </div>
+                <div class="stat-icon modules">
+                    <i class="fas fa-cubes"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card assignments">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-number">{{ stats.total_assignments|default:0 }}</div>
+                    <div class="stat-label">Total Asignaciones</div>
+                </div>
+                <div class="stat-icon assignments">
+                    <i class="fas fa-link"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card permissions">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-number">{{ stats.total_permissions|default:0 }}</div>
+                    <div class="stat-label">Permisos Asignados</div>
+                </div>
+                <div class="stat-icon permissions">
+                    <i class="fas fa-key"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles -->
+    <div class="controls-section">
+        <form method="get" class="search-form">
+            <input type="text" 
+                   name="q" 
+                   class="search-input" 
+                   placeholder="Buscar por grupo o módulo..." 
+                   value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-search">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            <a href="{{ create_url }}" class="btn btn-create">
+                <i class="fas fa-plus"></i> Nueva Asignación
+            </a>
         </form>
     </div>
 
-    <!-- Tabla -->
-    <div class="overflow-x-auto rounded-lg shadow-lg border border-gray-300">
-        <table class="w-full text-left text-sm font-mono text-gray-800">
-            <thead class="bg-gray-100 border-b border-gray-300">
-                <tr>
-                    <th class="px-6 py-3 w-20 font-semibold">ID Grupo</th>
-                    <th class="px-6 py-3 w-40 font-semibold">Grupo</th>
-                    <th class="px-6 py-3 w-48 font-semibold">Módulo</th>
-                    <th class="px-6 py-3 font-semibold">Permisos</th>
-                    <th class="px-6 py-3 w-40 font-semibold text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in GroupModulePermissions %}
-                <tr class="border-b border-gray-200 hover:bg-blue-50 transition-colors">
-                    <td class="px-6 py-4 font-semibold">{{ item.group.id }}</td>
-                    <td class="px-6 py-4 font-semibold">{{ item.group.name }}</td>
-                    <td class="px-6 py-4 flex items-center gap-2">
-                        <i class="{{ item.module.icon }} text-xl text-blue-600"></i>
-                        <span>{{ item.module.name }}</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">
-                            {% for perm in item.permissions.all %}
-                                {{ perm.name }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 flex justify-center gap-3">
-                        {% if permissions.change_groupmodulepermission %}
-                        <a href="{% url 'security:group_module_permission_update' item.id %}" 
-                           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-lg shadow-md transition flex items-center justify-center gap-1"
+    <!-- Lista de Asignaciones -->
+    <div class="assignments-grid">
+        {% if GroupModulePermissions %}
+            {% for assignment in GroupModulePermissions %}
+            <div class="assignment-card">
+                <div class="assignment-header">
+                    <div class="group-info">
+                        <div class="info-icon group-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="info-text">
+                            <h4>{{ assignment.group.name }}</h4>
+                            <p>Grupo</p>
+                        </div>
+                    </div>
+                    
+                    <div class="module-info">
+                        <div class="info-icon module-icon">
+                            <i class="{{ assignment.module.icon|default:'fas fa-cube' }}"></i>
+                        </div>
+                        <div class="info-text">
+                            <h4>{{ assignment.module.name }}</h4>
+                            <p>Módulo</p>
+                        </div>
+                    </div>
+                    
+                    <div class="permissions-summary">
+                        <div class="permissions-count">
+                            {{ assignment.permissions.count }} 
+                            {% if assignment.permissions.count == 1 %}permiso{% else %}permisos{% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="actions-group">
+                        <a href="{{ create_url }}" class="btn btn-sm btn-edit" 
                            title="Editar">
-                            <i class="fa-solid fa-edit"></i>
+                            <i class="fas fa-edit"></i>
                         </a>
-                        {% endif %}
-                        {% if permissions.delete_groupmodulepermission %}
-                        <button type="button" 
-                                onclick="openDeleteModal('{{ item.id }}', '{{ item.group.name }} - {{ item.module.name }}')"
-                                class="text-red-600 dark:text-red-500 hover:text-red-800 mx-1"                              
-                                title="Eliminar">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center py-6 text-gray-500 italic">No hay registros.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Paginación -->
-    <div class="flex justify-center mt-6">
-        <nav aria-label="Page navigation">
-            <ul class="inline-flex space-x-1">
-                {% if page_obj.has_previous %}
-                <li>
-                    <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
-                       class="block px-4 py-2 rounded-l-md border border-gray-300 bg-white hover:bg-blue-100 hover:text-blue-700 text-gray-700 font-semibold">
-                        &laquo; Primero
-                    </a>
-                </li>
-                <li>
-                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
-                       class="block px-4 py-2 border border-gray-300 bg-white hover:bg-blue-100 hover:text-blue-700 text-gray-700 font-semibold">
-                        &lsaquo; Anterior
-                    </a>
-                </li>
-                {% endif %}
-
-                {% for num in page_obj.paginator.page_range %}
-                    {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
-                    <li>
-                        <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
-                           class="block px-4 py-2 border border-gray-300 hover:bg-blue-100 hover:text-blue-700 font-semibold {% if num == page_obj.number %}bg-blue-600 text-white{% else %}bg-white text-gray-700{% endif %}">
-                            {{ num }}
+                        <a href="{% url 'security:group_module_permission_delete' assignment.pk %}" 
+                        class="btn btn-sm btn-delete" 
+                        title="Eliminar"
+                        onclick="return confirm('¿Está seguro de eliminar esta asignación?')">
+                            <i class="fas fa-trash"></i>
                         </a>
-                    </li>
-                    {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                <li>
-                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
-                       class="block px-4 py-2 border border-gray-300 bg-white hover:bg-blue-100 hover:text-blue-700 text-gray-700 font-semibold">
-                        Siguiente &rsaquo;
-                    </a>
-                </li>
-                <li>
-                    <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
-                       class="block px-4 py-2 rounded-r-md border border-gray-300 bg-white hover:bg-blue-100 hover:text-blue-700 text-gray-700 font-semibold">
-                        Último &raquo;
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-    </div>
-
-    <!-- Botones inferiores -->
-        <div class="flex justify-center mb-12 mt-6">
-        {% if permissions.add_groupmodulepermission %}
-        <a href="{% url 'security:group_module_permission_create' %}"
-           class="w-full md:w-64 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl shadow-lg text-center transition">
-            <i class="fa-solid fa-plus mr-2"></i> Crear otro
-        </a>
+                    </div>
+                </div>
+                
+                <div class="permissions-detail">
+                    <button class="permissions-toggle" 
+                            data-assignment-id="{{ assignment.pk }}">
+                        <i class="fas fa-eye"></i> Ver permisos asignados
+                    </button>
+                    
+                    <div id="permissions-{{ assignment.pk }}" class="permissions-list">
+                        {% if assignment.permissions.all %}
+                            <div class="permissions-grid">
+                                {% for permission in assignment.permissions.all %}
+                                <div class="permission-tag">
+                                    <i class="fas fa-key"></i>
+                                    {{ permission.name }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p style="text-align: center; color: #6b7280; margin: 0;">
+                                No hay permisos asignados
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-users-slash"></i>
+                <h3>No hay asignaciones registradas</h3>
+                <p>Comienza creando la primera asignación de permisos.</p>
+                <a href="{{ create_url }}" class="btn btn-create">
+                    <i class="fas fa-plus"></i> Crear Primera Asignación
+                </a>
+            </div>
         {% endif %}
-        <a href="{% url 'home' %}"
-           class="w-full md:w-64 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl shadow-lg text-center transition">
-            <i class="fa-solid fa-house mr-2"></i> Inicio
+    </div>
+
+    <!-- Botón de Regreso -->
+    <div class="back-section">
+        <a href="/" class="btn btn-back">
+            <i class="fas fa-home"></i> Regresar a Página Principal
         </a>
     </div>
-</section>
-
-<!-- Modal eliminar -->
-{% include 'fragments/delete.html' %}
+</div>
 
 <script>
-function openDeleteModal(id, name) {
-    const deleteForm = document.getElementById('deleteForm');
-    deleteForm.action = "{% url 'security:group_module_permission_delete' 0 %}".replace('0', id);
-    document.getElementById('Description').textContent = `ID: ${id} - ${name}`;
-    document.getElementById('deleteModal').classList.remove('hidden');
-}
-
-function closeModal() {
-    document.getElementById('deleteModal').classList.add('hidden');
+function togglePermissions(assignmentId) {
+    const permissionsList = document.getElementById(`permissions-${assignmentId}`);
+    const button = permissionsList.previousElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (permissionsList.classList.contains('show')) {
+        permissionsList.classList.remove('show');
+        icon.className = 'fas fa-eye';
+        button.innerHTML = '<i class="fas fa-eye"></i> Ver permisos asignados';
+    } else {
+        permissionsList.classList.add('show');
+        icon.className = 'fas fa-eye-slash';
+        button.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar permisos';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const deleteForm = document.getElementById('deleteForm');
-    if (deleteForm) {
-        deleteForm.addEventListener('submit', function(e) {
-            const submitBtn = deleteForm.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
-                submitBtn.disabled = true;
-            }
+    // Efecto de hover para las tarjetas
+    const cards = document.querySelectorAll('.assignment-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px)';
         });
-    }
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Event listeners para los botones de toggle
+    document.querySelectorAll('.permissions-toggle').forEach(button => {
+        button.addEventListener('click', function() {
+            const assignmentId = this.getAttribute('data-assignment-id');
+            togglePermissions(assignmentId);
+        });
+    });
 });
 </script>
-{% endblock %}
+
+{% endblock content %}

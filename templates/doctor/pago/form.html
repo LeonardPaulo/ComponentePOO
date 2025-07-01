@@ -152,6 +152,59 @@
                         Cancelar
                     </a>
                 </div>
+<!-- Modal PayPal -->
+<div id="paypal-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 relative w-full max-w-md">
+        <button onclick="cerrarPaypalModal()" class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl">&times;</button>
+        <div id="paypal-button-container"></div>
+    </div>
+</div>
+
+<script>
+function abrirPaypalModal() {
+    document.getElementById('paypal-modal').classList.remove('hidden');
+    document.getElementById('paypal-button-container').innerHTML = '';
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            let monto = document.getElementById('{{ form.monto_total.id_for_label }}').value;
+            return actions.order.create({
+                purchase_units: [{
+                    amount: { value: monto }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                alert('Pago realizado por ' + details.payer.name.given_name);
+                location.reload();
+            });
+        },
+        onCancel: function (data) {
+            cerrarPaypalModal();
+        }
+    }).render('#paypal-button-container');
+}
+function cerrarPaypalModal() {
+    document.getElementById('paypal-modal').classList.add('hidden');
+}
+
+// Solo abrir el modal si el método de pago es PayPal Y el estado es Pagado
+document.addEventListener('DOMContentLoaded', function() {
+    const metodoPagoSelect = document.getElementById('{{ form.metodo_pago.id_for_label }}');
+    const estadoSelect = document.getElementById('{{ form.estado.id_for_label }}');
+    const guardarBtn = document.querySelector('button[type="submit"]');
+    if (metodoPagoSelect && estadoSelect && guardarBtn) {
+        guardarBtn.addEventListener('click', function(e) {
+            if (metodoPagoSelect.value === 'paypal' && estadoSelect.value === 'pagado') {
+                e.preventDefault();
+                abrirPaypalModal();
+            }
+            // En cualquier otro caso, el formulario se envía normalmente
+        });
+    }
+});
+</script>
+<script src="https://www.paypal.com/sdk/js?client-id={{ PAYPAL_CLIENT_ID }}&currency=USD"></script>
             </form>
         </div>
     </section>

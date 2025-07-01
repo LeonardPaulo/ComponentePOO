@@ -1,5 +1,6 @@
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import messages
+from django.shortcuts import redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from applications.doctor.models import Pago
@@ -39,6 +40,8 @@ class PagoCreateView(PermissionMixin, CreateViewMixin, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        if form.instance.metodo_pago == 'paypal' and form.instance.estado == 'pagado':
+            return redirect(reverse('doctor:paypal_pago', args=[form.instance.id]))
         messages.success(self.request, f"Pago registrado exitosamente.")
         return response
 
@@ -61,6 +64,8 @@ class PagoUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        if form.instance.metodo_pago == 'paypal' and form.instance.estado == 'pagado':
+            return redirect(reverse('doctor:paypal_pago', args=[form.instance.id]))
         messages.success(self.request, f"Pago actualizado exitosamente.")
         return response
 

@@ -1,0 +1,8 @@
+{% extends 'home.html' %}
+{% block content %}
+<div class="text-center p-8">
+    <h2 class="text-2xl font-bold text-red-600 mb-4">Pago cancelado</h2>
+    <p>El pago fue cancelado por el usuario.</p>
+    <a href="{% url 'doctor:pago_list' %}" class="btn btn-primary mt-4">Volver a Pagos</a>
+</div>
+{% endblock %}

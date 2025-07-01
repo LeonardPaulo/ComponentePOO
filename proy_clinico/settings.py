@@ -28,6 +28,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# settings.py
+PAYPAL_CLIENT_ID = '' # Reemplaza con tu Client ID de PayPal
+PAYPAL_CLIENT_SECRET = '' # Reemplaza con tu Client Secret de PayPal
+PAYPAL_MODE = 'sandbox'  # Cambia a 'live' en producción
 
 # Application de djang
 INSTALLED_APPS = [
@@ -102,8 +106,8 @@ WSGI_APPLICATION = 'proy_clinico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Doctor',
-        'USER': 'Joseph',
+        'NAME': 'medicos',
+        'USER': 'postgres',
         'PASSWORD': '123',
         'HOST': 'localhost',  # o la IP del servidor de base de datos
         'PORT': '5432',        # puerto por defecto de PostgreSQL

@@ -52,6 +52,8 @@ from applications.doctor.views.horario_atencion import (
     HorarioAtencionListView, HorarioAtencionCreateView, HorarioAtencionUpdateView, HorarioAtencionDeleteView
 )
 
+from applications.doctor.views.paypal import crear_pago_paypal, paypal_success, paypal_cancel
+
 app_name = 'doctor'
 
 urlpatterns = [
@@ -136,4 +138,8 @@ urlpatterns = [
     path('horario_atencion/crear/', HorarioAtencionCreateView.as_view(), name='horario_atencion_create'),
     path('horario_atencion/editar/<int:pk>/', HorarioAtencionUpdateView.as_view(), name='horario_atencion_update'),
     path('horario_atencion/eliminar/<int:pk>/', HorarioAtencionDeleteView.as_view(), name='horario_atencion_delete'),
+
+    path('pagos/paypal/<int:pago_id>/', crear_pago_paypal, name='paypal_pago'),
+    path('pagos/paypal/success/<int:pago_id>/', paypal_success, name='paypal_success'),
+    path('pagos/paypal/cancel/<int:pago_id>/', paypal_cancel, name='paypal_cancel'),
 ]

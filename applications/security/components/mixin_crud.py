@@ -13,7 +13,7 @@ from applications.security.components.menu_module import MenuModule
 # configuracion de contexto generico y permisos de botones
 class ListViewMixin(object):
     query = None
-    paginate_by = 5
+    paginate_by = 2
   
     
     def dispatch(self, request, *args, **kwargs):

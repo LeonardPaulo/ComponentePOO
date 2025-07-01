@@ -23,7 +23,7 @@ class PacienteForm(ModelForm):
             'nombres', 'apellidos', 'cedula_ecuatoriana', 'dni',
             'fecha_nacimiento', 'telefono', 'email', 'sexo',
             'estado_civil', 'direccion', 'latitud', 'longitud',
-            'tipo_sangre', 'foto', 'foto_referencia',  # ← Agregar foto_referencia
+            'tipo_sangre', 'foto', 'foto_referencia',
             'antecedentes_personales', 'antecedentes_quirurgicos',
             'antecedentes_familiares', 'alergias', 'medicamentos_actuales',
             'habitos_toxicos', 'vacunas', 'antecedentes_gineco_obstetricos',
@@ -46,7 +46,7 @@ class PacienteForm(ModelForm):
             'fecha_nacimiento': forms.DateInput(attrs={
                 'type': 'date',
                 'class': 'form-input w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200'
-            }),
+            }, format='%Y-%m-%d'),
             'telefono': forms.TextInput(attrs={
                 'class': 'form-input w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200',
                 'placeholder': 'Número de teléfono'
@@ -80,7 +80,7 @@ class PacienteForm(ModelForm):
                 'accept': 'image/*',
                 'onchange': 'mostrarVistaPrevia(this)'
             }),
-            'foto_referencia': forms.HiddenInput(),  # Campo oculto
+            'foto_referencia': forms.HiddenInput(),
             'antecedentes_personales': forms.Textarea(attrs={'class': 'form-textarea w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200', 'rows': 3}),
             'antecedentes_quirurgicos': forms.Textarea(attrs={'class': 'form-textarea w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200', 'rows': 3}),
             'antecedentes_familiares': forms.Textarea(attrs={'class': 'form-textarea w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200', 'rows': 3}),
@@ -97,21 +97,38 @@ class PacienteForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    # Filtrar solo fotos que tienen imagen válida
+        
+        # Filtrar solo fotos que tienen imagen válida
         self.fields['foto_existente'].queryset = FotoPaciente.objects.filter(
             imagen__isnull=False
         ).select_related('paciente').order_by('-fecha_subida')
-    
-    # Personalizar el label de cada opción para mostrar paciente y fecha
+
+        # Personalizar el label de cada opción para mostrar paciente y fecha
         choices = [('', '-- Seleccionar foto existente --')]
         for foto in self.fields['foto_existente'].queryset:
             label = f"{foto.paciente} - {foto.fecha_subida.strftime('%d/%m/%Y')}"
             if foto.descripcion:
                 label += f" ({foto.descripcion[:30]}...)" if len(foto.descripcion) > 30 else f" ({foto.descripcion})"
             choices.append((foto.pk, label))
-    
+
         self.fields['foto_existente'].choices = choices
-    
-    # IMPORTANTE: Configurar campo activo como oculto y por defecto True
+
+        # IMPORTANTE: Configurar campo activo como oculto y por defecto True
         self.fields['activo'].widget = forms.HiddenInput()
         self.fields['activo'].initial = True
+        
+        # MANTENER LA FECHA DE NACIMIENTO
+        if self.instance and self.instance.pk and self.instance.fecha_nacimiento:
+            fecha_formateada = self.instance.fecha_nacimiento.strftime('%Y-%m-%d')
+            
+            # Establecer en múltiples formas para asegurar que funcione
+            self.fields['fecha_nacimiento'].initial = fecha_formateada
+            self.fields['fecha_nacimiento'].widget.attrs['value'] = fecha_formateada
+            
+            # Crear un nuevo widget con el valor fijo
+            self.fields['fecha_nacimiento'].widget = forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-input w-full rounded-lg border-gray-300 focus:ring focus:ring-blue-200',
+                'value': fecha_formateada
+            }, format='%Y-%m-%d')
+            

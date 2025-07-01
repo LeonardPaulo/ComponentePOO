@@ -838,9 +838,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
  <script>
  // Recibir el contexto del paciente desde Django
- const pacienteDesdeServidor = {{ paciente_json|safe }};
- const medicamentosDesdeServidor = {{ medicamentos_json|safe }};
- const modoEdicion = {{ modo_edicion|yesno:"true,false" }};
+    const pacienteDesdeServidor = {{ paciente_json|safe }};
+    const medicamentosDesdeServidor = {{ medicamentos_json|safe }};
+    const modoEdicion = {{ modo_edicion|yesno:"true,false" }};
 
 // ==============================
 // SISTEMA DE ATENCIÓN MÉDICA - CÓDIGO ORGANIZADO
@@ -1109,15 +1109,22 @@ class GestorAtencionMedica {
      * Método para limpiar campos de medicamentos
      */
     limpiarCamposMedicamentos() {
-        const campos = ['medicamento-select', 'cantidad-input', 'prescripcion-input', 'duracion-input', 'frecuencia-input'];
+    // Solo limpiar los campos de entrada, mantener la selección del medicamento
+    const campos = ['cantidad-input', 'prescripcion-input', 'duracion-input', 'frecuencia-input'];
 
-        campos.forEach(id => {
-            const elemento = this.obtenerElementoSeguro(id);
-            if (elemento) {
-                elemento.value = '';
-            }
-        });
+    campos.forEach(id => {
+        const elemento = this.obtenerElementoSeguro(id);
+        if (elemento) {
+            elemento.value = '';
+        }
+    });
+    
+    // Opcional: Enfocar el campo de cantidad para facilitar agregar otro medicamento
+    const cantidadInput = this.obtenerElementoSeguro('cantidad-input');
+    if (cantidadInput) {
+        cantidadInput.focus();
     }
+}
 
     /**
      * Método para eliminar medicamento

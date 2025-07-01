@@ -43,33 +43,41 @@
      }
      ```
 
-5. **Inicia Tailwind CSS en modo observador**
-
-   ```bash
-   python manage.py tailwind start
-   ```
-
-6. **Aplica las migraciones**
+5. **Aplica las migraciones**
 
    ```bash
    python manage.py makemigrations
    python manage.py migrate
    ```
 
-7. **Crea un superusuario para acceder al admin**
+6. **Crea un superusuario para acceder al admin**
 
    ```bash
    python manage.py createsuperuser
    # Usa un correo electrónico como usuario, ya que el login es por email
    ```
 
-8. **Ejecuta el servidor de desarrollo**
+7. **Instala las dependencias de Node.js:**
+
+   ```bash
+   cd theme/static_src
+   npm install
+   cd ../..
+   ```
+
+8. **Arranca Tailwind en modo observador:**
+
+   ```bash
+   python manage.py tailwind start
+   ```
+
+9. **Ejecuta el servidor de desarrollo:**
 
    ```bash
    python manage.py runserver
    ```
 
-9. **Accede a la aplicación**
+10. **Accede a la aplicación:**
 
 - Sitio principal: [http://localhost:8000/](http://localhost:8000/)
 - Admin de Django: [http://localhost:8000/admin/](http://localhost:8000/admin/)

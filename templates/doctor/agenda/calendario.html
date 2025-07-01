@@ -1,0 +1,48 @@
+{% extends 'home.html' %}
+{% block content %}
+<div class="flex justify-between mb-4">
+    <a href="?fecha={{ semana_anterior }}" class="px-4 py-2 bg-blue-200 rounded hover:bg-blue-300">&larr; Semana anterior</a>
+    <span class="font-bold text-lg">Semana de {{ hoy|date:"d/m/Y" }}</span>
+    <a href="?fecha={{ semana_siguiente }}" class="px-4 py-2 bg-blue-200 rounded hover:bg-blue-300">Semana siguiente &rarr;</a>
+</div>
+<div class="mb-6 flex justify-end">
+    <a href="{% url 'doctor:cita_list' %}" class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-full shadow transition-all duration-300">
+        <i class="fa-solid fa-list mr-2"></i>Volver a la Lista de Citas
+    </a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-7 gap-4">
+    {% for dia in agenda %}
+    <div class="bg-white rounded shadow p-2">
+        <h3 class="font-bold text-center">{{ dia.dia }}<br><span class="text-xs">{{ dia.fecha }}</span></h3>
+        <ul>
+            {% if dia.intervalos %}
+                {% for intervalo in dia.intervalos %}
+                <li class="my-1">
+                    {% if intervalo.estado == 'descanso' %}
+                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded block text-center opacity-80">
+                            {{ intervalo.inicio }} - {{ intervalo.fin }} (Descanso)
+                        </span>
+                    {% elif intervalo.estado == 'ocupado' %}
+                        <span class="bg-red-200 text-red-800 px-2 py-1 rounded block text-center cursor-not-allowed opacity-60">
+                            {{ intervalo.inicio }} - {{ intervalo.fin }} (Ocupado)
+                        </span>
+                    {% elif intervalo.estado == 'atendido' %}
+                        <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded block text-center cursor-not-allowed opacity-60">
+                            {{ intervalo.inicio }} - {{ intervalo.fin }} (Atendido)
+                        </span>
+                    {% else %}
+                        <a href="{% url 'doctor:cita_create' %}?fecha={{ dia.fecha }}&hora={{ intervalo.inicio }}"
+                           class="bg-green-200 text-green-800 px-2 py-1 rounded block text-center hover:bg-green-300 transition">
+                            {{ intervalo.inicio }} - {{ intervalo.fin }} (Disponible)
+                        </a>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            {% else %}
+                <li class="my-1 text-center text-gray-400">Sin horario disponible</li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

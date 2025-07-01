@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from applications.doctor.models import CitaMedica
-from applications.doctor.forms.cita_medica import CitaMedicaForm  # Debes tener este formulario
+from applications.doctor.forms.cita_medica import CitaMedicaForm
 from applications.security.components.mixin_crud import CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
 
 class CitaMedicaListView(PermissionMixin, ListViewMixin, ListView):
@@ -17,7 +17,7 @@ class CitaMedicaListView(PermissionMixin, ListViewMixin, ListView):
         q = self.request.GET.get('q')
         queryset = self.model.objects.all()
         if q:
-            queryset = queryset.filter(paciente__nombres__icontains=q)
+            queryset = queryset.filter(nombre_paciente__icontains=q)
         return queryset.order_by('-fecha', '-hora_cita')
 
     def get_context_data(self, **kwargs):
@@ -25,12 +25,11 @@ class CitaMedicaListView(PermissionMixin, ListViewMixin, ListView):
         context['create_url'] = reverse_lazy('doctor:cita_create')
         return context
 
-
 class CitaMedicaCreateView(PermissionMixin, CreateViewMixin, CreateView):
     model = CitaMedica
     template_name = 'doctor/cita_medica/form.html'
     form_class = CitaMedicaForm
-    success_url = reverse_lazy('doctor:cita_list')
+    success_url = reverse_lazy('doctor:agenda_calendario')
     permission_required = 'add_citamedica'
 
     def get_context_data(self, **kwargs):
@@ -38,16 +37,28 @@ class CitaMedicaCreateView(PermissionMixin, CreateViewMixin, CreateView):
         context['grabar'] = 'Registrar Cita Médica'
         context['back_url'] = self.success_url
         return context
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        fecha = self.request.GET.get('fecha')
+        hora = self.request.GET.get('hora')
+        if fecha:
+            initial['fecha'] = fecha
+        if hora:
+            initial['hora_cita'] = hora
+        return initial
 
     def form_valid(self, form):
-        response = super().form_valid(form)
-        messages.success(self.request, f"Cita médica registrada exitosamente para {self.object.paciente}")
-        return response
+        fecha = form.cleaned_data.get('fecha')
+        hora = form.cleaned_data.get('hora_cita')
+        if CitaMedica.objects.filter(fecha=fecha, hora_cita=hora).exists():
+            form.add_error(None, "Ya existe una cita agendada en ese horario.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(self.request, "Error al registrar la cita médica.")
         return super().form_invalid(form)
-
 
 class CitaMedicaUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
     model = CitaMedica
@@ -64,13 +75,15 @@ class CitaMedicaUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, f"Cita médica actualizada exitosamente para {self.object.paciente}")
+        messages.success(
+            self.request,
+            f"Cita médica actualizada exitosamente para {self.object.nombre_paciente} {self.object.apellido_paciente}"
+        )
         return response
 
     def form_invalid(self, form):
         messages.error(self.request, "Error al actualizar la cita médica.")
         return super().form_invalid(form)
-
 
 class CitaMedicaDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
     model = CitaMedica
@@ -81,12 +94,12 @@ class CitaMedicaDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['grabar'] = 'Eliminar Cita Médica'
-        context['description'] = f"¿Desea eliminar la cita de: {self.object.paciente}?"
+        context['description'] = f"¿Desea eliminar la cita de: {self.object.nombre_paciente} {self.object.apellido_paciente}?"
         context['back_url'] = self.success_url
         return context
 
     def form_valid(self, form):
-        paciente_nombre = self.object.paciente
+        paciente_nombre = f"{self.object.nombre_paciente} {self.object.apellido_paciente}"
         response = super().form_valid(form)
         messages.success(self.request, f"Éxito al eliminar la cita de {paciente_nombre}.")
         return response

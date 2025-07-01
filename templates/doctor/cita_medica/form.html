@@ -21,12 +21,45 @@
                 {% endif %}
 
                 <div>
-                    <label for="{{ form.paciente.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">
-                        {{ form.paciente.label }} 
+                    <label for="{{ form.nombre_paciente.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">
+                        {{ form.nombre_paciente.label }}
                     </label>
-                    {{ form.paciente }}
-                    {% if form.paciente.errors %}
-                        {% for error in form.paciente.errors %}
+                    {{ form.nombre_paciente }}
+                    {% if form.nombre_paciente.errors %}
+                        {% for error in form.nombre_paciente.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="{{ form.apellido_paciente.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">
+                        {{ form.apellido_paciente.label }}
+                    </label>
+                    {{ form.apellido_paciente }}
+                    {% if form.apellido_paciente.errors %}
+                        {% for error in form.apellido_paciente.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="{{ form.cedula_paciente.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">
+                        {{ form.cedula_paciente.label }}
+                    </label>
+                    {{ form.cedula_paciente }}
+                    {% if form.cedula_paciente.errors %}
+                        {% for error in form.cedula_paciente.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="{{ form.direccion_paciente.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">
+                        {{ form.direccion_paciente.label }}
+                    </label>
+                    {{ form.direccion_paciente }}
+                    {% if form.direccion_paciente.errors %}
+                        {% for error in form.direccion_paciente.errors %}
                             <p class="mt-2 text-sm text-red-600">{{ error }}</p>
                         {% endfor %}
                     {% endif %}

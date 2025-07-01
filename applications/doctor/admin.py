@@ -19,9 +19,15 @@ class HorarioAtencionAdmin(admin.ModelAdmin):
 
 @admin.register(CitaMedica)
 class CitaMedicaAdmin(admin.ModelAdmin):
-    list_display = ("paciente","fecha", "hora_cita", "estado")
-    list_filter = ("estado", "fecha")
-    search_fields = ("paciente__nombres", "paciente__apellidos", "doctor__nombres", "doctor__apellidos")
+    list_display = [
+        'nombre_paciente',
+        'apellido_paciente',
+        'cedula_paciente',
+        'direccion_paciente',
+        'fecha',
+        'hora_cita',
+        'estado',
+    ]
 
 
 class DetalleAtencionInline(admin.TabularInline):

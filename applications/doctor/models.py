@@ -30,15 +30,19 @@ class HorarioAtencion(models.Model):
     activo = models.BooleanField(default=True, verbose_name="Activo")
 
     def __str__(self):
-        return f"{self.dia_semana}"
+        return f"{self.dia_semana} {self.hora_inicio.strftime('%H:%M')} - {self.hora_fin.strftime('%H:%M')}"
 
     class Meta:
         verbose_name = "Horario de Atención"
         verbose_name_plural = "Horarios de Atención"
-        unique_together = ('dia_semana', 'hora_inicio', 'hora_fin')  # Evita duplicados exactos
+        unique_together = ('dia_semana', 'hora_inicio', 'hora_fin')
 
 class CitaMedica(models.Model):
-    paciente = models.ForeignKey('core.Paciente', on_delete=models.CASCADE, verbose_name="Paciente", related_name="citas")
+    nombre_paciente = models.CharField(max_length=100, verbose_name="Nombre del Paciente")
+    apellido_paciente = models.CharField(max_length=100, verbose_name="Apellido del Paciente")
+    cedula_paciente = models.CharField(max_length=20, verbose_name="Cédula del Paciente")
+    direccion_paciente = models.CharField(max_length=255, verbose_name="Dirección del Paciente")
+
     fecha = models.DateField(verbose_name="Fecha de la Cita")
     hora_cita = models.TimeField(verbose_name="Hora de la Cita")
 
@@ -51,7 +55,7 @@ class CitaMedica(models.Model):
     observaciones = models.TextField(verbose_name="Observaciones", blank=True, null=True)
 
     def __str__(self):
-        return f"{self.paciente.nombre_completo} - {self.fecha} {self.hora_cita}"
+        return f"{self.nombre_paciente} {self.apellido_paciente} - {self.fecha} {self.hora_cita}"
 
     class Meta:
         ordering = ['fecha', 'hora_cita']
@@ -60,7 +64,7 @@ class CitaMedica(models.Model):
         ]
         verbose_name = "Cita Médica"
         verbose_name_plural = "Citas Médicas"
-        unique_together = ('fecha', 'hora_cita')  # Previene duplicidad
+        unique_together = ('fecha', 'hora_cita')
 
 class Atencion(models.Model):
     # Paciente que recibe esta atención médica

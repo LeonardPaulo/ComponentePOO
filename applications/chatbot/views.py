@@ -8,7 +8,7 @@ from deep_translator import GoogleTranslator
 
 
 # applications/chatbot/views.py
-COHERE_API_KEY = "Usar_la_API_del_Grupo"  # Reemplaza con tu API Key de Cohere
+COHERE_API_KEY = "Reemplazar"  # Reemplaza con tu API Key de Cohere
 
 
 co = cohere.Client(COHERE_API_KEY)

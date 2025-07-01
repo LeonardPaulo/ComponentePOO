@@ -1,0 +1,58 @@
+{# applications/doctor/templates/doctor/cargo/form.html #}
+
+{% extends 'home.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    {% include 'fragments/messages.html' %}
+    <section class="dark:bg-principal mt-2">
+        <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="pt-8 lg:pt-4">
+                <h1 class="rounded-2xl bg-emerald-600 px-2 py-1 text-blue-800 uppercase text-4xl">{{ title }}</h1>
+            </div>
+
+            <div class="lg:p-8 p-4 rounded-3xl" data-aos="fade-up" data-aos-delay="200">
+                <div class="max-w-md mx-auto bg-white dark:bg-[#0b1121] rounded-lg shadow-lg p-6">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {# Renderizado manual de los campos del formulario #}
+                        {% for field in form %}
+                            <div class="mb-4">
+                                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {{ field.label }}
+                                    {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                </label>
+                                {% if field.help_text %}
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ field.help_text }}</p>
+                                {% endif %}
+                                <div class="mt-1">
+                                    {# Renderiza el campo. Las clases CSS de los widgets en forms.py se aplicarán aquí #}
+                                    {{ field }}
+                                </div>
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <p class="text-red-500 text-xs italic">{{ error }}</p>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="flex justify-center space-x-4 mt-6">
+                            <button type="submit"
+                                class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
+                                <i class="fa-solid fa-save mr-2"></i> Guardar
+                            </button>
+                            <a href="{% url 'doctor:cargo_list' %}"
+                                class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
+                                <i class="fa-solid fa-times mr-2"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

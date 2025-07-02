@@ -6,9 +6,15 @@ class UserForm(forms.ModelForm):
         model = User
         fields = [
             'dni', 'username', 'email', 'first_name', 'last_name',
-             'is_active', 'is_staff', 'is_superuser'
+            'image', 'direction', 'phone', 'is_active', 'is_staff', 'is_superuser'
         ]
         widgets = {
-            'icon': forms.TextInput(attrs={'placeholder': 'fa-solid fa-user'}),
-            'order': forms.NumberInput(attrs={'min': 0}),
+            'image': forms.FileInput(attrs={
+                'accept': 'image/*',
+                'class': 'w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-700 bg-white'
+            }),
+            'direction': forms.Textarea(attrs={
+                'rows': 2,
+                'placeholder': 'Ingrese la dirección completa'
+            }),
         }

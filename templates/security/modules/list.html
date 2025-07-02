@@ -1,175 +1,698 @@
-{% extends 'home.html' %} 
-<title>{% block title %}{{title}}{% endblock %}</title>
+{% extends 'home.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
 {% block content %}
-    {% load static %}
-    {% include 'fragments/messages.html' %}
-    <section class="dark:bg-principal mt-2">
-        <div class="text-center" data-aos="fade-up" data-aos-delay="200">
-            <div class="sm:pt-8 lg:pt-4">
-                
-                    <h1 class="rounded-2xl  bg-indigo-500 px-2 py-1 text-white uppercase text-4xl">
-                        {{ title1 }}
-                    </h1>
-               
-            
-               
-            </div>
-            <div class="lg:p-2 rounded-3xl" data-aos="fade-up" data-aos-delay="200">
-                <!-- Barra de búsqueda -->
-                <div class="p-4 flex justify-center">
-                    <label for="table-search" class="sr-only">Search</label>
-                    <div class="relative mt-1">
-                        <div
-                            class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                            </svg>
-                        </div>
-                        <form method="GET" >
-                            <input type="text" name="q" id="table-search"
-                                class="text-center pl-10 shadow-sm bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 pr-12 dark:bg-principal dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-                                placeholder="Búsqueda sin límites" value="{{ request.GET.q }}">
-                        </form>
-                    </div>
-                </div>
-                <!-- Tabla de módulos -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-center text-lg">
-                        <thead class="uppercase font-Tiny5 bg-gray-50 dark:bg-secundario dark:text-blue-300">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">ID</th>
-                                <th scope="col" class="px-6 py-3">Icono</th>
-                                <th scope="col" class="px-6 py-3">Nombre</th>
-                                <th scope="col" class="px-6 py-3">URL</th>
-                                <th scope="col" class="px-6 py-3">Menú</th>
-                                <th scope="col" class="px-6 py-3">Descripción</th>
-                                <th scope="col" class="px-6 py-3">Orden</th>
-                                <th scope="col" class="px-6 py-3">Estado</th>
-                                <th scope="col" class="px-6 py-3">Permisos</th>
-                                <th scope="col" class="px-6 py-3">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in modules %}
-                            <tr class="dark:text-gray-400 bg-white border-b dark:bg-[#ced7f0] dark:border-secundario hover:bg-gray-50 dark:hover:bg-[#121c33]">
-                                <td class="px-6 py-4">{{ item.id }}</td>
-                                <td class="px-6 py-4">
-                                    <i class="{{ item.icon }} text-2xl text-blue-600 dark:text-blue-400"></i>
-                                </td>
-                                <td class="px-6 py-4 font-semibold">{{ item.name }}</td>
-                                <td class="px-6 py-4">
-                                    <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">
-                                        {{ item.url }}
-                                    </code>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded-full text-sm">
-                                        {{ item.menu.name }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    {% if item.description %}
-                                        {{ item.description|truncatechars:50 }}
-                                    {% else %}
-                                        <span class="text-gray-400 italic">Sin descripción</span>
-                                    {% endif %}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-sm">
-                                        {{ item.order }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    {% if item.is_active %}
-                                        <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full text-sm">
-                                            Activo
-                                        </span>
-                                    {% else %}
-                                        <span class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded-full text-sm">
-                                            Inactivo
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-sm">
-                                        {{ item.permissions.count }} permisos
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                  {% if permissions.change_module %}
-                                    <a href="{% url 'security:module_update' item.id %}"
-                                        class="text-blue-600 dark:text-blue-500 hover:text-blue-800 mx-1">
-                                        <i class="fa-solid fa-edit text-lg"></i>
-                                    </a>
-                                  {% endif%}  
-                                  {% if permissions.delete_module %}
-                                    <a href="#"
-                                        class="text-red-600 dark:text-red-500 hover:text-red-800 mx-1"
-                                        onclick="openDeleteModal('{{ item.id }}', '{{ item.name }}')">
-                                        <i class="fa-solid fa-trash text-lg"></i>
-                                    </a>
-                                  {% endif %} 
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% include 'fragments/messages.html' %}
 
-                <!-- Paginación -->
-                <div class="flex justify-center mt-4">
-                    <nav aria-label="Page navigation example">
-                        <ul class="inline-flex -space-x-px">
-                            {% if page_obj.has_previous %}
-                            <li>
-                                <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
-                                    class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-[#0b1121] dark:border-secundario dark:text-gray-400 dark:hover:bg-[#121c33] dark:hover:text-white">Anterior</a>
-                            </li>
-                            {% endif %}
-                            {% for num in page_obj.paginator.page_range %}
-                            <li>
-                                <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
-                                    class="flex items-center justify-center px-3 h-8 leading-tight {% if num == page_obj.number %}text-blue-600 bg-blue-50 border border-gray-300 hover:bg-blue-100 hover:text-blue-700 dark:bg-secundario dark:border-principal dark:text-blue-300{% else %}text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-[#0b1121] dark:border-secundario dark:text-gray-400 dark:hover:bg-[#121c33] dark:hover:text-white{% endif %}">
-                                    {{ num }}
-                                </a>
-                            </li>
-                            {% endfor %}
-                            {% if page_obj.has_next %}
-                            <li>
-                                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
-                                    class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-[#0b1121] dark:border-secundario dark:text-gray-400 dark:hover:bg-[#121c33] dark:hover:text-white">Siguiente</a>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                </div>
+<style>
+    .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .header-section {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    
+    .header-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .header-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border-left: 4px solid;
+        transition: transform 0.2s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .stat-card.total { border-left-color: #10b981; }
+    .stat-card.current { border-left-color: #3b82f6; }
+    .stat-card.showing { border-left-color: #8b5cf6; }
+    
+    .stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+    
+    .stat-icon.total { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.current { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .stat-icon.showing { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .controls-section {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .search-form {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .search-input {
+        padding: 0.875rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        outline: none;
+    }
+    
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+    
+    .btn-search {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+    
+    .btn-search:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+    
+    .btn-create:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #4b5563, #374151);
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .btn-home {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+    }
+    
+    .btn-home:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .modulos-grid {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .modulo-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 1px solid #f3f4f6;
+    }
+    
+    .modulo-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .modulo-header {
+        display: grid;
+        grid-template-columns: auto auto 1fr auto;
+        gap: 1.5rem;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .modulo-id {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .id-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    .id-text {
+        font-weight: 600;
+        color: #1f2937;
+        font-size: 1rem;
+    }
+    
+    .module-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-radius: 12px;
+    }
+    
+    .module-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .module-info h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+    
+    .module-info p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+    
+    .module-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f3f4f6;
+    }
+    
+    .meta-item {
+        text-align: center;
+    }
+    
+    .meta-label {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+    }
+    
+    .meta-value {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .badge-active {
+        background: #dcfce7;
+        color: #166534;
+    }
+    
+    .badge-inactive {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .badge-menu {
+        background: #ddd6fe;
+        color: #5b21b6;
+    }
+    
+    .actions-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-sm {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+    
+    .btn-edit {
+        background: #f59e0b;
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background: #d97706;
+        color: white;
+    }
+    
+    .btn-delete {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .btn-delete:hover {
+        background: #dc2626;
+        color: white;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6b7280;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+        color: #d1d5db;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #374151;
+    }
+    
+    .empty-state p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        margin: 2rem 0;
+    }
+    
+    .pagination {
+        display: inline-flex;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .pagination a, .pagination span {
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        color: #6b7280;
+        background: white;
+        border: 1px solid #e5e7eb;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .pagination a:hover {
+        background: #f9fafb;
+        color: #374151;
+    }
+    
+    .pagination .current {
+        background: #10b981;
+        color: white;
+        border-color: #10b981;
+    }
+    
+    .pagination a:first-child,
+    .pagination span:first-child {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+    }
+    
+    .pagination a:last-child,
+    .pagination span:last-child {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+    
+    .actions-section {
+        text-align: center;
+        margin: 2rem 0;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .actions-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .header-title {
+            font-size: 2rem;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .search-form {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        
+        .modulo-header {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .module-meta {
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+    }
+</style>
 
-                <!-- Enlaces adicionales -->
-                <div class="flex flex-col md:flex-row justify-center form-group text-center p-4">
-                    {% if permissions.add_module %}
-                    <a class="bg-blue-700 hover:bg-blue-800 text-white py-2 px-4 rounded-full mr-0 md:mr-2 mb-2 md:mb-0 flex items-center justify-center transition-colors duration-300"
-                        href="{% url 'security:module_create' %}">
-                        <i class="fa-solid fa-plus mr-2"></i> Nuevo Módulo
-                    </a>
-                    {% endif %}
-                    <a class="bg-blue-700 hover:bg-blue-800 text-white py-2 px-4 rounded-full flex items-center justify-center transition-colors duration-300"
-                        href="{% url 'home' %}">
-                        <i class="fa-solid fa-house"></i>
-                    </a>
+<div class="main-container">
+    <!-- Header -->
+    <div class="header-section">
+        <h1 class="header-title">
+            <i class="fas fa-cube"></i>
+            {{ title1 }}
+        </h1>
+        <p class="header-subtitle">
+            Gestión completa de módulos y permisos del sistema
+        </p>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-number">{{ page_obj.paginator.count|default:0 }}</div>
+                    <div class="stat-label">Total Módulos</div>
+                </div>
+                <div class="stat-icon total">
+                    <i class="fas fa-cube"></i>
                 </div>
             </div>
         </div>
-    </section>
+        
+        <div class="stat-card current">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-number">{{ page_obj.number|default:1 }} de {{ page_obj.paginator.num_pages|default:1 }}</div>
+                    <div class="stat-label">Página Actual</div>
+                </div>
+                <div class="stat-icon current">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card showing">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-number">{{ modules|length|default:0 }}</div>
+                    <div class="stat-label">Mostrando</div>
+                </div>
+                <div class="stat-icon showing">
+                    <i class="fas fa-list"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    {% include 'fragments/delete.html' %}
-   <script>
+    <!-- Controles -->
+    <div class="controls-section">
+        <form method="GET" class="search-form">
+            <input type="text" 
+                   name="q" 
+                   id="table-search"
+                   class="search-input" 
+                   placeholder="Buscar módulo..." 
+                   value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-search">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            {% if permissions.add_module %}
+            <a href="{% url 'security:module_create' %}" class="btn btn-create">
+                <i class="fas fa-plus"></i> Nuevo Módulo
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Lista de Módulos -->
+    <div class="modulos-grid">
+        {% if modules %}
+            {% for item in modules %}
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-id">
+                        <div class="id-icon">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                        <div class="id-text">#{{ item.id }}</div>
+                    </div>
+                    
+                    <div class="module-icon">
+                        <i class="{{ item.icon }}"></i>
+                    </div>
+                    
+                    <div class="module-info">
+                        <h4>{{ item.name }}</h4>
+                        <p>
+                            {% if item.description %}
+                                {{ item.description|truncatechars:80 }}
+                            {% else %}
+                                Módulo del sistema
+                            {% endif %}
+                        </p>
+                        <div class="mt-2">
+                            <code class="bg-gray-100 px-2 py-1 rounded text-xs">{{ item.url }}</code>
+                        </div>
+                    </div>
+                    
+                    <div class="actions-group">
+                        {% if permissions.change_module %}
+                        <a href="{% url 'security:module_update' item.id %}" class="btn btn-sm btn-edit" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if permissions.delete_module %}
+                        <a href="#" class="btn btn-sm btn-delete" 
+                           onclick="openDeleteModal('{{ item.id }}', '{{ item.name }}')"
+                           title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Metadata del módulo -->
+                <div class="module-meta">
+                    <div class="meta-item">
+                        <div class="meta-label">Estado</div>
+                        <div class="meta-value">
+                            {% if item.is_active %}
+                                <span class="badge badge-active">Activo</span>
+                            {% else %}
+                                <span class="badge badge-inactive">Inactivo</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="meta-item">
+                        <div class="meta-label">Menú</div>
+                        <div class="meta-value">
+                            <span class="badge badge-menu">{{ item.menu.name }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-item">
+                        <div class="meta-label">Orden</div>
+                        <div class="meta-value">{{ item.order }}</div>
+                    </div>
+                    
+                    <div class="meta-item">
+                        <div class="meta-label">Permisos</div>
+                        <div class="meta-value">{{ item.permissions.count }} permisos</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-cube"></i>
+                <h3>No se encontraron módulos</h3>
+                <p>No hay módulos registrados o intenta con otros términos de búsqueda.</p>
+                {% if permissions.add_module %}
+                <a href="{% url 'security:module_create' %}" class="btn btn-create">
+                    <i class="fas fa-plus"></i> Crear Primer Módulo
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Paginación -->
+    {% if page_obj and page_obj.paginator.num_pages > 1 %}
+    <div class="pagination-wrapper">
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    <i class="fas fa-angle-double-left"></i> Primera
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="current">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                        {{ num }}
+                    </a>
+                {% elif num == 1 %}
+                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                    {% if page_obj.number > 4 %}<span>...</span>{% endif %}
+                {% elif num == page_obj.paginator.num_pages %}
+                    {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}<span>...</span>{% endif %}
+                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    Siguiente <i class="fas fa-chevron-right"></i>
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    Última <i class="fas fa-angle-double-right"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Acciones Adicionales -->
+    <div class="actions-section">
+        <div class="actions-buttons">
+            <a href="{% url 'home' %}" class="btn btn-home">
+                <i class="fas fa-home"></i> Regresar a Página Principal
+            </a>
+        </div>
+    </div>
+</div>
+
+{% include 'fragments/delete.html' %}
+
+<script>
 function openDeleteModal(id, name) {
     const deleteForm = document.getElementById('deleteForm');
     deleteForm.action = `{% url 'security:module_delete' 0 %}`.replace('0', id);
-    document.getElementById('Description').textContent = `ID: ${id} - ${name}`;
+    document.getElementById('Description').textContent = `Módulo #${id} - ${name}`;
     document.getElementById('deleteModal').classList.remove('hidden');
 }
 
@@ -177,23 +700,55 @@ function closeModal() {
     document.getElementById('deleteModal').classList.add('hidden');
 }
 
-// ✅ AGREGAR: Asegurar redirección correcta
 document.addEventListener('DOMContentLoaded', function() {
+    // Efecto de hover para las tarjetas
+    const cards = document.querySelectorAll('.modulo-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Manejo del formulario de eliminación
     const deleteForm = document.getElementById('deleteForm');
-    
     if (deleteForm) {
         deleteForm.addEventListener('submit', function(e) {
-            // Opcional: Mostrar loading
             const submitBtn = deleteForm.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...';
                 submitBtn.disabled = true;
             }
-            
-            // Permitir envío normal del formulario
-            // Django manejará la redirección automáticamente
         });
     }
+
+    // Funcionalidad de búsqueda mejorada
+    const searchInput = document.getElementById('table-search');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                this.form.submit();
+            }
+        });
+    }
+
+    // Estado de carga para botones de acción
+    document.querySelectorAll('a[href*="module"]').forEach(link => {
+        link.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon && !this.href.includes('#')) {
+                const originalClass = icon.className;
+                icon.className = 'fa-solid fa-spinner fa-spin';
+                setTimeout(() => {
+                    icon.className = originalClass;
+                }, 2000);
+            }
+        });
+    });
 });
 </script>
+
 {% endblock %}

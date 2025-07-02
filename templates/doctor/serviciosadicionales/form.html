@@ -1,101 +1,318 @@
 {% extends 'home.html' %}
+{% load static %}
+{% load l10n %}
+
 {% block title %}{{ title }}{% endblock %}
 
+{% block css %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos para focus de campos */
+        input:focus, select:focus, textarea:focus {
+            --tw-ring-color: #10b981 !important;
+            border-color: #10b981 !important;
+        }
+
+        /* Estilos para iconos de sección */
+        .w-10.h-10.bg-blue-100 {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+        }
+
+        /* Estilos para botones */
+        .bg-blue-600 {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+        }
+
+        .bg-blue-600:hover {
+            background: linear-gradient(135deg, #059669, #047857) !important;
+        }
+
+        .bg-gray-600:hover {
+            background: linear-gradient(135deg, #4b5563, #374151) !important;
+        }
+
+        /* Estilos para campos con errores */
+        .field-container.has-error input,
+        .field-container.has-error select,
+        .field-container.has-error textarea {
+            border-color: #ef4444 !important;
+            background-color: rgba(254, 242, 242, 0.5) !important;
+        }
+
+        .field-container.has-error input:focus,
+        .field-container.has-error select:focus,
+        .field-container.has-error textarea:focus {
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+            outline: none !important;
+        }
+
+        /* Animación sutil para errores */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+
+        .field-container.has-error {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Estilos específicos para el campo de costo */
+        .cost-input-container {
+            position: relative;
+        }
+
+        .cost-prefix {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-weight: 600;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .cost-input {
+            padding-left: 2rem !important;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
-    {% load static %}
-    {% include 'fragments/messages.html' %}
-    <section class="dark:bg-principal mt-2 flex justify-center items-center min-h-[calc(100vh-100px)]">
-        <div class="w-full max-w-md bg-white dark:bg-[#0b1121] rounded-lg shadow-xl p-8 transform transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl"
-            data-aos="fade-up" data-aos-delay="200">
-            <h1 class="text-center rounded-2xl bg-emerald-600 px-2 py-1 text-blue-800 uppercase text-3xl mb-6">
-                {{ title }}
-            </h1>
-            
-            <form method="post" 
-                  action="{% if servicio %}{% url 'doctor:serviciosadicionales_update' servicio.pk %}{% else %}{% url 'doctor:serviciosadicionales_create' %}{% endif %}"
-                  class="space-y-6 form-white">
-                {% csrf_token %}
+{% include 'fragments/messages.html' %}
 
-                {% if form.non_field_errors %}
-                    <div class="bg-red-100 text-red-700 p-2 rounded mb-4">
-                        {{ form.non_field_errors }}
+<section class="bg-gray-50 min-h-screen py-8">
+    <div class="container mx-auto px-6">
+        <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">
+            {{ title }}
+        </h1>
+
+        <!-- Mensajes de error del formulario (no específicos de campo) -->
+        {% if form.non_field_errors %}
+        <div class="mx-4 lg:mx-20 mb-6" data-aos="fade-up">
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg max-w-4xl mx-auto">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fa-solid fa-exclamation-triangle text-red-500 text-lg"></i>
                     </div>
-                {% endif %}
-
-                <div>
-                    <label for="{{ form.nombre_servicio.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                        {{ form.nombre_servicio.label }} <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" name="{{ form.nombre_servicio.name }}" id="{{ form.nombre_servicio.id_for_label }}" 
-                           value="{% if form.nombre_servicio.value %}{{ form.nombre_servicio.value }}{% endif %}"
-                           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 dark:bg-principal dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                           placeholder="Ej: Radiografía, Laboratorio clínico" required>
-                    {% if form.nombre_servicio.errors %}
-                        {% for error in form.nombre_servicio.errors %}
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-
-                <div>
-                    <label for="{{ form.costo_servicio.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                        {{ form.costo_servicio.label }} <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 dark:text-gray-400 sm:text-sm">$</span>
+                    <div class="ml-3">
+                        <h3 class="text-red-800 font-medium">
+                            Se encontraron errores en el formulario:
+                        </h3>
+                        <div class="mt-2 text-red-700">
+                            <ul class="list-disc list-inside space-y-1">
+                                {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
                         </div>
-                        <input type="number" name="{{ form.costo_servicio.name }}" id="{{ form.costo_servicio.id_for_label }}"
-                               value="{% if form.costo_servicio.value %}{{ form.costo_servicio.value }}{% endif %}"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-8 p-2.5 dark:bg-principal dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-emerald-500 dark:focus:border-emerald-500"
-                               placeholder="0.00" step="0.01" min="0" required>
                     </div>
-                    {% if form.costo_servicio.errors %}
-                        {% for error in form.costo_servicio.errors %}
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <form method="post" 
+              action="{% if servicio %}{% url 'doctor:serviciosadicionales_update' servicio.pk %}{% else %}{% url 'doctor:serviciosadicionales_create' %}{% endif %}"
+              class="space-y-8 max-w-4xl mx-auto">
+            {% csrf_token %}
+
+            {# Sección: Información del Servicio Adicional #}
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                    Información del Servicio Adicional
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Campo Nombre del Servicio -->
+                    <div class="field-container {% if form.nombre_servicio.errors %}has-error{% endif %}">
+                        <label for="{{ form.nombre_servicio.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.nombre_servicio.label }}
+                            {% if form.nombre_servicio.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="relative">
+                            <input type="text" 
+                                   name="{{ form.nombre_servicio.name }}" 
+                                   id="{{ form.nombre_servicio.id_for_label }}" 
+                                   value="{% if form.nombre_servicio.value %}{{ form.nombre_servicio.value }}{% endif %}"
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-700 bg-white"
+                                   placeholder="Ej: Radiografía, Laboratorio clínico" 
+                                   required>
+                            {% if form.nombre_servicio.errors %}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if form.nombre_servicio.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.nombre_servicio.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo Costo del Servicio -->
+                    <div class="field-container {% if form.costo_servicio.errors %}has-error{% endif %}">
+                        <label for="{{ form.costo_servicio.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.costo_servicio.label }}
+                            {% if form.costo_servicio.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        
+                        <div class="relative cost-input-container">
+                            <span class="cost-prefix">$</span>
+                            <input type="number" 
+                                    name="{{ form.costo_servicio.name }}" 
+                                    id="{{ form.costo_servicio.id_for_label }}"
+                                    value="{% if servicio %}{{ servicio.costo_servicio|unlocalize }}{% else %}{{ form.costo_servicio.value|unlocalize|default:'' }}{% endif %}"
+                                    class="cost-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-700 bg-white"
+                                    placeholder="0.00" 
+                                    step="0.01" 
+                                    min="0" 
+                                    required>
+                            {% if form.costo_servicio.errors %}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if form.costo_servicio.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.costo_servicio.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
 
-                <div>
-                    <label for="{{ form.descripcion.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                        {{ form.descripcion.label }}
-                    </label>
-                    <textarea name="{{ form.descripcion.name }}" id="{{ form.descripcion.id_for_label }}" rows="3" 
-                              class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 dark:bg-principal dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-emerald-500 dark:focus:border-emerald-500" 
-                              placeholder="Descripción opcional del servicio...">{% if form.descripcion.value %}{{ form.descripcion.value }}{% endif %}</textarea>
-                    {% if form.descripcion.errors %}
-                        {% for error in form.descripcion.errors %}
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
+                <div class="mt-6">
+                    <!-- Campo Descripción -->
+                    <div class="field-container {% if form.descripcion.errors %}has-error{% endif %}">
+                        <label for="{{ form.descripcion.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.descripcion.label }}
+                            {% if form.descripcion.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="relative">
+                            <textarea name="{{ form.descripcion.name }}" 
+                                      id="{{ form.descripcion.id_for_label }}"
+                                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-700 bg-white"
+                                      placeholder="Descripción detallada del servicio" 
+                                      rows="4" 
+                                      maxlength="500">{% if form.descripcion.value %}{{ form.descripcion.value }}{% endif %}</textarea>
+                            {% if form.descripcion.errors %}
+                            <div class="absolute top-3 right-3 pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if form.descripcion.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.descripcion.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <p class="mt-2 text-sm text-gray-500">Máximo 500 caracteres</p>
+                    </div>
                 </div>
 
-                <div class="flex items-center">
-                    <input type="checkbox" name="{{ form.activo.name }}" id="{{ form.activo.id_for_label }}"
-                           {% if form.activo.value %}checked{% endif %}
-                           class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                    <label for="{{ form.activo.id_for_label }}" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                        {{ form.activo.label }}
-                    </label>
-                    {% if form.activo.errors %}
-                        {% for error in form.activo.errors %}
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
+                <div class="mt-6">
+                    <!-- Campo Activo -->
+                    <div class="field-container {% if form.activo.errors %}has-error{% endif %}">
+                        <div class="flex items-center space-x-3 {% if form.activo.errors %}p-3 bg-red-50 border border-red-200 rounded-lg{% endif %}">
+                            <input type="checkbox" 
+                                   name="{{ form.activo.name }}" 
+                                   id="{{ form.activo.id_for_label }}"
+                                   {% if form.activo.value %}checked{% endif %}
+                                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 focus:ring-2">
+                            <label for="{{ form.activo.id_for_label }}" class="text-sm font-semibold text-gray-700">
+                                {{ form.activo.label }}
+                                {% if form.activo.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                        </div>
+                        {% if form.activo.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.activo.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
+            </div>
 
-                <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 justify-center">
-                    <button type="submit"
-                        class="w-full md:w-auto px-6 py-3 bg-emerald-700 text-black font-medium rounded-full shadow-lg hover:bg-emerald-800 transition duration-300 transform hover:scale-105">
-                        {{ action }}
+            {# Botones de acción #}
+            <div class="bg-white rounded-2xl shadow-xl p-8 mt-8">
+                <div class="flex justify-center space-x-4">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 flex items-center space-x-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span>{{ action }}</span>
                     </button>
-                    <a href="{% url 'doctor:serviciosadicionales_list' %}"
-                        class="w-full md:w-auto px-6 py-3 bg-gray-600 text-black font-medium rounded-full shadow-lg hover:bg-gray-700 transition duration-300 transform hover:scale-105 text-center">
-                        Cancelar
+                    <a href="{% url 'doctor:serviciosadicionales_list' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 flex items-center space-x-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>Cancelar</span>
                     </a>
                 </div>
-            </form>
-        </div>
-    </section>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script>
+// Inicializar cuando cargue la página
+document.addEventListener('DOMContentLoaded', function() {
+    // Funcionalidad de validación en tiempo real para el costo
+    const costoInput = document.getElementById('{{ form.costo_servicio.id_for_label }}');
+    if (costoInput) {
+        costoInput.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            if (value < 0) {
+                this.value = 0;
+            }
+        });
+        
+        // Forzar valor del campo de costo (solución temporal)
+        {% if servicio %}
+        if (!costoInput.value) {
+            costoInput.value = "{{ servicio.costo_servicio|floatformat:2 }}";
+        }
+        {% endif %}
+    }
+
+    // Funcionalidad para el campo de nombre del servicio
+    const nombreInput = document.getElementById('{{ form.nombre_servicio.id_for_label }}');
+    if (nombreInput) {
+        nombreInput.addEventListener('input', function() {
+            // Capitalizar primera letra
+            this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+        });
+    }
+});
+</script>
+
 {% endblock %}

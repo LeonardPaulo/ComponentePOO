@@ -1,59 +1,105 @@
 {% extends 'home.html' %}
-<title>{% block title %}{{ title|default:"Usuarios" }}{% endblock %}</title>
 {% load static %}
+
+{% block title %}{{ title|default:"Usuarios" }}{% endblock %}
+
+{% block css %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos para focus de campos */
+        input:focus, select:focus, textarea:focus {
+            --tw-ring-color: #10b981 !important;
+            border-color: #10b981 !important;
+        }
+
+        /* Estilos para iconos de sección */
+        .w-10.h-10.bg-blue-100 {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+        }
+
+        /* Estilos para botones */
+        .bg-blue-600 {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+        }
+
+        .bg-blue-600:hover {
+            background: linear-gradient(135deg, #059669, #047857) !important;
+        }
+
+        .bg-gray-600:hover {
+            background: linear-gradient(135deg, #4b5563, #374151) !important;
+        }
+
+        /* Estilos específicos para vista previa de imagen de perfil */
+        .profile-preview-container {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 2px solid #e5e7eb;
+        }
+
+        .profile-preview-container:hover {
+            border-color: #10b981;
+        }
+
+        .profile-image-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .default-avatar {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        /* Estilos para campos con errores */
+        .field-container.has-error input,
+        .field-container.has-error select,
+        .field-container.has-error textarea {
+            border-color: #ef4444 !important;
+            background-color: rgba(254, 242, 242, 0.5) !important;
+        }
+
+        .field-container.has-error input:focus,
+        .field-container.has-error select:focus,
+        .field-container.has-error textarea:focus {
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+            outline: none !important;
+        }
+
+        /* Animación sutil para errores */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+
+        .field-container.has-error {
+            animation: shake 0.5s ease-in-out;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
-<link rel="stylesheet" href="{% static 'error_form.css' %}">
-<script src="{% static 'error_form.js' %}"></script>
+<section class="bg-gray-50 min-h-screen py-8">
+    <div class="container mx-auto px-6">
+        <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">
+            {{ title1|default:"Usuario" }}
+        </h1>
 
-<style>
-body { background: #fff !important; color: #111 !important; }
-#messages-container { z-index: 100; position: relative; }
-.perm-checkbox { accent-color: #3b82f6; }
-button, a.bg-blue-500, a.bg-blue-600 {
-    min-width: 200px !important;
-    font-size: 1rem;
-    padding: 1rem 2rem;
-}
-table {
-    width: 100%;
-    table-layout: fixed;
-}
-input[type="text"], input[type="email"], input[type="number"], input:not([type]), textarea, select {
-    border: 1.5px solid #000 !important;
-    color: #222 !important;
-    background: #fff !important;
-    border-radius: 0.5rem !important;
-    padding: 0.5rem 1rem !important;
-    font-size: 1rem !important;
-    box-shadow: none !important;
-}
-input:focus, textarea:focus, select:focus {
-    outline: none !important;
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 2px #2563eb33 !important;
-}
-</style>
-
-<section class="dark:bg-principal">
-    <div class="text-center" data-aos="fade" data-aos-delay="200">
-        <div class="sm:pt-28 lg:pt-4">
-            <h1 class="rounded-2xl bg-indigo-500 px-2 py-1 text-white uppercase text-4xl">
-                {{ title1|default:"Usuario" }}
-            </h1>
-        </div>
-
+        <!-- Mensajes de error del formulario (no específicos de campo) -->
         {% if form.non_field_errors %}
         <div class="mx-4 lg:mx-20 mb-6" data-aos="fade-up">
-            <div class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 p-4 rounded-lg max-w-4xl mx-auto">
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg max-w-4xl mx-auto">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
                         <i class="fa-solid fa-exclamation-triangle text-red-500 text-lg"></i>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-red-800 dark:text-red-200 font-medium">
+                        <h3 class="text-red-800 font-medium">
                             Se encontraron errores en el formulario:
                         </h3>
-                        <div class="mt-2 text-red-700 dark:text-red-300">
+                        <div class="mt-2 text-red-700">
                             <ul class="list-disc list-inside space-y-1">
                                 {% for error in form.non_field_errors %}
                                 <li>{{ error }}</li>
@@ -66,292 +112,428 @@ input:focus, textarea:focus, select:focus {
         </div>
         {% endif %}
 
-        <form method="post" class="space-y-6 py-4">
-            <div class="mx-4 lg:mx-20" data-aos="fade">
-                <div class="bg-white dark:bg-secundario rounded-3xl p-8 max-w-4xl mx-auto"
-                    data-aos="fade-up" data-aos-delay="200">
-                    {% csrf_token %}
+        <form method="post" enctype="multipart/form-data" class="space-y-8 max-w-4xl mx-auto">
+            {% csrf_token %}
 
-                    <!-- Vista previa del ícono -->
-                    <div class="text-center mb-8">
-                        <div class="bg-gray-100 dark:bg-principal rounded-full w-20 h-20 mx-auto flex items-center justify-center mb-4">
-                            <i id="iconPreview" class="bi bi-x-octagon text-3xl text-gray-400"></i>
-                        </div>
-                        <h2 class="dark:text-blue-300 text-2xl font-Pacifico">Vista previa del ícono</h2>
+            {# Sección: Vista Previa de Imagen de Perfil #}
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
                     </div>
+                    Vista Previa de Imagen de Perfil
+                </h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- DNI -->
-                        <div class="field-container {% if form.dni.errors %}has-error{% endif %}">
-                            <label for="{{ form.dni.id_for_label }}"
-                                class="font-black uppercase text-lg block mb-2
-                                       {% if form.dni.errors %}text-red-600 dark:text-red-400{% else %}dark:text-blue-300{% endif %}">
-                                DNI
-                                {% if form.dni.field.required %}<span class="text-red-500">*</span>{% endif %}
-                            </label>
-                            <div class="relative">
-                                <input type="text" name="dni" id="{{ form.dni.id_for_label }}" value="{{ form.dni.value|default_if_none:'' }}" class="w-full" maxlength="20" required autocomplete="off" />
-                                {% if form.dni.errors %}
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <i class="fa-solid fa-exclamation-circle text-red-500"></i>
-                                </div>
-                                {% endif %}
+                <div class="text-center">
+                    <div class="profile-preview-container rounded-full w-20 h-20 mx-auto flex items-center justify-center mb-4 transition-all duration-300">
+                        {% if form.instance.image %}
+                            <img id="profilePreview" src="{{ form.instance.image.url }}" alt="Imagen de perfil" class="profile-image-preview">
+                        {% else %}
+                            <div id="profilePreview" class="default-avatar w-full h-full rounded-full flex items-center justify-center">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
                             </div>
+                        {% endif %}
+                    </div>
+                    <p class="text-gray-600 text-sm">La imagen se actualizará automáticamente cuando selecciones un archivo</p>
+                </div>
+            </div>
+
+            {# Sección: Información Personal #}
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    Información Personal
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Campo DNI -->
+                    <div class="field-container {% if form.dni.errors %}has-error{% endif %}">
+                        <label for="{{ form.dni.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.dni.label }}
+                            {% if form.dni.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="relative">
+                            {{ form.dni }}
                             {% if form.dni.errors %}
-                            <div class="mt-2 text-red-600 dark:text-red-400 text-sm">
-                                {% for error in form.dni.errors %}
-                                <div class="flex items-center mt-1">
-                                    <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
                             </div>
                             {% endif %}
                         </div>
-                        <!-- Correo electrónico -->
-                        <div class="field-container {% if form.email.errors %}has-error{% endif %}">
-                            <label for="{{ form.email.id_for_label }}"
-                                class="font-black uppercase text-lg block mb-2
-                                       {% if form.email.errors %}text-red-600 dark:text-red-400{% else %}dark:text-blue-300{% endif %}">
-                                Correo electrónico
-                                {% if form.email.field.required %}<span class="text-red-500">*</span>{% endif %}
-                            </label>
-                            <div class="relative">
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <i class="fa-solid fa-exclamation-circle text-red-500"></i>
-                                </div>
-                                {% endif %}
+                        {% if form.dni.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.dni.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
                             </div>
-                            {% if form.email.errors %}
-                            <div class="mt-2 text-red-600 dark:text-red-400 text-sm">
-                                {% for error in form.email.errors %}
-                                <div class="flex items-center mt-1">
-                                    <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
+                            {% endfor %}
                         </div>
-                        <!-- Username -->
-                        <div class="field-container {% if form.username.errors %}has-error{% endif %}">
-                            <label for="{{ form.username.id_for_label }}"
-                                class="font-black uppercase text-lg block mb-2
-                                       {% if form.username.errors %}text-red-600 dark:text-red-400{% else %}dark:text-blue-300{% endif %}">
-                                {{ form.username.label }}
-                                {% if form.username.field.required %}<span class="text-red-500">*</span>{% endif %}
-                            </label>
-                            <div class="relative">
-                                {{ form.username }}
-                                {% if form.username.errors %}
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <i class="fa-solid fa-exclamation-circle text-red-500"></i>
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% if form.username.errors %}
-                            <div class="mt-2 text-red-600 dark:text-red-400 text-sm">
-                                {% for error in form.username.errors %}
-                                <div class="flex items-center mt-1">
-                                    <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-                        <!-- First Name -->
-                        <div class="field-container {% if form.first_name.errors %}has-error{% endif %}">
-                            <label for="{{ form.first_name.id_for_label }}"
-                                class="font-black uppercase text-lg block mb-2
-                                       {% if form.first_name.errors %}text-red-600 dark:text-red-400{% else %}dark:text-blue-300{% endif %}">
-                                {{ form.first_name.label }}
-                                {% if form.first_name.field.required %}<span class="text-red-500">*</span>{% endif %}
-                            </label>
-                            <div class="relative">
-                                {{ form.first_name }}
-                                {% if form.first_name.errors %}
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <i class="fa-solid fa-exclamation-circle text-red-500"></i>
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% if form.first_name.errors %}
-                            <div class="mt-2 text-red-600 dark:text-red-400 text-sm">
-                                {% for error in form.first_name.errors %}
-                                <div class="flex items-center mt-1">
-                                    <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-                        <!-- Last Name -->
-                        <div class="field-container {% if form.last_name.errors %}has-error{% endif %}">
-                            <label for="{{ form.last_name.id_for_label }}"
-                                class="font-black uppercase text-lg block mb-2
-                                       {% if form.last_name.errors %}text-red-600 dark:text-red-400{% else %}dark:text-blue-300{% endif %}">
-                                {{ form.last_name.label }}
-                                {% if form.last_name.field.required %}<span class="text-red-500">*</span>{% endif %}
-                            </label>
-                            <div class="relative">
-                                {{ form.last_name }}
-                                {% if form.last_name.errors %}
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <i class="fa-solid fa-exclamation-circle text-red-500"></i>
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% if form.last_name.errors %}
-                            <div class="mt-2 text-red-600 dark:text-red-400 text-sm">
-                                {% for error in form.last_name.errors %}
-                                <div class="flex items-center mt-1">
-                                    <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-                        <!-- Icon -->
-                        <div class="field-container {% if form.icon.errors %}has-error{% endif %}">
-                            <label for="{{ form.icon.id_for_label }}"
-                                class="font-black uppercase text-lg block mb-2
-                                       {% if form.icon.errors %}text-red-600 dark:text-red-400{% else %}dark:text-blue-300{% endif %}">
-                                {{ form.icon.label }}
-                                {% if form.icon.field.required %}<span class="text-red-500">*</span>{% endif %}
-                            </label>
-                            <div class="relative">
-                                {{ form.icon }}
-                                {% if form.icon.errors %}
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <i class="fa-solid fa-exclamation-circle text-red-500"></i>
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% if form.icon.errors %}
-                            <div class="mt-2 text-red-600 dark:text-red-400 text-sm">
-                                {% for error in form.icon.errors %}
-                                <div class="flex items-center mt-1">
-                                    <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-                        <!-- Order -->
-                        <div class="field-container {% if form.order.errors %}has-error{% endif %}">
-                            <label for="{{ form.order.id_for_label }}"
-                                class="font-black uppercase text-lg block mb-2
-                                       {% if form.order.errors %}text-red-600 dark:text-red-400{% else %}dark:text-blue-300{% endif %}">
-                                {{ form.order.label }}
-                                {% if form.order.field.required %}<span class="text-red-500">*</span>{% endif %}
-                            </label>
-                            <div class="relative">
-                                {{ form.order }}
-                                {% if form.order.errors %}
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <i class="fa-solid fa-exclamation-circle text-red-500"></i>
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% if form.order.errors %}
-                            <div class="mt-2 text-red-600 dark:text-red-400 text-sm">
-                                {% for error in form.order.errors %}
-                                <div class="flex items-center mt-1">
-                                    <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-                        <!-- is_active -->
-                        <div class="field-container {% if form.is_active.errors %}has-error{% endif %}">
-                            <div class="flex items-center space-x-3 {% if form.is_active.errors %}p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg{% endif %}">
-                                {{ form.is_active }}
-                                <label for="{{ form.is_active.id_for_label }}"
-                                    class="font-black uppercase text-lg
-                                           {% if form.is_active.errors %}text-red-600 dark:text-red-400{% else %}dark:text-blue-300{% endif %}">
-                                    {{ form.is_active.label }}
-                                    {% if form.is_active.field.required %}<span class="text-red-500">*</span>{% endif %}
-                                </label>
-                            </div>
-                            {% if form.is_active.errors %}
-                            <div class="mt-2 text-red-600 dark:text-red-400 text-sm">
-                                {% for error in form.is_active.errors %}
-                                <div class="flex items-center mt-1">
-                                    <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-                        <!-- is_staff -->
-                        <div class="field-container {% if form.is_staff.errors %}has-error{% endif %}">
-                            <div class="flex items-center space-x-3 {% if form.is_staff.errors %}p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg{% endif %}">
-                                {{ form.is_staff }}
-                                <label for="{{ form.is_staff.id_for_label }}"
-                                    class="font-black uppercase text-lg
-                                           {% if form.is_staff.errors %}text-red-600 dark:text-red-400{% else %}dark:text-blue-300{% endif %}">
-                                    {{ form.is_staff.label }}
-                                    {% if form.is_staff.field.required %}<span class="text-red-500">*</span>{% endif %}
-                                </label>
-                            </div>
-                            {% if form.is_staff.errors %}
-                            <div class="mt-2 text-red-600 dark:text-red-400 text-sm">
-                                {% for error in form.is_staff.errors %}
-                                <div class="flex items-center mt-1">
-                                    <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-                        <!-- is_superuser -->
-                        <div class="field-container {% if form.is_superuser.errors %}has-error{% endif %}">
-                            <div class="flex items-center space-x-3 {% if form.is_superuser.errors %}p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg{% endif %}">
-                                {{ form.is_superuser }}
-                                <label for="{{ form.is_superuser.id_for_label }}"
-                                    class="font-black uppercase text-lg
-                                           {% if form.is_superuser.errors %}text-red-600 dark:text-red-400{% else %}dark:text-blue-300{% endif %}">
-                                    {{ form.is_superuser.label }}
-                                    {% if form.is_superuser.field.required %}<span class="text-red-500">*</span>{% endif %}
-                                </label>
-                            </div>
-                            {% if form.is_superuser.errors %}
-                            <div class="mt-2 text-red-600 dark:text-red-400 text-sm">
-                                {% for error in form.is_superuser.errors %}
-                                <div class="flex items-center mt-1">
-                                    <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
+                        {% endif %}
                     </div>
 
-                    <!-- Botones de acción -->
-                    <div class="flex flex-col md:flex-row justify-center items-center mt-8 space-y-3 md:space-y-0 md:space-x-8">
-                        <button type="submit"
-                            class="w-full md:w-auto bg-blue-700 hover:bg-blue-800 text-white py-3 px-8 rounded-lg flex items-center justify-center transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
-                            <i class="fa-solid fa-save mr-2"></i>Guardar Usuario
-                        </button>
-                        <a class="w-full md:w-auto bg-red-700 hover:bg-red-800 text-white py-3 px-8 rounded-lg flex items-center justify-center transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
-                            href="{% url 'security:user_list' %}">
-                            <i class="fa-solid fa-xmark mr-2"></i>Cancelar
-                        </a>
+                    <!-- Campo Email -->
+                    <div class="field-container {% if form.email.errors %}has-error{% endif %}">
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.email.label }}
+                            {% if form.email.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="relative">
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if form.email.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.email.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
+
+                    <!-- Campo Username -->
+                    <div class="field-container {% if form.username.errors %}has-error{% endif %}">
+                        <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.username.label }}
+                            {% if form.username.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="relative">
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if form.username.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.username.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo First Name -->
+                    <div class="field-container {% if form.first_name.errors %}has-error{% endif %}">
+                        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.first_name.label }}
+                            {% if form.first_name.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="relative">
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if form.first_name.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.first_name.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo Last Name -->
+                    <div class="field-container {% if form.last_name.errors %}has-error{% endif %}">
+                        <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.last_name.label }}
+                            {% if form.last_name.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="relative">
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if form.last_name.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.last_name.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo Phone -->
+                    <div class="field-container {% if form.phone.errors %}has-error{% endif %}">
+                        <label for="{{ form.phone.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.phone.label }}
+                            {% if form.phone.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="relative">
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if form.phone.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.phone.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <!-- Campo Imagen de Perfil -->
+                    <div class="field-container {% if form.image.errors %}has-error{% endif %}">
+                        <label for="{{ form.image.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.image.label }}
+                            {% if form.image.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="relative">
+                            {{ form.image }}
+                            {% if form.image.errors %}
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if form.image.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.image.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <p class="mt-2 text-sm text-gray-500">Formatos aceptados: JPG, PNG, GIF. Tamaño máximo: 2MB</p>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <!-- Campo Direction -->
+                    <div class="field-container {% if form.direction.errors %}has-error{% endif %}">
+                        <label for="{{ form.direction.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ form.direction.label }}
+                            {% if form.direction.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        <div class="relative">
+                            {{ form.direction }}
+                            {% if form.direction.errors %}
+                            <div class="absolute top-2 right-2 pointer-events-none">
+                                <i class="fa-solid fa-exclamation-circle text-red-500"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if form.direction.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.direction.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {# Sección: Permisos y Estado #}
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    Permisos y Estado del Usuario
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Campo is_active -->
+                    <div class="field-container {% if form.is_active.errors %}has-error{% endif %}">
+                        <div class="flex items-center space-x-3 {% if form.is_active.errors %}p-3 bg-red-50 border border-red-200 rounded-lg{% endif %}">
+                            {{ form.is_active }}
+                            <label for="{{ form.is_active.id_for_label }}" class="text-sm font-semibold text-gray-700">
+                                {{ form.is_active.label }}
+                                {% if form.is_active.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                        </div>
+                        {% if form.is_active.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.is_active.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo is_staff -->
+                    <div class="field-container {% if form.is_staff.errors %}has-error{% endif %}">
+                        <div class="flex items-center space-x-3 {% if form.is_staff.errors %}p-3 bg-red-50 border border-red-200 rounded-lg{% endif %}">
+                            {{ form.is_staff }}
+                            <label for="{{ form.is_staff.id_for_label }}" class="text-sm font-semibold text-gray-700">
+                                {{ form.is_staff.label }}
+                                {% if form.is_staff.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                        </div>
+                        {% if form.is_staff.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.is_staff.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo is_superuser -->
+                    <div class="field-container {% if form.is_superuser.errors %}has-error{% endif %}">
+                        <div class="flex items-center space-x-3 {% if form.is_superuser.errors %}p-3 bg-red-50 border border-red-200 rounded-lg{% endif %}">
+                            {{ form.is_superuser }}
+                            <label for="{{ form.is_superuser.id_for_label }}" class="text-sm font-semibold text-gray-700">
+                                {{ form.is_superuser.label }}
+                                {% if form.is_superuser.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                        </div>
+                        {% if form.is_superuser.errors %}
+                        <div class="mt-2 text-red-600 text-sm">
+                            {% for error in form.is_superuser.errors %}
+                            <div class="flex items-center mt-1">
+                                <i class="fa-solid fa-circle-exclamation text-xs mr-2"></i>
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {# Botones de acción #}
+            <div class="bg-white rounded-2xl shadow-xl p-8 mt-8">
+                <div class="flex justify-center space-x-4">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 flex items-center space-x-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span>Guardar Usuario</span>
+                    </button>
+                    <a href="{% url 'security:user_list' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 flex items-center space-x-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>Cancelar</span>
+                    </a>
                 </div>
             </div>
         </form>
     </div>
 </section>
+
+<script>
+// Inicializar cuando cargue la página
+document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar estilos a todos los campos
+    const fields = ['dni', 'email', 'username', 'first_name', 'last_name', 'phone', 'direction'];
+    
+    fields.forEach(fieldName => {
+        const element = document.getElementById(`id_${fieldName}`);
+        if (element) {
+            if (element.tagName === 'INPUT') {
+                element.classList.add('w-full', 'p-3', 'border', 'border-gray-300', 'rounded-lg', 'focus:ring-2', 'focus:ring-emerald-500', 'focus:border-transparent', 'text-gray-700', 'bg-white');
+            } else if (element.tagName === 'TEXTAREA') {
+                element.classList.add('w-full', 'p-3', 'border', 'border-gray-300', 'rounded-lg', 'focus:ring-2', 'focus:ring-emerald-500', 'focus:border-transparent', 'text-gray-700', 'bg-white', 'min-h-[80px]');
+            } else if (element.tagName === 'SELECT') {
+                element.classList.add('w-full', 'p-3', 'border', 'border-gray-300', 'rounded-lg', 'focus:ring-2', 'focus:ring-emerald-500', 'focus:border-transparent', 'text-gray-700', 'bg-white');
+            }
+        }
+    });
+
+    // Estilos para el campo de imagen
+    const imageField = document.getElementById('id_image');
+    if (imageField) {
+        imageField.classList.add('w-full', 'p-3', 'border', 'border-gray-300', 'rounded-lg', 'focus:ring-2', 'focus:ring-emerald-500', 'focus:border-transparent', 'text-gray-700', 'bg-white');
+    }
+
+    // Estilos para checkboxes
+    const checkboxFields = ['is_active', 'is_staff', 'is_superuser'];
+    checkboxFields.forEach(fieldName => {
+        const element = document.getElementById(`id_${fieldName}`);
+        if (element) {
+            element.classList.add('w-4', 'h-4', 'text-emerald-600', 'bg-gray-100', 'border-gray-300', 'rounded', 'focus:ring-emerald-500', 'focus:ring-2');
+        }
+    });
+
+    // Vista previa de imagen de perfil
+    const imageInput = document.getElementById('id_image');
+    const profilePreview = document.getElementById('profilePreview');
+    
+    if (imageInput && profilePreview) {
+        imageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Validar tipo de archivo
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Por favor selecciona un archivo de imagen válido (JPG, PNG, GIF)');
+                    event.target.value = ''; // Limpiar el input
+                    return;
+                }
+                
+                // Validar tamaño (2MB máximo)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('El archivo es demasiado grande. El tamaño máximo es 2MB');
+                    event.target.value = ''; // Limpiar el input
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Reemplazar el contenido del preview con la nueva imagen
+                    profilePreview.innerHTML = `<img src="${e.target.result}" alt="Vista previa" class="profile-image-preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
+
 {% endblock %}

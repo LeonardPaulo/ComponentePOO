@@ -15,7 +15,7 @@
     }
     
     .header-section {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         color: white;
         border-radius: 15px;
         padding: 2rem;
@@ -58,7 +58,7 @@
         transform: translateY(-2px);
     }
     
-    .stat-card.total { border-left-color: #10b981; }
+    .stat-card.total { border-left-color: #8b5cf6; }
     .stat-card.current { border-left-color: #3b82f6; }
     .stat-card.showing { border-left-color: #8b5cf6; }
     
@@ -80,7 +80,7 @@
         font-size: 1.5rem;
     }
     
-    .stat-icon.total { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
     .stat-icon.current { background: linear-gradient(135deg, #3b82f6, #2563eb); }
     .stat-icon.showing { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
     
@@ -123,8 +123,8 @@
     }
     
     .search-input:focus {
-        border-color: #10b981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         outline: none;
     }
     
@@ -143,23 +143,23 @@
     }
     
     .btn-search {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     
     .btn-search:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
     
     .btn-create {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     
     .btn-create:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
@@ -207,10 +207,9 @@
     
     .grupo-header {
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: auto auto 1fr auto;
         gap: 1.5rem;
         align-items: center;
-        margin-bottom: 1rem;
     }
     
     .grupo-id {
@@ -228,13 +227,28 @@
         justify-content: center;
         color: white;
         font-size: 1.1rem;
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
     }
     
     .id-text {
         font-weight: 600;
         color: #1f2937;
         font-size: 1rem;
+    }
+    
+    .grupo-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        border-radius: 12px;
+    }
+    
+    .grupo-icon i {
+        font-size: 1.5rem;
+        color: white;
     }
     
     .group-info h4 {
@@ -337,9 +351,9 @@
     }
     
     .pagination .current {
-        background: #10b981;
+        background: #8b5cf6;
         color: white;
-        border-color: #10b981;
+        border-color: #8b5cf6;
     }
     
     .pagination a:first-child,
@@ -481,14 +495,17 @@
                 <div class="grupo-header">
                     <div class="grupo-id">
                         <div class="id-icon">
-                            <i class="fas fa-hashtag"></i>
+                            {{ forloop.counter0|add:page_obj.start_index }}
                         </div>
-                        <div class="id-text">#{{ item.id }}</div>
+                    </div>
+                    
+                    <div class="grupo-icon">
+                        <i class="fas fa-users"></i>
                     </div>
                     
                     <div class="group-info">
                         <h4>{{ item.name }}</h4>
-                        <p>Grupo de usuarios del sistema</p>
+                        <p>Grupo de {{ item.name|lower }} del sistema</p>
                     </div>
                     
                     <div class="actions-group">
@@ -568,7 +585,7 @@
     <div class="actions-section">
         <div class="actions-buttons">
             <a href="{% url 'home' %}" class="btn btn-home">
-                <i class="fas fa-home"></i> Regresar a Página Principal
+                <i class="fas fa-home"></i> Inicio
             </a>
         </div>
     </div>

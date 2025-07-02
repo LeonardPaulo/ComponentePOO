@@ -21,7 +21,7 @@ class GroupModulePermissionListView(PermissionMixin, ListViewMixin, ListView):
     model = GroupModulePermission
     context_object_name = 'GroupModulePermissions'
     permission_required = 'view_groupmodulepermission'
-    paginate_by = 50
+    paginate_by = 2
 
     def get_queryset(self):
         q1 = self.request.GET.get('q')

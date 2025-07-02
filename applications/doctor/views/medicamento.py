@@ -16,7 +16,7 @@ class MedicamentoListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
     model = Medicamento
     template_name = 'doctor/medicamento/list.html'
     context_object_name = 'medicamentos' # Nombre de la variable en el template
-    paginate_by = 10 # Paginación, muestra 10 elementos por página
+    paginate_by = 2 # Paginación, muestra 10 elementos por página
     permission_required = 'core.view_medicamento' # Permiso requerido para ver la lista
 
     def get_queryset(self):

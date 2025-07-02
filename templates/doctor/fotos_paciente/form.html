@@ -1,33 +1,213 @@
 {% extends 'home.html' %}
+{% load static %}
+{% load l10n %}
+
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    {% load static %}
-    {% include 'fragments/messages.html' %}
-    <section class="dark:bg-principal mt-2 flex justify-center items-center min-h-[calc(100vh-100px)]">
-        <div class="w-full max-w-md bg-white dark:bg-[#0b1121] rounded-lg shadow-xl p-8 transform transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl"
-            data-aos="fade-up" data-aos-delay="200">
-            <h1 class="text-center rounded-2xl bg-emerald-600 px-2 py-1 text-blue-800 uppercase text-3xl mb-6">
-                {{ title }}
-            </h1>
-            
-            <form method="post" 
-                  enctype="multipart/form-data"
-                  action="{% if is_update %}{% url action_url foto.pk %}{% else %}{% url action_url %}{% endif %}"
-                  class="space-y-6 form-white">
-                {% csrf_token %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% include 'fragments/messages.html' %}
 
-                {% if form.non_field_errors %}
-                    <div class="bg-red-100 text-red-700 p-2 rounded mb-4">
-                        {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
+<style>
+    .main-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .form-section {
+        background: #fff;
+        border-radius: 15px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+    .form-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4f46e5;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .form-title i {
+        color: #059669;
+        font-size: 1.5rem;
+        background: #e0f2fe;
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    input[type="text"], input[type="number"], input[type="file"], textarea, select {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 1rem;
+        transition: border-color 0.2s, background 0.2s;
+        margin-bottom: 0.5rem;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, input[type="file"]:focus, textarea:focus, select:focus {
+        border-color: #10b981;
+        background: #fff;
+        outline: none;
+    }
+    input[type="checkbox"] {
+        accent-color: #10b981;
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-right: 0.5rem;
+    }
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .btn {
+        padding: 0.9rem 2.2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-save {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+    }
+    .btn-save:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+    }
+    .btn-cancel {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: #fff;
+    }
+    .btn-cancel:hover {
+        background: linear-gradient(135deg, #4b5563, #374151);
+        transform: translateY(-1px);
+    }
+    .error-text {
+        color: #ef4444;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    .vertical-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Estilos para campos con errores */
+    .field-container.has-error input,
+    .field-container.has-error textarea,
+    .field-container.has-error select {
+        border-color: #ef4444 !important;
+        background-color: rgba(254, 242, 242, 0.5) !important;
+    }
+    
+    .field-container.has-error input:focus,
+    .field-container.has-error textarea:focus,
+    .field-container.has-error select:focus {
+        border-color: #dc2626 !important;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        outline: none !important;
+    }
+    
+    /* Animación sutil para errores */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+        20%, 40%, 60%, 80% { transform: translateX(2px); }
+    }
+    
+    .field-container.has-error {
+        animation: shake 0.5s ease-in-out;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    
+    .form-group-full {
+        grid-column: 1 / -1;
+    }
+    
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        .main-container {
+            max-width: 100%;
+            padding: 1rem;
+        }
+    }
+</style>
 
+<div id="msg-success" style="display:none;" class="mb-6">
+    <div class="bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded flex items-center gap-2" role="alert">
+        <i class="fas fa-check-circle"></i>
+        <span id="msg-success-text"></span>
+    </div>
+</div>
+<div id="msg-delete" style="display:none;" class="mb-6">
+    <div class="bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded flex items-center gap-2" role="alert">
+        <i class="fas fa-trash"></i>
+        <span id="msg-delete-text"></span>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="form-section">
+        <div class="form-title">
+            <i class="fas fa-camera"></i>
+            {{ title }}
+        </div>
+
+        <!-- Mensajes de error del formulario (no específicos de campo) -->
+        {% if form.non_field_errors %}
+        <div class="mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded flex items-start gap-2" role="alert">
+                <i class="fas fa-exclamation-triangle text-lg"></i>
                 <div>
-                    <label for="{{ form.paciente.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                    <h3 class="font-medium">Se encontraron errores en el formulario:</h3>
+                    <ul class="list-disc list-inside mt-2 space-y-1">
+                        {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <form method="post" 
+              enctype="multipart/form-data"
+              action="{% if is_update %}{% url action_url foto.pk %}{% else %}{% url action_url %}{% endif %}"
+              autocomplete="off" class="vertical-form" id="fotoPacienteForm">
+            {% csrf_token %}
+
+            <div class="form-grid">
+                <!-- Campo Paciente -->
+                <div class="form-group form-group-full field-container {% if form.paciente.errors %}has-error{% endif %}">
+                    <label for="{{ form.paciente.id_for_label }}" class="form-label">
                         {{ form.paciente.label }}
+                        {% if form.paciente.field.required %} *{% endif %}
                     </label>
-                    <select name="{{ form.paciente.name }}" id="{{ form.paciente.id_for_label }}" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 dark:bg-principal dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-emerald-500 dark:focus:border-emerald-500">
+                    <select name="{{ form.paciente.name }}" id="{{ form.paciente.id_for_label }}">
                         <option value="">Seleccione un paciente</option>
                         {% for choice in form.paciente.field.choices %}
                             {% if choice.0 %}
@@ -35,48 +215,99 @@
                             {% endif %}
                         {% endfor %}
                     </select>
-                    {% if form.paciente.errors %}
-                        {% for error in form.paciente.errors %}
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
+                    {% for error in form.paciente.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
                 </div>
 
-                <div>
-                    <label for="{{ form.imagen.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                <!-- Campo Imagen -->
+                <div class="form-group form-group-full field-container {% if form.imagen.errors %}has-error{% endif %}">
+                    <label for="{{ form.imagen.id_for_label }}" class="form-label">
                         {{ form.imagen.label }}
+                        {% if form.imagen.field.required %} *{% endif %}
                     </label>
-                    <input type="file" name="{{ form.imagen.name }}" id="{{ form.imagen.id_for_label }}" accept="image/*" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 dark:bg-principal dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-emerald-500 dark:focus:border-emerald-500">
-                    {% if form.imagen.errors %}
-                        {% for error in form.imagen.errors %}
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
+                    <input type="file" name="{{ form.imagen.name }}" id="{{ form.imagen.id_for_label }}" accept="image/*">
+                    {% for error in form.imagen.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                    <p class="text-sm text-gray-500 mt-1">Formatos aceptados: JPG, PNG, GIF (máximo 5MB)</p>
                 </div>
 
-                <div>
-                    <label for="{{ form.descripcion.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                <!-- Campo Descripción -->
+                <div class="form-group form-group-full field-container {% if form.descripcion.errors %}has-error{% endif %}">
+                    <label for="{{ form.descripcion.id_for_label }}" class="form-label">
                         {{ form.descripcion.label }}
+                        {% if form.descripcion.field.required %} *{% endif %}
                     </label>
-                    <textarea name="{{ form.descripcion.name }}" id="{{ form.descripcion.id_for_label }}" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 dark:bg-principal dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-emerald-500 dark:focus:border-emerald-500" placeholder="Descripción opcional de la foto...">{% if form.descripcion.value %}{{ form.descripcion.value }}{% endif %}</textarea>
-                    {% if form.descripcion.errors %}
-                        {% for error in form.descripcion.errors %}
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
+                    <textarea name="{{ form.descripcion.name }}" id="{{ form.descripcion.id_for_label }}" rows="4" placeholder="Descripción opcional de la foto...">{% if form.descripcion.value %}{{ form.descripcion.value }}{% endif %}</textarea>
+                    {% for error in form.descripcion.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                    <p class="text-sm text-gray-500 mt-1">Máximo 500 caracteres</p>
                 </div>
+            </div>
 
-                <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 justify-center">
-                    <button type="submit"
-                        class="w-full md:w-auto px-6 py-3 bg-emerald-700 text-black font-medium rounded-full shadow-lg hover:bg-emerald-800 transition duration-300 transform hover:scale-105">
-                        {{ btn_text }}
-                    </button>
-                    <a href="{% url 'doctor:fotopaciente_list' %}"
-                        class="w-full md:w-auto px-6 py-3 bg-gray-600 text-black font-medium rounded-full shadow-lg hover:bg-gray-700 transition duration-300 transform hover:scale-105 text-center">
-                        Cancelar
-                    </a>
-                </div>
-            </form>
-        </div>
-    </section>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save" id="btn-save">
+                    <i class="fas fa-save"></i>
+                    {{ btn_text }}
+                </button>
+                <a href="{% url 'doctor:fotopaciente_list' %}" class="btn btn-cancel" id="btn-cancel">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Inicializar cuando cargue la página
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('fotoPacienteForm');
+    const saveBtn = document.getElementById('btn-save');
+    
+    if (form && saveBtn) {
+        form.addEventListener('submit', function() {
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            saveBtn.disabled = true;
+        });
+    }
+
+    // Validación de archivo de imagen
+    const imagenInput = document.getElementById('{{ form.imagen.id_for_label }}');
+    if (imagenInput) {
+        imagenInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                
+                if (file.size > maxSize) {
+                    alert('El archivo es demasiado grande. El tamaño máximo es 5MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Tipo de archivo no permitido. Use JPG, PNG o GIF.');
+                    this.value = '';
+                    return;
+                }
+            }
+        });
+    }
+
+    // Funcionalidad para el campo de descripción
+    const descripcionInput = document.getElementById('{{ form.descripcion.id_for_label }}');
+    if (descripcionInput) {
+        descripcionInput.addEventListener('input', function() {
+            // Capitalizar primera letra
+            if (this.value.length > 0) {
+                this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

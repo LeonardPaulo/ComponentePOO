@@ -15,7 +15,7 @@
     }
     
     .header-section {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         color: white;
         border-radius: 15px;
         padding: 2rem;
@@ -58,7 +58,7 @@
         transform: translateY(-2px);
     }
     
-    .stat-card.total { border-left-color: #10b981; }
+    .stat-card.total { border-left-color: #8b5cf6; }
     .stat-card.current { border-left-color: #3b82f6; }
     .stat-card.showing { border-left-color: #8b5cf6; }
     
@@ -80,7 +80,7 @@
         font-size: 1.5rem;
     }
     
-    .stat-icon.total { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
     .stat-icon.current { background: linear-gradient(135deg, #3b82f6, #2563eb); }
     .stat-icon.showing { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
     
@@ -123,8 +123,8 @@
     }
     
     .search-input:focus {
-        border-color: #10b981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         outline: none;
     }
     
@@ -143,34 +143,23 @@
     }
     
     .btn-search {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     
     .btn-search:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
     
     .btn-create {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     
     .btn-create:hover {
-        background: linear-gradient(135deg, #059669, #047857);
-        color: white;
-        transform: translateY(-1px);
-    }
-    
-    .btn-secondary {
-        background: linear-gradient(135deg, #6b7280, #4b5563);
-        color: white;
-    }
-    
-    .btn-secondary:hover {
-        background: linear-gradient(135deg, #4b5563, #374151);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
@@ -186,7 +175,7 @@
         transform: translateY(-1px);
     }
     
-    .modulos-grid {
+    .modules-grid {
         display: grid;
         gap: 1rem;
     }
@@ -228,7 +217,7 @@
         justify-content: center;
         color: white;
         font-size: 1.1rem;
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
     }
     
     .id-text {
@@ -243,7 +232,7 @@
         justify-content: center;
         width: 50px;
         height: 50px;
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
         border-radius: 12px;
     }
     
@@ -298,7 +287,7 @@
         padding: 0.25rem 0.75rem;
         border-radius: 9999px;
         font-size: 0.75rem;
-        font-weight: 500;
+        font-weight: 600;
     }
     
     .badge-active {
@@ -307,13 +296,13 @@
     }
     
     .badge-inactive {
-        background: #fee2e2;
+        background: #fef2f2;
         color: #991b1b;
     }
     
     .badge-menu {
-        background: #ddd6fe;
-        color: #5b21b6;
+        background: #ede9fe;
+        color: #6b21a8;
     }
     
     .actions-group {
@@ -403,9 +392,9 @@
     }
     
     .pagination .current {
-        background: #10b981;
+        background: #8b5cf6;
         color: white;
-        border-color: #10b981;
+        border-color: #8b5cf6;
     }
     
     .pagination a:first-child,
@@ -528,7 +517,7 @@
                    name="q" 
                    id="table-search"
                    class="search-input" 
-                   placeholder="Buscar módulo..." 
+                   placeholder="Búsqueda sin límites" 
                    value="{{ request.GET.q }}">
             <button type="submit" class="btn btn-search">
                 <i class="fas fa-search"></i> Buscar
@@ -542,16 +531,15 @@
     </div>
 
     <!-- Lista de Módulos -->
-    <div class="modulos-grid">
+    <div class="modules-grid">
         {% if modules %}
             {% for item in modules %}
             <div class="modulo-card">
                 <div class="modulo-header">
                     <div class="modulo-id">
                         <div class="id-icon">
-                            <i class="fas fa-hashtag"></i>
+                            {{ forloop.counter0|add:page_obj.start_index }}
                         </div>
-                        <div class="id-text">#{{ item.id }}</div>
                     </div>
                     
                     <div class="module-icon">
@@ -680,7 +668,7 @@
     <div class="actions-section">
         <div class="actions-buttons">
             <a href="{% url 'home' %}" class="btn btn-home">
-                <i class="fas fa-home"></i> Regresar a Página Principal
+                <i class="fas fa-home"></i> Inicio
             </a>
         </div>
     </div>
@@ -692,7 +680,7 @@
 function openDeleteModal(id, name) {
     const deleteForm = document.getElementById('deleteForm');
     deleteForm.action = `{% url 'security:module_delete' 0 %}`.replace('0', id);
-    document.getElementById('Description').textContent = `Módulo #${id} - ${name}`;
+    document.getElementById('Description').textContent = `ID: ${id} - ${name}`;
     document.getElementById('deleteModal').classList.remove('hidden');
 }
 

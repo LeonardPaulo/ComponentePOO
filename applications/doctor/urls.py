@@ -16,6 +16,12 @@ from applications.doctor.views.diagnostico import (
     DiagnosticoUpdateView,
     DiagnosticoDeleteView,
 )
+from .views.doctor import ( 
+    DoctorListView,
+    DoctorCreateView,
+    DoctorUpdateView,
+    DoctorDeleteView
+)
 from applications.doctor.views.medicamento import (
     MedicamentoListView,
     MedicamentoCreateView,
@@ -113,6 +119,11 @@ urlpatterns = [
     path('diagnosticos/crear/', DiagnosticoCreateView.as_view(), name='diagnostico_create'),
     path('diagnosticos/editar/<int:pk>/', DiagnosticoUpdateView.as_view(), name='diagnostico_update'),
     path('diagnosticos/eliminar/<int:pk>/', DiagnosticoDeleteView.as_view(), name='diagnostico_delete'),
+
+    path('doctores/', DoctorListView.as_view(), name='doctor_list'),
+    path('doctores/crear/', DoctorCreateView.as_view(), name='doctor_create'),
+    path('doctores/editar/<int:pk>/', DoctorUpdateView.as_view(), name='doctor_update'),
+    path('doctores/eliminar/<int:pk>/', DoctorDeleteView.as_view(), name='doctor_delete'),
 
     # ¡NUEVAS RUTAS PARA MEDICAMENTO!
     path('medicamentos/', MedicamentoListView.as_view(), name='medicamento_list'),

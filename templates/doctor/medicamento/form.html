@@ -1,64 +1,451 @@
-{# applications/doctor/templates/doctor/medicamento/form.html #}
-
 {% extends 'home.html' %}
 {% load static %}
-{# ¡ESTA LÍNEA ES LA QUE CAUSA EL ERROR SI CRISPY FORMS NO ESTÁ CONFIGURADO EN SETTINGS.PY! #}
-{# ELIMÍNALA O COMENTALA: {% load crispy_forms_tags %} #} 
+{% load l10n %}
 
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    {% include 'fragments/messages.html' %}
-    <section class="dark:bg-principal mt-2">
-        <div class="text-center" data-aos="fade-up" data-aos-delay="200">
-            <div class="pt-8 lg:pt-4">
-                <h1 class="rounded-2xl bg-emerald-600 px-2 py-1 text-blue-800 uppercase text-4xl">{{ title }}</h1>
-            </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% include 'fragments/messages.html' %}
 
-            <div class="lg:p-8 p-4 rounded-3xl" data-aos="fade-up" data-aos-delay="200">
-                <div class="max-w-md mx-auto bg-white dark:bg-[#0b1121] rounded-lg shadow-lg p-6">
-                    <form method="post" enctype="multipart/form-data"> {# IMPRESCINDIBLE para el campo de imagen #}
-                        {% csrf_token %}
-                        
-                        {# ¡ESTA LÍNEA TAMBIÉN DEBE SER REEMPLAZADA POR EL RENDERIZADO MANUAL! #}
-                        {# ELIMÍNALA O COMENTALA: {{ form|crispy }} #} 
+<style>
+    .main-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .form-section {
+        background: #fff;
+        border-radius: 15px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+    .form-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4f46e5;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .form-title i {
+        color: #059669;
+        font-size: 1.5rem;
+        background: #e0f2fe;
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    input[type="text"], input[type="number"], input[type="file"], textarea, select {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 1rem;
+        transition: border-color 0.2s, background 0.2s;
+        margin-bottom: 0.5rem;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, input[type="file"]:focus, textarea:focus, select:focus {
+        border-color: #10b981;
+        background: #fff;
+        outline: none;
+    }
+    input[type="checkbox"] {
+        accent-color: #10b981;
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-right: 0.5rem;
+    }
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .btn {
+        padding: 0.9rem 2.2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-save {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+    }
+    .btn-save:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+    }
+    .btn-cancel {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: #fff;
+    }
+    .btn-cancel:hover {
+        background: linear-gradient(135deg, #4b5563, #374151);
+        transform: translateY(-1px);
+    }
+    .error-text {
+        color: #ef4444;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    .vertical-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Estilos específicos para el campo de precio */
+    .price-input-container {
+        position: relative;
+    }
+    
+    .price-prefix {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-weight: 600;
+        z-index: 10;
+        pointer-events: none;
+    }
+    
+    .price-input {
+        padding-left: 2rem !important;
+    }
+    
+    /* Estilos para campos con errores */
+    .field-container.has-error input,
+    .field-container.has-error textarea,
+    .field-container.has-error select {
+        border-color: #ef4444 !important;
+        background-color: rgba(254, 242, 242, 0.5) !important;
+    }
+    
+    .field-container.has-error input:focus,
+    .field-container.has-error textarea:focus,
+    .field-container.has-error select:focus {
+        border-color: #dc2626 !important;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        outline: none !important;
+    }
+    
+    /* Animación sutil para errores */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+        20%, 40%, 60%, 80% { transform: translateX(2px); }
+    }
+    
+    .field-container.has-error {
+        animation: shake 0.5s ease-in-out;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    
+    .form-group-full {
+        grid-column: 1 / -1;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        .main-container {
+            max-width: 100%;
+            padding: 1rem;
+        }
+    }
+</style>
 
-                        {# RENDERIZADO MANUAL DE LOS CAMPOS DEL FORMULARIO #}
-                        {% for field in form %}
-                            <div class="mb-4">
-                                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    {{ field.label }}
-                                    {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
-                                </label>
-                                {% if field.help_text %}
-                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ field.help_text }}</p>
-                                {% endif %}
-                                <div class="mt-1">
-                                    {# Renderiza el campo. Las clases CSS de los widgets en forms.py se aplicarán aquí #}
-                                    {{ field }}
-                                </div>
-                                {% if field.errors %}
-                                    {% for error in field.errors %}
-                                        <p class="text-red-500 text-xs italic">{{ error }}</p>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
+<div id="msg-success" style="display:none;" class="mb-6">
+    <div class="bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded flex items-center gap-2" role="alert">
+        <i class="fas fa-check-circle"></i>
+        <span id="msg-success-text"></span>
+    </div>
+</div>
+<div id="msg-delete" style="display:none;" class="mb-6">
+    <div class="bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded flex items-center gap-2" role="alert">
+        <i class="fas fa-trash"></i>
+        <span id="msg-delete-text"></span>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="form-section">
+        <div class="form-title">
+            <i class="fa-solid fa-pills"></i>
+            {{ title }}
+        </div>
+
+        <!-- Mensajes de error del formulario (no específicos de campo) -->
+        {% if form.non_field_errors %}
+        <div class="mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded flex items-start gap-2" role="alert">
+                <i class="fas fa-exclamation-triangle text-lg"></i>
+                <div>
+                    <h3 class="font-medium">Se encontraron errores en el formulario:</h3>
+                    <ul class="list-disc list-inside mt-2 space-y-1">
+                        {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
                         {% endfor %}
-                        {# FIN DEL RENDERIZADO MANUAL #}
-
-                        <div class="flex justify-center space-x-4 mt-6">
-                            <button type="submit"
-                                class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
-                                <i class="fa-solid fa-save mr-2"></i> Guardar
-                            </button>
-                            <a href="{% url 'doctor:medicamento_list' %}"
-                                class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
-                                <i class="fa-solid fa-times mr-2"></i> Cancelar
-                            </a>
-                        </div>
-                    </form>
+                    </ul>
                 </div>
             </div>
         </div>
-    </section>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" autocomplete="off" class="vertical-form" id="medicamentoForm">
+            {% csrf_token %}
+
+            <div class="form-grid">
+                <!-- Campo Nombre -->
+                <div class="form-group field-container {% if form.nombre.errors %}has-error{% endif %}">
+                    <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                        {{ form.nombre.label }}
+                        {% if form.nombre.field.required %} *{% endif %}
+                    </label>
+                    {{ form.nombre }}
+                    {% for error in form.nombre.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Campo Tipo -->
+                <div class="form-group field-container {% if form.tipo.errors %}has-error{% endif %}">
+                    <label for="{{ form.tipo.id_for_label }}" class="form-label">
+                        {{ form.tipo.label }}
+                        {% if form.tipo.field.required %} *{% endif %}
+                    </label>
+                    {{ form.tipo }}
+                    {% for error in form.tipo.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Campo Marca -->
+                <div class="form-group field-container {% if form.marca_medicamento.errors %}has-error{% endif %}">
+                    <label for="{{ form.marca_medicamento.id_for_label }}" class="form-label">
+                        {{ form.marca_medicamento.label }}
+                        {% if form.marca_medicamento.field.required %} *{% endif %}
+                    </label>
+                    {{ form.marca_medicamento }}
+                    {% for error in form.marca_medicamento.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Campo Concentración -->
+                <div class="form-group field-container {% if form.concentracion.errors %}has-error{% endif %}">
+                    <label for="{{ form.concentracion.id_for_label }}" class="form-label">
+                        {{ form.concentracion.label }}
+                        {% if form.concentracion.field.required %} *{% endif %}
+                    </label>
+                    {{ form.concentracion }}
+                    {% for error in form.concentracion.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Campo Vía de Administración -->
+                <div class="form-group field-container {% if form.via_administracion.errors %}has-error{% endif %}">
+                    <label for="{{ form.via_administracion.id_for_label }}" class="form-label">
+                        {{ form.via_administracion.label }}
+                        {% if form.via_administracion.field.required %} *{% endif %}
+                    </label>
+                    {{ form.via_administracion }}
+                    {% for error in form.via_administracion.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Campo Cantidad -->
+                <div class="form-group field-container {% if form.cantidad.errors %}has-error{% endif %}">
+                    <label for="{{ form.cantidad.id_for_label }}" class="form-label">
+                        {{ form.cantidad.label }}
+                        {% if form.cantidad.field.required %} *{% endif %}
+                    </label>
+                    {{ form.cantidad }}
+                    {% for error in form.cantidad.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Campo Precio -->
+                <div class="form-group field-container {% if form.precio.errors %}has-error{% endif %}">
+                    <label for="{{ form.precio.id_for_label }}" class="form-label">
+                        {{ form.precio.label }}
+                        {% if form.precio.field.required %} *{% endif %}
+                    </label>
+                    <div class="price-input-container">
+                        <span class="price-prefix">$</span>
+                        <div class="price-input">
+                            {{ form.precio }}
+                        </div>
+                    </div>
+                    {% for error in form.precio.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Campo Descripción -->
+                <div class="form-group form-group-full field-container {% if form.descripcion.errors %}has-error{% endif %}">
+                    <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                        {{ form.descripcion.label }}
+                        {% if form.descripcion.field.required %} *{% endif %}
+                    </label>
+                    {{ form.descripcion }}
+                    {% for error in form.descripcion.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Campo Foto -->
+                <div class="form-group form-group-full field-container {% if form.foto.errors %}has-error{% endif %}">
+                    <label for="{{ form.foto.id_for_label }}" class="form-label">
+                        {{ form.foto.label }}
+                        {% if form.foto.field.required %} *{% endif %}
+                    </label>
+                    {{ form.foto }}
+                    {% for error in form.foto.errors %}
+                        <div class="error-text">{{ error }}</div>
+                    {% endfor %}
+                    <p class="text-sm text-gray-500 mt-1">Formatos aceptados: JPG, PNG, GIF (máximo 5MB)</p>
+                </div>
+
+                <!-- Campos Checkbox -->
+                <div class="form-group form-group-full">
+                    <div class="checkbox-group">
+                        <div class="field-container {% if form.comercial.errors %}has-error{% endif %}">
+                            {{ form.comercial }}
+                            <label for="{{ form.comercial.id_for_label }}" class="form-label mb-0">
+                                {{ form.comercial.label }}
+                            </label>
+                            {% for error in form.comercial.errors %}
+                                <div class="error-text">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="field-container {% if form.activo.errors %}has-error{% endif %}">
+                            {{ form.activo }}
+                            <label for="{{ form.activo.id_for_label }}" class="form-label mb-0">
+                                {{ form.activo.label }}
+                            </label>
+                            {% for error in form.activo.errors %}
+                                <div class="error-text">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save" id="btn-save">
+                    <i class="fas fa-save"></i>
+                    Guardar Medicamento
+                </button>
+                <a href="{% url 'doctor:medicamento_list' %}" class="btn btn-cancel" id="btn-cancel">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Inicializar cuando cargue la página
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('medicamentoForm');
+    const saveBtn = document.getElementById('btn-save');
+    
+    if (form && saveBtn) {
+        form.addEventListener('submit', function() {
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            saveBtn.disabled = true;
+        });
+    }
+
+    // Funcionalidad de validación en tiempo real para el precio
+    const precioInput = document.getElementById('{{ form.precio.id_for_label }}');
+    if (precioInput) {
+        precioInput.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            if (value < 0) {
+                this.value = 0;
+            }
+        });
+    }
+
+    // Funcionalidad de validación para cantidad
+    const cantidadInput = document.getElementById('{{ form.cantidad.id_for_label }}');
+    if (cantidadInput) {
+        cantidadInput.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            if (value < 0) {
+                this.value = 0;
+            }
+        });
+    }
+
+    // Funcionalidad para el campo de nombre
+    const nombreInput = document.getElementById('{{ form.nombre.id_for_label }}');
+    if (nombreInput) {
+        nombreInput.addEventListener('input', function() {
+            // Capitalizar primera letra
+            this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+        });
+    }
+
+    // Validación de archivo de imagen
+    const fotoInput = document.getElementById('{{ form.foto.id_for_label }}');
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                
+                if (file.size > maxSize) {
+                    alert('El archivo es demasiado grande. El tamaño máximo es 5MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Tipo de archivo no permitido. Use JPG, PNG o GIF.');
+                    this.value = '';
+                    return;
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

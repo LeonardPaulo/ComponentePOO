@@ -15,7 +15,7 @@
     }
     
     .header-section {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         color: white;
         border-radius: 15px;
         padding: 2rem;
@@ -58,7 +58,7 @@
         transform: translateY(-2px);
     }
     
-    .stat-card.total { border-left-color: #10b981; }
+    .stat-card.total { border-left-color: #8b5cf6; }
     .stat-card.current { border-left-color: #3b82f6; }
     .stat-card.showing { border-left-color: #8b5cf6; }
     
@@ -80,7 +80,7 @@
         font-size: 1.5rem;
     }
     
-    .stat-icon.total { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
     .stat-icon.current { background: linear-gradient(135deg, #3b82f6, #2563eb); }
     .stat-icon.showing { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
     
@@ -123,8 +123,8 @@
     }
     
     .search-input:focus {
-        border-color: #10b981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         outline: none;
     }
     
@@ -143,23 +143,23 @@
     }
     
     .btn-search {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     
     .btn-search:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
     
     .btn-create {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     
     .btn-create:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
@@ -216,7 +216,7 @@
         justify-content: center;
         color: white;
         font-size: 1.1rem;
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
     }
     
     .id-text {
@@ -251,16 +251,6 @@
         margin: 0;
         font-size: 0.8rem;
         color: #6b7280;
-    }
-    
-    .order-badge {
-        background: linear-gradient(135deg, #06b6d4, #0891b2);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        display: inline-block;
     }
     
     .actions-group {
@@ -300,6 +290,16 @@
         color: #6b7280;
     }
     
+    .order-badge {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+    }
+
     .empty-state i {
         font-size: 4rem;
         margin-bottom: 1rem;
@@ -350,9 +350,9 @@
     }
     
     .pagination .current {
-        background: #10b981;
+        background: #8b5cf6;
         color: white;
-        border-color: #10b981;
+        border-color: #8b5cf6;
     }
     
     .pagination a:first-child,
@@ -491,9 +491,8 @@
                 <div class="menu-header">
                     <div class="menu-id">
                         <div class="id-icon">
-                            <i class="fas fa-hashtag"></i>
+                            {{ forloop.counter0|add:page_obj.start_index }}
                         </div>
-                        <div class="id-text">#{{ item.id }}</div>
                     </div>
                     
                     <div class="menu-icon">
@@ -502,7 +501,7 @@
                     
                     <div class="menu-info">
                         <h4>{{ item.name }}</h4>
-                        <p>Elemento de navegación del sistema</p>
+                        <p>Menú de {{ item.name|lower }} del sistema</p>
                     </div>
                     
                     <div class="order-badge">
@@ -586,7 +585,7 @@
     <div class="actions-section">
         <div class="actions-buttons">
             <a href="{% url 'home' %}" class="btn btn-home">
-                <i class="fas fa-home"></i> Regresar a Página Principal
+                <i class="fas fa-home"></i> Inicio
             </a>
         </div>
     </div>

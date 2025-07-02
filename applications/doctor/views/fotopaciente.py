@@ -12,7 +12,7 @@ def fotopaciente_list(request):
     query = request.GET.get('q')
     if query:
         fotos = fotos.filter(paciente__apellidos__icontains=query)
-    paginator = Paginator(fotos, 10)
+    paginator = Paginator(fotos, 2)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {

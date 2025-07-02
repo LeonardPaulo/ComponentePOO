@@ -15,7 +15,7 @@
     }
     
     .header-section {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         color: white;
         border-radius: 15px;
         padding: 2rem;
@@ -58,7 +58,7 @@
         transform: translateY(-2px);
     }
     
-    .stat-card.total { border-left-color: #10b981; }
+    .stat-card.total { border-left-color: #8b5cf6; }
     .stat-card.current { border-left-color: #3b82f6; }
     .stat-card.showing { border-left-color: #8b5cf6; }
     
@@ -80,7 +80,7 @@
         font-size: 1.5rem;
     }
     
-    .stat-icon.total { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
     .stat-icon.current { background: linear-gradient(135deg, #3b82f6, #2563eb); }
     .stat-icon.showing { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
     
@@ -123,8 +123,8 @@
     }
     
     .search-input:focus {
-        border-color: #10b981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         outline: none;
     }
     
@@ -143,23 +143,23 @@
     }
     
     .btn-search {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     
     .btn-search:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
     
     .btn-create {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     
     .btn-create:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
@@ -196,10 +196,9 @@
     
     .servicio-header {
         display: grid;
-        grid-template-columns: auto auto 1fr auto;
+        grid-template-columns: auto auto 1fr auto auto;
         gap: 1.5rem;
         align-items: center;
-        margin-bottom: 1rem;
     }
     
     .servicio-id {
@@ -217,7 +216,8 @@
         justify-content: center;
         color: white;
         font-size: 1.1rem;
-        background: linear-gradient(135deg, #10b981, #059669);
+        font-weight: 600;
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
     }
     
     .id-text {
@@ -226,84 +226,50 @@
         font-size: 1rem;
     }
     
-    .service-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
+    .servicio-icon {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 1.5rem;
-        background: linear-gradient(135deg, #10b981, #059669);
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        border-radius: 12px;
     }
     
-    .service-info h4 {
+    .servicio-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .servicio-info h4 {
         margin: 0;
         font-size: 1.1rem;
         font-weight: 600;
         color: #1f2937;
     }
     
-    .service-info p {
+    .servicio-info p {
         margin: 0;
         font-size: 0.8rem;
         color: #6b7280;
     }
     
-    .service-meta {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        gap: 1rem;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #f3f4f6;
-    }
-    
-    .meta-item {
-        text-align: center;
-    }
-    
-    .meta-label {
-        font-size: 0.75rem;
-        color: #6b7280;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.25rem;
-    }
-    
-    .meta-value {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #1f2937;
-    }
-    
-    .badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-    
-    .badge-active {
-        background: #dcfce7;
-        color: #166534;
-    }
-    
-    .badge-inactive {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-    
-    .price-tag {
-        background: #dcfce7;
-        color: #166534;
+    .status-badge {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
         padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+    }
+    
+    .status-badge.active {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    .status-badge.inactive {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
     }
     
     .actions-group {
@@ -393,9 +359,9 @@
     }
     
     .pagination .current {
-        background: #10b981;
+        background: #8b5cf6;
         color: white;
-        border-color: #10b981;
+        border-color: #8b5cf6;
     }
     
     .pagination a:first-child,
@@ -452,11 +418,6 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
         }
-        
-        .service-meta {
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-        }
     }
 </style>
 
@@ -468,7 +429,7 @@
             {{ title }}
         </h1>
         <p class="header-subtitle">
-            Gestión completa de servicios adicionales del sistema médico
+            Gestión de servicios adicionales registrados en el sistema
         </p>
     </div>
 
@@ -485,7 +446,6 @@
                 </div>
             </div>
         </div>
-        
         <div class="stat-card current">
             <div class="stat-header">
                 <div>
@@ -497,7 +457,6 @@
                 </div>
             </div>
         </div>
-        
         <div class="stat-card showing">
             <div class="stat-header">
                 <div>
@@ -536,65 +495,40 @@
             <div class="servicio-header">
                 <div class="servicio-id">
                     <div class="id-icon">
-                        <i class="fas fa-hashtag"></i>
+                        {{ forloop.counter0|add:page_obj.start_index }}
                     </div>
-                    <div class="id-text">#{{ servicio.id }}</div>
                 </div>
                 
-                <div class="service-icon">
+                <div class="servicio-icon">
                     <i class="fas fa-stethoscope"></i>
                 </div>
                 
-                <div class="service-info">
+                <div class="servicio-info">
                     <h4>{{ servicio.nombre_servicio }}</h4>
-                    <p class="price-tag">${{ servicio.costo_servicio }}</p>
+                    <p>
+                        <strong>Costo:</strong> ${{ servicio.costo_servicio }}<br>
+                        <strong>Descripción:</strong> 
+                        {% if servicio.descripcion %}
+                            {{ servicio.descripcion|truncatechars:50 }}
+                        {% else %}
+                            Sin descripción
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="status-badge {% if servicio.activo %}active{% else %}inactive{% endif %}">
+                    {% if servicio.activo %}Activo{% else %}Inactivo{% endif %}
                 </div>
                 
                 <div class="actions-group">
                     <a href="{% url 'doctor:serviciosadicionales_update' servicio.id %}" class="btn btn-sm btn-edit" title="Editar">
                         <i class="fas fa-edit"></i>
                     </a>
-                    
                     <a href="#" class="btn btn-sm btn-delete" 
                        onclick="openDeleteModal('{{ servicio.id }}', '{{ servicio.nombre_servicio }}')"
                        title="Eliminar">
                         <i class="fas fa-trash"></i>
                     </a>
-                </div>
-            </div>
-            
-            <!-- Metadata del servicio -->
-            <div class="service-meta">
-                <div class="meta-item">
-                    <div class="meta-label">Estado</div>
-                    <div class="meta-value">
-                        {% if servicio.activo %}
-                            <span class="badge badge-active">Activo</span>
-                        {% else %}
-                            <span class="badge badge-inactive">Inactivo</span>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="meta-item">
-                    <div class="meta-label">Nombre</div>
-                    <div class="meta-value">{{ servicio.nombre_servicio|default:"No especificado" }}</div>
-                </div>
-                
-                <div class="meta-item">
-                    <div class="meta-label">Costo</div>
-                    <div class="meta-value">${{ servicio.costo_servicio }}</div>
-                </div>
-                
-                <div class="meta-item">
-                    <div class="meta-label">Descripción</div>
-                    <div class="meta-value">
-                        {% if servicio.descripcion %}
-                            {{ servicio.descripcion|truncatechars:30 }}
-                        {% else %}
-                            Sin descripción
-                        {% endif %}
-                    </div>
                 </div>
             </div>
         </div>
@@ -622,14 +556,11 @@
                     <i class="fas fa-chevron-left"></i> Anterior
                 </a>
             {% endif %}
-            
             {% for num in page_obj.paginator.page_range %}
                 {% if page_obj.number == num %}
                     <span class="current">{{ num }}</span>
                 {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}">
-                        {{ num }}
-                    </a>
+                    <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}">{{ num }}</a>
                 {% elif num == 1 %}
                     <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}">{{ num }}</a>
                     {% if page_obj.number > 4 %}<span>...</span>{% endif %}
@@ -638,7 +569,6 @@
                     <a href="?page={{ num }}{% if search %}&search={{ search }}{% endif %}">{{ num }}</a>
                 {% endif %}
             {% endfor %}
-            
             {% if page_obj.has_next %}
                 <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}">
                     Siguiente <i class="fas fa-chevron-right"></i>
@@ -655,7 +585,7 @@
     <div class="actions-section">
         <div class="actions-buttons">
             <a href="{% url 'home' %}" class="btn btn-home">
-                <i class="fas fa-home"></i> Regresar a Página Principal
+                <i class="fas fa-home"></i> Inicio
             </a>
         </div>
     </div>
@@ -667,7 +597,7 @@
 function openDeleteModal(id, nombre) {
     const deleteForm = document.getElementById('deleteForm');
     deleteForm.action = `{% url 'doctor:serviciosadicionales_delete' 0 %}`.replace('0', id);
-    document.getElementById('Description').textContent = `Servicio: ${nombre}`;
+    document.getElementById('Description').textContent = `Servicio #${id} - ${nombre}`;
     document.getElementById('deleteModal').classList.remove('hidden');
 }
 
@@ -682,7 +612,6 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-4px)';
         });
-        
         card.addEventListener('mouseleave', function() {
             this.style.transform = 'translateY(0)';
         });

@@ -13,14 +13,16 @@
         margin: 0 auto;
         padding: 2rem;
     }
+    
     .header-section {
-        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         color: white;
         border-radius: 15px;
         padding: 2rem;
         margin-bottom: 2rem;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     }
+    
     .header-title {
         font-size: 2.5rem;
         font-weight: 700;
@@ -29,17 +31,20 @@
         align-items: center;
         gap: 1rem;
     }
+    
     .header-subtitle {
         font-size: 1.1rem;
         opacity: 0.9;
         margin: 0;
     }
+    
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2rem;
     }
+    
     .stat-card {
         background: white;
         border-radius: 12px;
@@ -48,16 +53,22 @@
         border-left: 4px solid;
         transition: transform 0.2s ease;
     }
-    .stat-card:hover { transform: translateY(-2px); }
-    .stat-card.total { border-left-color: #10b981; }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .stat-card.total { border-left-color: #8b5cf6; }
     .stat-card.current { border-left-color: #3b82f6; }
     .stat-card.showing { border-left-color: #8b5cf6; }
+    
     .stat-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: 0.5rem;
     }
+    
     .stat-icon {
         width: 50px;
         height: 50px;
@@ -68,15 +79,18 @@
         color: white;
         font-size: 1.5rem;
     }
-    .stat-icon.total { background: linear-gradient(135deg, #059669, #10b981); }
+    
+    .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
     .stat-icon.current { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-    .stat-icon.showing { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+    .stat-icon.showing { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    
     .stat-number {
         font-size: 2.5rem;
         font-weight: 700;
         color: #1f2937;
         line-height: 1;
     }
+    
     .stat-label {
         font-size: 0.9rem;
         color: #6b7280;
@@ -84,6 +98,7 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
+    
     .controls-section {
         background: white;
         border-radius: 12px;
@@ -91,12 +106,14 @@
         margin-bottom: 2rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
+    
     .search-form {
         display: grid;
         grid-template-columns: 1fr auto auto;
         gap: 1rem;
         align-items: center;
     }
+    
     .search-input {
         padding: 0.875rem 1rem;
         border: 2px solid #e5e7eb;
@@ -104,11 +121,13 @@
         font-size: 1rem;
         transition: all 0.3s ease;
     }
+    
     .search-input:focus {
-        border-color: #10b981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         outline: none;
     }
+    
     .btn {
         padding: 0.875rem 1.5rem;
         border: none;
@@ -122,37 +141,45 @@
         cursor: pointer;
         font-size: 0.95rem;
     }
+    
     .btn-search {
-        background: linear-gradient(135deg, #059669, #10b981);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
+    
     .btn-search:hover {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
+    
     .btn-create {
         background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
+    
     .btn-create:hover {
         background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
+    
     .btn-home {
         background: linear-gradient(135deg, #3b82f6, #2563eb);
         color: white;
     }
+    
     .btn-home:hover {
         background: linear-gradient(135deg, #2563eb, #1d4ed8);
         color: white;
         transform: translateY(-1px);
     }
+    
     .tipos-grid {
         display: grid;
         gap: 1rem;
     }
+    
     .tipo-card {
         background: white;
         border-radius: 12px;
@@ -161,22 +188,25 @@
         transition: all 0.3s ease;
         border: 1px solid #f3f4f6;
     }
+    
     .tipo-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     }
+    
     .tipo-header {
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: auto auto 1fr auto auto;
         gap: 1.5rem;
         align-items: center;
-        margin-bottom: 1rem;
     }
+    
     .tipo-id {
         display: flex;
         align-items: center;
         gap: 0.75rem;
     }
+    
     .id-icon {
         width: 40px;
         height: 40px;
@@ -186,80 +216,130 @@
         justify-content: center;
         color: white;
         font-size: 1.1rem;
-        background: linear-gradient(135deg, #059669, #10b981);
+        font-weight: 600;
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
     }
+    
     .id-text {
         font-weight: 600;
         color: #1f2937;
         font-size: 1rem;
     }
+    
+    .tipo-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        border-radius: 12px;
+    }
+    
+    .tipo-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+    
     .tipo-info h4 {
         margin: 0;
         font-size: 1.1rem;
         font-weight: 600;
         color: #1f2937;
     }
+    
     .tipo-info p {
         margin: 0;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         color: #6b7280;
     }
+    
+    .status-badge {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+    }
+    
+    .status-badge.active {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    .status-badge.inactive {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    
     .actions-group {
         display: flex;
         gap: 0.5rem;
     }
+    
     .btn-sm {
         padding: 0.5rem 0.75rem;
         font-size: 0.8rem;
         border-radius: 6px;
     }
+    
     .btn-edit {
         background: #f59e0b;
         color: white;
     }
+    
     .btn-edit:hover {
         background: #d97706;
         color: white;
     }
+    
     .btn-delete {
         background: #ef4444;
         color: white;
     }
+    
     .btn-delete:hover {
         background: #dc2626;
         color: white;
     }
+    
     .empty-state {
         text-align: center;
         padding: 4rem 2rem;
         color: #6b7280;
     }
+    
     .empty-state i {
         font-size: 4rem;
         margin-bottom: 1rem;
         opacity: 0.5;
         color: #d1d5db;
     }
+    
     .empty-state h3 {
         font-size: 1.5rem;
         margin-bottom: 0.5rem;
         color: #374151;
     }
+    
     .empty-state p {
         font-size: 1rem;
         margin-bottom: 1.5rem;
     }
+    
     .pagination-wrapper {
         display: flex;
         justify-content: center;
         margin: 2rem 0;
     }
+    
     .pagination {
         display: inline-flex;
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         overflow: hidden;
     }
+    
     .pagination a, .pagination span {
         padding: 0.75rem 1rem;
         text-decoration: none;
@@ -272,25 +352,30 @@
         align-items: center;
         gap: 0.5rem;
     }
+    
     .pagination a:hover {
         background: #f9fafb;
         color: #374151;
     }
+    
     .pagination .current {
-        background: #10b981;
+        background: #8b5cf6;
         color: white;
-        border-color: #10b981;
+        border-color: #8b5cf6;
     }
+    
     .pagination a:first-child,
     .pagination span:first-child {
         border-top-left-radius: 8px;
         border-bottom-left-radius: 8px;
     }
+    
     .pagination a:last-child,
     .pagination span:last-child {
         border-top-right-radius: 8px;
         border-bottom-right-radius: 8px;
     }
+    
     .actions-section {
         text-align: center;
         margin: 2rem 0;
@@ -299,18 +384,40 @@
         border-radius: 12px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
+    
     .actions-buttons {
         display: flex;
         justify-content: center;
         gap: 1rem;
         flex-wrap: wrap;
     }
+    
     @media (max-width: 768px) {
-        .main-container { padding: 1rem; }
-        .header-title { font-size: 2rem; flex-direction: column; gap: 0.5rem; }
-        .search-form { grid-template-columns: 1fr; gap: 0.75rem; }
-        .tipo-header { grid-template-columns: 1fr; gap: 1rem; text-align: center; }
-        .stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .header-title {
+            font-size: 2rem;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .search-form {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        
+        .tipo-header {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
     }
 </style>
 
@@ -346,7 +453,7 @@
                     <div class="stat-label">Página Actual</div>
                 </div>
                 <div class="stat-icon current">
-                    <i class="fa-solid fa-list-ol"></i>
+                    <i class="fas fa-file-alt"></i>
                 </div>
             </div>
         </div>
@@ -357,7 +464,7 @@
                     <div class="stat-label">Mostrando</div>
                 </div>
                 <div class="stat-icon showing">
-                    <i class="fa-solid fa-eye"></i>
+                    <i class="fas fa-list"></i>
                 </div>
             </div>
         </div>
@@ -391,15 +498,23 @@
                 <div class="tipo-header">
                     <div class="tipo-id">
                         <div class="id-icon">
-                            {{ tipo_sangre.id }}
-                        </div>
-                        <div class="id-text">
-                            {{ tipo_sangre.tipo }}
+                            {{ forloop.counter0|add:page_obj.start_index }}
                         </div>
                     </div>
+                    
+                    <div class="tipo-icon">
+                        <i class="fa-solid fa-tint"></i>
+                    </div>
+                    
                     <div class="tipo-info">
-                        <h4>{{ tipo_sangre.descripcion|default:"N/A" }}</h4>
+                        <h4>{{ tipo_sangre.tipo }}</h4>
+                        <p>{{ tipo_sangre.descripcion|default:"Sin descripción" }}</p>
                     </div>
+                    
+                    <div class="status-badge active">
+                        Activo
+                    </div>
+                    
                     <div class="actions-group">
                         {% if permissions.change_tiposangre %}
                         <a href="{% url 'doctor:tiposangre_update' tipo_sangre.id %}" class="btn btn-sm btn-edit" title="Editar">

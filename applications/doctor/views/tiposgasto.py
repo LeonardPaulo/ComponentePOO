@@ -15,7 +15,7 @@ def tipogasto_list(request):
     if query:
         tipos_gasto = tipos_gasto.filter(nombre__icontains=query)
 
-    paginator = Paginator(tipos_gasto, 10)
+    paginator = Paginator(tipos_gasto, 2)  # Cambiado de 10 a 2
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

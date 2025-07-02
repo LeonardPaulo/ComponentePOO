@@ -13,6 +13,7 @@
         margin: 0 auto;
         padding: 2rem;
     }
+    
     .header-section {
         background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         color: white;
@@ -21,6 +22,7 @@
         margin-bottom: 2rem;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     }
+    
     .header-title {
         font-size: 2.5rem;
         font-weight: 700;
@@ -29,17 +31,20 @@
         align-items: center;
         gap: 1rem;
     }
+    
     .header-subtitle {
         font-size: 1.1rem;
         opacity: 0.9;
         margin: 0;
     }
+    
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2rem;
     }
+    
     .stat-card {
         background: white;
         border-radius: 12px;
@@ -48,16 +53,22 @@
         border-left: 4px solid;
         transition: transform 0.2s ease;
     }
-    .stat-card:hover { transform: translateY(-2px); }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+    
     .stat-card.total { border-left-color: #8b5cf6; }
     .stat-card.current { border-left-color: #3b82f6; }
-    .stat-card.showing { border-left-color: #10b981; }
+    .stat-card.showing { border-left-color: #8b5cf6; }
+    
     .stat-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: 0.5rem;
     }
+    
     .stat-icon {
         width: 50px;
         height: 50px;
@@ -68,15 +79,18 @@
         color: white;
         font-size: 1.5rem;
     }
+    
     .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
     .stat-icon.current { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-    .stat-icon.showing { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.showing { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    
     .stat-number {
         font-size: 2.5rem;
         font-weight: 700;
         color: #1f2937;
         line-height: 1;
     }
+    
     .stat-label {
         font-size: 0.9rem;
         color: #6b7280;
@@ -84,6 +98,7 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
+    
     .controls-section {
         background: white;
         border-radius: 12px;
@@ -91,12 +106,14 @@
         margin-bottom: 2rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
+    
     .search-form {
         display: grid;
         grid-template-columns: 1fr auto auto auto;
         gap: 1rem;
         align-items: center;
     }
+    
     .search-input {
         padding: 0.875rem 1rem;
         border: 2px solid #e5e7eb;
@@ -104,11 +121,13 @@
         font-size: 1rem;
         transition: all 0.3s ease;
     }
+    
     .search-input:focus {
         border-color: #8b5cf6;
         box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         outline: none;
     }
+    
     .btn {
         padding: 0.875rem 1.5rem;
         border: none;
@@ -122,46 +141,56 @@
         cursor: pointer;
         font-size: 0.95rem;
     }
+    
     .btn-search {
         background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
+    
     .btn-search:hover {
         background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
+    
     .btn-create {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
+    
     .btn-create:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
+    
     .btn-secondary {
         background: linear-gradient(135deg, #6b7280, #4b5563);
         color: white;
     }
+    
     .btn-secondary:hover {
         background: linear-gradient(135deg, #4b5563, #374151);
         color: white;
         transform: translateY(-1px);
     }
+    
     .btn-home {
         background: linear-gradient(135deg, #3b82f6, #2563eb);
         color: white;
     }
+    
     .btn-home:hover {
         background: linear-gradient(135deg, #2563eb, #1d4ed8);
         color: white;
         transform: translateY(-1px);
     }
+    
     .diagnosticos-grid {
         display: grid;
         gap: 1rem;
     }
+    
     .diagnostico-card {
         background: white;
         border-radius: 12px;
@@ -170,22 +199,25 @@
         transition: all 0.3s ease;
         border: 1px solid #f3f4f6;
     }
+    
     .diagnostico-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     }
+    
     .diagnostico-header {
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: auto auto 1fr auto auto;
         gap: 1.5rem;
         align-items: center;
-        margin-bottom: 1rem;
     }
+    
     .diagnostico-id {
         display: flex;
         align-items: center;
         gap: 0.75rem;
     }
+    
     .id-icon {
         width: 40px;
         height: 40px;
@@ -197,78 +229,127 @@
         font-size: 1.1rem;
         background: linear-gradient(135deg, #8b5cf6, #6366f1);
     }
+    
     .id-text {
         font-weight: 600;
         color: #1f2937;
         font-size: 1rem;
     }
+    
+    .diagnostico-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        border-radius: 12px;
+    }
+    
+    .diagnostico-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+    
     .diagnostico-info h4 {
         margin: 0;
         font-size: 1.1rem;
         font-weight: 600;
         color: #1f2937;
     }
+    
     .diagnostico-info p {
         margin: 0;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         color: #6b7280;
     }
+    
+    .status-badge {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+    }
+    
+    .status-badge.active {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    .status-badge.inactive {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    
     .actions-group {
         display: flex;
         gap: 0.5rem;
     }
+    
     .btn-sm {
         padding: 0.5rem 0.75rem;
         font-size: 0.8rem;
         border-radius: 6px;
     }
+    
     .btn-edit {
         background: #f59e0b;
         color: white;
     }
+    
     .btn-edit:hover {
         background: #d97706;
         color: white;
     }
+    
     .btn-delete {
         background: #ef4444;
         color: white;
     }
+    
     .btn-delete:hover {
         background: #dc2626;
         color: white;
     }
+    
     .empty-state {
         text-align: center;
         padding: 4rem 2rem;
         color: #6b7280;
     }
+    
     .empty-state i {
         font-size: 4rem;
         margin-bottom: 1rem;
         opacity: 0.5;
         color: #d1d5db;
     }
+    
     .empty-state h3 {
         font-size: 1.5rem;
         margin-bottom: 0.5rem;
         color: #374151;
     }
+    
     .empty-state p {
         font-size: 1rem;
         margin-bottom: 1.5rem;
     }
+    
     .pagination-wrapper {
         display: flex;
         justify-content: center;
         margin: 2rem 0;
     }
+    
     .pagination {
         display: inline-flex;
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         overflow: hidden;
     }
+    
     .pagination a, .pagination span {
         padding: 0.75rem 1rem;
         text-decoration: none;
@@ -281,25 +362,30 @@
         align-items: center;
         gap: 0.5rem;
     }
+    
     .pagination a:hover {
         background: #f9fafb;
         color: #374151;
     }
+    
     .pagination .current {
         background: #8b5cf6;
         color: white;
         border-color: #8b5cf6;
     }
+    
     .pagination a:first-child,
     .pagination span:first-child {
         border-top-left-radius: 8px;
         border-bottom-left-radius: 8px;
     }
+    
     .pagination a:last-child,
     .pagination span:last-child {
         border-top-right-radius: 8px;
         border-bottom-right-radius: 8px;
     }
+    
     .actions-section {
         text-align: center;
         margin: 2rem 0;
@@ -308,18 +394,40 @@
         border-radius: 12px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
+    
     .actions-buttons {
         display: flex;
         justify-content: center;
         gap: 1rem;
         flex-wrap: wrap;
     }
+    
     @media (max-width: 768px) {
-        .main-container { padding: 1rem; }
-        .header-title { font-size: 2rem; flex-direction: column; gap: 0.5rem; }
-        .search-form { grid-template-columns: 1fr; gap: 0.75rem; }
-        .diagnostico-header { grid-template-columns: 1fr; gap: 1rem; text-align: center; }
-        .stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .header-title {
+            font-size: 2rem;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .search-form {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        
+        .diagnostico-header {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
     }
 </style>
 
@@ -348,6 +456,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="stat-card current">
             <div class="stat-header">
                 <div>
@@ -359,6 +468,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="stat-card showing">
             <div class="stat-header">
                 <div>
@@ -401,25 +511,26 @@
                 <div class="diagnostico-header">
                     <div class="diagnostico-id">
                         <div class="id-icon">
-                            {{ forloop.counter }}
+                            {{ forloop.counter0|add:page_obj.start_index }}
                         </div>
                         <div class="id-text">
                             {{ diagnostico.codigo }}
                         </div>
                     </div>
+                    
+                    <div class="diagnostico-icon">
+                        <i class="fas fa-notes-medical"></i>
+                    </div>
+                    
                     <div class="diagnostico-info">
                         <h4>{{ diagnostico.descripcion }}</h4>
                         <p>{{ diagnostico.datos_adicionales|default:"Sin datos adicionales" }}</p>
-                        <span class="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold
-                            {% if diagnostico.activo %}
-                                bg-green-100 text-green-800 border border-green-300
-                            {% else %}
-                                bg-red-100 text-red-800 border border-red-300
-                            {% endif %}
-                        ">
-                            {% if diagnostico.activo %}Activo{% else %}Inactivo{% endif %}
-                        </span>
                     </div>
+                    
+                    <div class="status-badge {% if diagnostico.activo %}active{% else %}inactive{% endif %}">
+                        {% if diagnostico.activo %}Activo{% else %}Inactivo{% endif %}
+                    </div>
+                    
                     <div class="actions-group">
                         <a href="{% url 'doctor:diagnostico_update' diagnostico.id %}" class="btn btn-sm btn-edit" title="Editar">
                             <i class="fas fa-edit"></i>
@@ -457,11 +568,14 @@
                     <i class="fas fa-chevron-left"></i> Anterior
                 </a>
             {% endif %}
+            
             {% for num in page_obj.paginator.page_range %}
                 {% if page_obj.number == num %}
                     <span class="current">{{ num }}</span>
                 {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                        {{ num }}
+                    </a>
                 {% elif num == 1 %}
                     <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
                     {% if page_obj.number > 4 %}<span>...</span>{% endif %}
@@ -470,6 +584,7 @@
                     <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
                 {% endif %}
             {% endfor %}
+            
             {% if page_obj.has_next %}
                 <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
                     Siguiente <i class="fas fa-chevron-right"></i>
@@ -513,6 +628,7 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-4px)';
         });
+        
         card.addEventListener('mouseleave', function() {
             this.style.transform = 'translateY(0)';
         });

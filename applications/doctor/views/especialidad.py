@@ -11,7 +11,7 @@ class EspecialidadListView(LoginRequiredMixin, PermissionRequiredMixin, ListView
     model = Especialidad
     template_name = "doctor/especialidad/list.html"
     context_object_name = "especialidades"
-    paginate_by = 10 # Opcional: para paginación
+    paginate_by = 2 # Opcional: para paginación
     permission_required = 'core.view_especialidad' # Permiso necesario para ver
 
 class EspecialidadCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):

@@ -15,7 +15,7 @@
     }
     
     .header-section {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         color: white;
         border-radius: 15px;
         padding: 2rem;
@@ -58,7 +58,7 @@
         transform: translateY(-2px);
     }
     
-    .stat-card.total { border-left-color: #10b981; }
+    .stat-card.total { border-left-color: #8b5cf6; }
     .stat-card.current { border-left-color: #3b82f6; }
     .stat-card.showing { border-left-color: #8b5cf6; }
     
@@ -80,7 +80,7 @@
         font-size: 1.5rem;
     }
     
-    .stat-icon.total { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
     .stat-icon.current { background: linear-gradient(135deg, #3b82f6, #2563eb); }
     .stat-icon.showing { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
     
@@ -109,7 +109,7 @@
     
     .search-form {
         display: grid;
-        grid-template-columns: 1fr auto auto auto;
+        grid-template-columns: 1fr auto auto auto auto;
         gap: 1rem;
         align-items: center;
     }
@@ -123,8 +123,8 @@
     }
     
     .search-input:focus {
-        border-color: #10b981;
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         outline: none;
     }
     
@@ -143,23 +143,23 @@
     }
     
     .btn-search {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     
     .btn-search:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
     
     .btn-create {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     
     .btn-create:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
@@ -227,8 +227,9 @@
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 1.1rem;
-        background: linear-gradient(135deg, #10b981, #059669);
+        font-size: 1.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
     }
     
     .id-text {
@@ -248,14 +249,14 @@
         height: 60px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #10b981;
+        border: 3px solid #8b5cf6;
     }
     
     .patient-photo .photo-placeholder {
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -342,6 +343,68 @@
         display: inline-block;
     }
     
+    .permissions-toggle {
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .permissions-toggle:hover {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        transform: translateY(-1px);
+    }
+    
+    .permissions-list {
+        display: none;
+        margin-top: 1rem;
+    }
+    
+    .permissions-list.show {
+        display: block;
+    }
+    
+    .permissions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .permission-tag {
+        background: #f3f4f6;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #374151;
+    }
+    
+    .permissions-count {
+        background: linear-gradient(135deg, #8b5cf6, #6366f1) !important;
+    }
+    
+    .actions-section {
+        text-align: center;
+        margin: 2rem 0;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .actions-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
     .empty-state {
         text-align: center;
         padding: 4rem 2rem;
@@ -398,9 +461,9 @@
     }
     
     .pagination .current {
-        background: #10b981;
+        background: #8b5cf6;
         color: white;
-        border-color: #10b981;
+        border-color: #8b5cf6;
     }
     
     .pagination a:first-child,
@@ -413,73 +476,6 @@
     .pagination span:last-child {
         border-top-right-radius: 8px;
         border-bottom-right-radius: 8px;
-    }
-    
-    .actions-section {
-        text-align: center;
-        margin: 2rem 0;
-        padding: 2rem;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .actions-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    /* Estilos específicos para permisos */
-    .permissions-toggle {
-        background: #f8fafc;
-        color: #374151;
-        border: 1px solid #e5e7eb;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .permissions-toggle:hover {
-        background: #f1f5f9;
-        color: #1f2937;
-    }
-    
-    .permissions-list {
-        display: none;
-        margin-top: 1rem;
-        padding: 1rem;
-        background: #f8fafc;
-        border-radius: 8px;
-        border: 1px solid #e5e7eb;
-    }
-    
-    .permissions-list.show {
-        display: block;
-    }
-    
-    .permissions-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 0.5rem;
-    }
-    
-    .permission-tag {
-        background: #dbeafe;
-        color: #1e40af;
-        padding: 0.25rem 0.75rem;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
     }
     
     @media (max-width: 768px) {
@@ -512,6 +508,10 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
         }
+        
+        .actions-buttons {
+            flex-direction: column;
+        }
     }
 </style>
 
@@ -532,7 +532,7 @@
         <div class="stat-card total">
             <div class="stat-header">
                 <div>
-                    <div class="stat-number">{{ stats.total_assignments|default:0 }}</div>
+                    <div class="stat-number">{{ page_obj.paginator.count|default:0 }}</div>
                     <div class="stat-label">Total Asignaciones</div>
                 </div>
                 <div class="stat-icon total">
@@ -544,11 +544,11 @@
         <div class="stat-card current">
             <div class="stat-header">
                 <div>
-                    <div class="stat-number">{{ stats.unique_groups|default:0 }}</div>
-                    <div class="stat-label">Grupos Únicos</div>
+                    <div class="stat-number">{{ page_obj.number|default:1 }} de {{ page_obj.paginator.num_pages|default:1 }}</div>
+                    <div class="stat-label">Página Actual</div>
                 </div>
                 <div class="stat-icon current">
-                    <i class="fas fa-users"></i>
+                    <i class="fas fa-file-alt"></i>
                 </div>
             </div>
         </div>
@@ -556,11 +556,11 @@
         <div class="stat-card showing">
             <div class="stat-header">
                 <div>
-                    <div class="stat-number">{{ stats.total_permissions|default:0 }}</div>
-                    <div class="stat-label">Permisos Asignados</div>
+                    <div class="stat-number">{{ GroupModulePermissions|length|default:0 }}</div>
+                    <div class="stat-label">Mostrando</div>
                 </div>
                 <div class="stat-icon showing">
-                    <i class="fas fa-key"></i>
+                    <i class="fas fa-list"></i>
                 </div>
             </div>
         </div>
@@ -595,9 +595,8 @@
                 <div class="paciente-header">
                     <div class="paciente-id">
                         <div class="id-icon">
-                            <i class="fas fa-hashtag"></i>
+                            {{ forloop.counter0|add:page_obj.start_index }}
                         </div>
-                        <div class="id-text">#{{ assignment.id }}</div>
                     </div>
                     
                     <div class="patient-photo">
@@ -635,7 +634,7 @@
                         
                         <h5 style="margin-top: 1rem;">Permisos Asignados</h5>
                         <div class="detail-content">
-                            <div class="permissions-count" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; font-weight: 500; display: inline-block;">
+                            <div class="permissions-count" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; font-weight: 500; display: inline-block;">
                                 {{ assignment.permissions.count }} 
                                 {% if assignment.permissions.count == 1 %}permiso{% else %}permisos{% endif %}
                             </div>
@@ -683,11 +682,52 @@
         {% endif %}
     </div>
 
+    <!-- Paginación -->
+    {% if page_obj and page_obj.paginator.num_pages > 1 %}
+    <div class="pagination-wrapper">
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    <i class="fas fa-angle-double-left"></i> Primera
+                </a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="current">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                        {{ num }}
+                    </a>
+                {% elif num == 1 %}
+                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                    {% if page_obj.number > 4 %}<span>...</span>{% endif %}
+                {% elif num == page_obj.paginator.num_pages %}
+                    {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}<span>...</span>{% endif %}
+                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    Siguiente <i class="fas fa-chevron-right"></i>
+                </a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    Última <i class="fas fa-angle-double-right"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Acciones Adicionales -->
     <div class="actions-section">
         <div class="actions-buttons">
             <a href="{% url 'home' %}" class="btn btn-home">
-                <i class="fas fa-home"></i> Regresar a Página Principal
+                <i class="fas fa-home"></i> Inicio
             </a>
         </div>
     </div>

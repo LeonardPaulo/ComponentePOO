@@ -12,6 +12,7 @@ class PagoListView(PermissionMixin, ListViewMixin, ListView):
     model = Pago
     context_object_name = 'pagos'
     permission_required = 'view_pago'
+    paginate_by = 2
 
     def get_queryset(self):
         q = self.request.GET.get('q')

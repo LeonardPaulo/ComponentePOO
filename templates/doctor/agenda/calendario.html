@@ -1,48 +1,249 @@
 {% extends 'home.html' %}
+{% load static %}
+
 {% block content %}
-<div class="flex justify-between mb-4">
-    <a href="?fecha={{ semana_anterior }}" class="px-4 py-2 bg-blue-200 rounded hover:bg-blue-300">&larr; Semana anterior</a>
-    <span class="font-bold text-lg">Semana de {{ hoy|date:"d/m/Y" }}</span>
-    <a href="?fecha={{ semana_siguiente }}" class="px-4 py-2 bg-blue-200 rounded hover:bg-blue-300">Semana siguiente &rarr;</a>
-</div>
-<div class="mb-6 flex justify-end">
-    <a href="{% url 'doctor:cita_list' %}" class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-full shadow transition-all duration-300">
-        <i class="fa-solid fa-list mr-2"></i>Volver a la Lista de Citas
-    </a>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-7 gap-4">
-    {% for dia in agenda %}
-    <div class="bg-white rounded shadow p-2">
-        <h3 class="font-bold text-center">{{ dia.dia }}<br><span class="text-xs">{{ dia.fecha }}</span></h3>
-        <ul>
-            {% if dia.intervalos %}
-                {% for intervalo in dia.intervalos %}
-                <li class="my-1">
-                    {% if intervalo.estado == 'descanso' %}
-                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded block text-center opacity-80">
-                            {{ intervalo.inicio }} - {{ intervalo.fin }} (Descanso)
-                        </span>
-                    {% elif intervalo.estado == 'ocupado' %}
-                        <span class="bg-red-200 text-red-800 px-2 py-1 rounded block text-center cursor-not-allowed opacity-60">
-                            {{ intervalo.inicio }} - {{ intervalo.fin }} (Ocupado)
-                        </span>
-                    {% elif intervalo.estado == 'atendido' %}
-                        <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded block text-center cursor-not-allowed opacity-60">
-                            {{ intervalo.inicio }} - {{ intervalo.fin }} (Atendido)
-                        </span>
-                    {% else %}
-                        <a href="{% url 'doctor:cita_create' %}?fecha={{ dia.fecha }}&hora={{ intervalo.inicio }}"
-                           class="bg-green-200 text-green-800 px-2 py-1 rounded block text-center hover:bg-green-300 transition">
-                            {{ intervalo.inicio }} - {{ intervalo.fin }} (Disponible)
-                        </a>
-                    {% endif %}
-                </li>
-                {% endfor %}
-            {% else %}
-                <li class="my-1 text-center text-gray-400">Sin horario disponible</li>
-            {% endif %}
-        </ul>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .calendar-header {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    .calendar-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        gap: 2rem;
+        margin-bottom: 1rem;
+    }
+    .calendar-nav-btn {
+        padding: 0.85rem 2rem;
+        background: rgba(255,255,255,0.13);
+        color: #fff;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        transition: background 0.2s, transform 0.2s;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .calendar-nav-btn:hover {
+        background: rgba(255,255,255,0.22);
+        color: #fff;
+        transform: translateY(-2px) scale(1.03);
+    }
+    .calendar-title {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 10px;
+        box-shadow: none;
+    }
+    .calendar-title i {
+        font-size: 1.5rem;
+        color: #fff;
+        background: rgba(16,185,129,0.7);
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1.5rem;
+    }
+    @media (min-width: 768px) {
+        .calendar-grid {
+            grid-template-columns: repeat(7, 1fr);
+        }
+    }
+    .calendar-day {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        padding: 1.5rem 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        min-height: 220px;
+    }
+    .calendar-day h3 {
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    .calendar-day .text-xs {
+        font-size: 0.85rem;
+        color: #6b7280;
+        font-weight: 400;
+    }
+    .calendar-day ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        flex: 1;
+    }
+    .calendar-day li {
+        margin: 0.4rem 0;
+    }
+    .intervalo-descanso {
+        background: #fef9c3;
+        color: #b45309;
+        padding: 0.3rem 0.5rem;
+        border-radius: 6px;
+        text-align: center;
+        opacity: 0.85;
+        font-size: 0.98rem;
+        font-weight: 500;
+    }
+    .intervalo-ocupado {
+        background: #fee2e2;
+        color: #b91c1c;
+        padding: 0.3rem 0.5rem;
+        border-radius: 6px;
+        text-align: center;
+        opacity: 0.7;
+        font-size: 0.98rem;
+        font-weight: 500;
+        cursor: not-allowed;
+    }
+    .intervalo-atendido {
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 0.3rem 0.5rem;
+        border-radius: 6px;
+        text-align: center;
+        opacity: 0.7;
+        font-size: 0.98rem;
+        font-weight: 500;
+        cursor: not-allowed;
+    }
+    .intervalo-disponible {
+        background: #bbf7d0;
+        color: #166534;
+        padding: 0.3rem 0.5rem;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.98rem;
+        font-weight: 500;
+        transition: background 0.2s, color 0.2s;
+        text-decoration: none;
+        display: block;
+    }
+    .intervalo-disponible:hover {
+        background: #4ade80;
+        color: #065f46;
+    }
+    .sin-horario {
+        color: #9ca3af;
+        text-align: center;
+        font-size: 0.98rem;
+        margin-top: 1.5rem;
+    }
+    .calendar-actions {
+        display: flex;
+        justify-content: center;
+        margin: 2.5rem 0 0 0;
+    }
+    .btn-lista-citas {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: #fff;
+        padding: 0.85rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background 0.2s;
+        text-decoration: none;
+        font-size: 1.1rem;
+    }
+    .btn-lista-citas:hover {
+        background: linear-gradient(135deg, #4b5563, #374151);
+        color: #fff;
+        transform: translateY(-2px) scale(1.03);
+    }
+</style>
+
+<div class="main-container">
+    <div class="calendar-header">
+        <div class="calendar-nav">
+            <a href="?fecha={{ semana_anterior }}" class="calendar-nav-btn">
+                <i class="fa-solid fa-arrow-left"></i> Semana anterior
+            </a>
+            <span class="calendar-title">
+                <i class="fa-solid fa-calendar-week"></i>
+                Semana de {{ hoy|date:"d/m/Y" }}
+            </span>
+            <a href="?fecha={{ semana_siguiente }}" class="calendar-nav-btn">
+                Semana siguiente <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
     </div>
-    {% endfor %}
+    <div class="calendar-grid">
+        {% for dia in agenda %}
+        <div class="calendar-day">
+            <h3>{{ dia.dia }}<br><span class="text-xs">{{ dia.fecha }}</span></h3>
+            <ul>
+                {% if dia.intervalos %}
+                    {% for intervalo in dia.intervalos %}
+                    <li>
+                        {% if intervalo.estado == 'descanso' %}
+                            <span class="intervalo-descanso">
+                                {{ intervalo.inicio }} - {{ intervalo.fin }} (Descanso)
+                            </span>
+                        {% elif intervalo.estado == 'ocupado' %}
+                            <span class="intervalo-ocupado">
+                                {{ intervalo.inicio }} - {{ intervalo.fin }} (Ocupado)
+                            </span>
+                        {% elif intervalo.estado == 'atendido' %}
+                            <span class="intervalo-atendido">
+                                {{ intervalo.inicio }} - {{ intervalo.fin }} (Atendido)
+                            </span>
+                        {% else %}
+                            <a href="{% url 'doctor:cita_create' %}?fecha={{ dia.fecha|date:'Y-m-d' }}&hora={{ intervalo.inicio }}" class="intervalo-disponible">
+                                {{ intervalo.inicio }} - {{ intervalo.fin }} (Disponible)
+                            </a>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="sin-horario">Sin horario disponible</li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="calendar-actions">
+        <a href="{% url 'doctor:cita_list' %}" class="btn-lista-citas">
+            <i class="fa-solid fa-list"></i> Volver a la Lista de Citas
+        </a>
+    </div>
 </div>
 {% endblock %}

@@ -13,7 +13,7 @@ class TipoMedicamentoListView(LoginRequiredMixin, PermissionRequiredMixin, ListV
     model = TipoMedicamento
     template_name = 'doctor/tipomedicamento/list.html'
     context_object_name = 'tipos_medicamento' # Cambiado para ser más descriptivo
-    paginate_by = 10
+    paginate_by = 2
     permission_required = ('core.view_tipomedicamento',)
 
     def get_context_data(self, **kwargs):

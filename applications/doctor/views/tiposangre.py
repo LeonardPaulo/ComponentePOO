@@ -21,7 +21,7 @@ def tiposangre_list(request):
     if query:
         tipos_sangre = tipos_sangre.filter(tipo__icontains=query)
 
-    paginator = Paginator(tipos_sangre, 10)
+    paginator = Paginator(tipos_sangre, 2)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

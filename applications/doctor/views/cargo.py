@@ -15,7 +15,7 @@ class CargoListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Cargo
     template_name = 'doctor/cargo/list.html'
     context_object_name = 'cargos' # Nombre de la variable en el template
-    paginate_by = 10 
+    paginate_by = 2 # Número de elementos por página 
     permission_required = 'core.view_cargo' # Permiso requerido para ver la lista
 
     def get_queryset(self):

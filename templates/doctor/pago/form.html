@@ -1,157 +1,244 @@
 {% extends 'home.html' %}
-{% block title %}{{ title|default:"Registrar Pago" }}{% endblock %}
+{% load static %}
+
+{% block title %}
+    {% if object %}Editar Pago{% else %}Registrar Pago{% endif %}
+{% endblock %}
 
 {% block content %}
-    {% load static %}
-    {% include 'fragments/messages.html' %}
-    <section class="bg-gray-50 mt-2 flex justify-center items-center min-h-[calc(100vh-100px)]">
-        <div class="w-full max-w-2xl bg-white rounded-lg shadow-xl p-8 border-2 border-black transform transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl"
-            data-aos="fade-up" data-aos-delay="200">
-            <h1 class="text-center rounded-2xl bg-blue-100 px-2 py-1 text-blue-800 uppercase text-3xl mb-6 font-bold">
-                {{ grabar|default:"Registrar Pago" }}
-            </h1>
-            
-            <form method="post" enctype="multipart/form-data" class="space-y-6">
-                {% csrf_token %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-                {% if form.non_field_errors %}
-                    <div class="bg-red-100 text-red-700 p-2 rounded mb-4 text-center font-semibold">
-                        {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
+<style>
+    .main-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .form-section {
+        background: #fff;
+        border-radius: 15px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+    .form-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #059669;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .form-title i {
+        color: #059669;
+        font-size: 1.5rem;
+        background: #e0f2fe;
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    input[type="text"], input[type="number"], input[type="date"], input[type="datetime-local"], textarea, select {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 1rem;
+        transition: border-color 0.2s, background 0.2s;
+        margin-bottom: 0.5rem;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, input[type="datetime-local"]:focus, textarea:focus, select:focus {
+        border-color: #10b981;
+        background: #fff;
+        outline: none;
+    }
+    input[type="checkbox"] {
+        accent-color: #10b981;
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-right: 0.5rem;
+    }
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .btn {
+        padding: 0.9rem 2.2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-save {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+    }
+    .btn-save:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+    }
+    .btn-cancel {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: #fff;
+    }
+    .btn-cancel:hover {
+        background: linear-gradient(135deg, #4b5563, #374151);
+        transform: translateY(-1px);
+    }
+    .error-text {
+        color: #ef4444;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    .vertical-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .metodo-icon {
+        font-size: 1.7rem;
+        margin-right: 0.7rem;
+        vertical-align: middle;
+    }
+    .metodo-icon-efectivo { color: #f59e42; }
+    .metodo-icon-tarjeta { color: #2563eb; }
+    .metodo-icon-transferencia { color: #059669; }
+    .metodo-icon-paypal { color: #0070ba; }
+    .metodo-icon-otro { color: #6b7280; }
+</style>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.atencion.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.atencion.label }}
-                        </label>
-                        {{ form.atencion }}
-                        {% if form.atencion.errors %}
-                            {% for error in form.atencion.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.metodo_pago.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.metodo_pago.label }}
-                        </label>
-                        {{ form.metodo_pago }}
-                        {% if form.metodo_pago.errors %}
-                            {% for error in form.metodo_pago.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.monto_total.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.monto_total.label }}
-                        </label>
-                        {{ form.monto_total }}
-                        {% if form.monto_total.errors %}
-                            {% for error in form.monto_total.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.estado.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.estado.label }}
-                        </label>
-                        {{ form.estado }}
-                        {% if form.estado.errors %}
-                            {% for error in form.estado.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.fecha_pago.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.fecha_pago.label }}
-                        </label>
-                        {{ form.fecha_pago }}
-                        {% if form.fecha_pago.errors %}
-                            {% for error in form.fecha_pago.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.nombre_pagador.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.nombre_pagador.label }}
-                        </label>
-                        {{ form.nombre_pagador }}
-                        {% if form.nombre_pagador.errors %}
-                            {% for error in form.nombre_pagador.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.referencia_externa.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.referencia_externa.label }}
-                        </label>
-                        {{ form.referencia_externa }}
-                        {% if form.referencia_externa.errors %}
-                            {% for error in form.referencia_externa.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.evidencia_pago.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.evidencia_pago.label }}
-                        </label>
-                        {{ form.evidencia_pago }}
-                        {% if form.evidencia_pago.errors %}
-                            {% for error in form.evidencia_pago.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
+<div class="main-container">
+    <div class="form-section">
+        <div class="form-title">
+            <i class="fa-solid fa-money-bill-wave"></i>
+            {% if object %}Editar Pago{% else %}Registrar Pago{% endif %}
+        </div>
+        <form method="post" enctype="multipart/form-data" class="vertical-form" autocomplete="off">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="error-text mb-4">
+                    {{ form.non_field_errors }}
                 </div>
+            {% endif %}
 
-                <div class="border border-black rounded-lg p-4">
-                    <label for="{{ form.observaciones.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                        {{ form.observaciones.label }}
-                    </label>
-                    {{ form.observaciones }}
-                    {% if form.observaciones.errors %}
-                        {% for error in form.observaciones.errors %}
-                            <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-                
-                <div class="border border-black rounded-lg p-4">
-                    <label for="{{ form.activo.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                        {{ form.activo.label }}
-                    </label>
-                    {{ form.activo }}
-                    {% if form.activo.errors %}
-                        {% for error in form.activo.errors %}
-                            <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
-                </div>
+            <div class="form-group">
+                <label for="{{ form.atencion.id_for_label }}" class="form-label">
+                    {{ form.atencion.label }}
+                </label>
+                {{ form.atencion }}
+                {% for error in form.atencion.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
 
-                <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 justify-center mt-4">
-                    <button type="submit"
-                        class="w-full md:w-auto px-6 py-3 bg-blue-700 text-white font-medium rounded-full shadow-lg hover:bg-blue-800 transition duration-300 transform hover:scale-105">
-                        Guardar Pago
-                    </button>
-                    <a href="{{ back_url|default:request.META.HTTP_REFERER }}"
-                        class="w-full md:w-auto px-6 py-3 bg-gray-600 text-white font-medium rounded-full shadow-lg hover:bg-gray-700 transition duration-300 transform hover:scale-105 text-center">
-                        Cancelar
-                    </a>
-                </div>
+            <div class="form-group">
+                <label for="{{ form.metodo_pago.id_for_label }}" class="form-label">
+                    {{ form.metodo_pago.label }}
+                </label>
+                <span id="icono-metodo-pago" style="display:inline-block;vertical-align:middle;"></span>
+                {{ form.metodo_pago }}
+                {% for error in form.metodo_pago.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.monto_total.id_for_label }}" class="form-label">
+                    {{ form.monto_total.label }}
+                </label>
+                {{ form.monto_total }}
+                {% for error in form.monto_total.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.estado.id_for_label }}" class="form-label">
+                    {{ form.estado.label }}
+                </label>
+                {{ form.estado }}
+                {% for error in form.estado.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.fecha_pago.id_for_label }}" class="form-label">
+                    {{ form.fecha_pago.label }}
+                </label>
+                {{ form.fecha_pago }}
+                {% for error in form.fecha_pago.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.nombre_pagador.id_for_label }}" class="form-label">
+                    {{ form.nombre_pagador.label }}
+                </label>
+                {{ form.nombre_pagador }}
+                {% for error in form.nombre_pagador.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.referencia_externa.id_for_label }}" class="form-label">
+                    {{ form.referencia_externa.label }}
+                </label>
+                {{ form.referencia_externa }}
+                {% for error in form.referencia_externa.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.evidencia_pago.id_for_label }}" class="form-label">
+                    {{ form.evidencia_pago.label }}
+                </label>
+                {{ form.evidencia_pago }}
+                {% for error in form.evidencia_pago.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.observaciones.id_for_label }}" class="form-label">
+                    {{ form.observaciones.label }}
+                </label>
+                {{ form.observaciones }}
+                {% for error in form.observaciones.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group flex items-center">
+                {{ form.activo }}
+                <label for="{{ form.activo.id_for_label }}" class="form-label mb-0">Activo</label>
+                {% for error in form.activo.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i>
+                    {% if object %}Actualizar{% else %}Guardar{% endif %}
+                </button>
+                <a href="{{ back_url|default:request.META.HTTP_REFERER }}" class="btn btn-cancel">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Modal PayPal -->
 <div id="paypal-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-lg shadow-lg p-6 relative w-full max-w-md">
@@ -161,6 +248,28 @@
 </div>
 
 <script>
+function mostrarIconoMetodo() {
+    const select = document.getElementById('{{ form.metodo_pago.id_for_label }}');
+    const iconSpan = document.getElementById('icono-metodo-pago');
+    let iconHtml = '';
+    switch (select.value) {
+        case 'efectivo':
+            iconHtml = '<i class="fa-solid fa-money-bill-wave metodo-icon metodo-icon-efectivo"></i>';
+            break;
+        case 'tarjeta':
+            iconHtml = '<i class="fa-solid fa-credit-card metodo-icon metodo-icon-tarjeta"></i>';
+            break;
+        case 'transferencia':
+            iconHtml = '<i class="fa-solid fa-building-columns metodo-icon metodo-icon-transferencia"></i>';
+            break;
+        case 'paypal':
+            iconHtml = '<i class="fa-brands fa-paypal metodo-icon metodo-icon-paypal"></i>';
+            break;
+        default:
+            iconHtml = '<i class="fa-solid fa-question metodo-icon metodo-icon-otro"></i>';
+    }
+    iconSpan.innerHTML = iconHtml;
+}
 function abrirPaypalModal() {
     document.getElementById('paypal-modal').classList.remove('hidden');
     document.getElementById('paypal-button-container').innerHTML = '';
@@ -194,6 +303,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const estadoSelect = document.getElementById('{{ form.estado.id_for_label }}');
     const guardarBtn = document.querySelector('button[type="submit"]');
     if (metodoPagoSelect && estadoSelect && guardarBtn) {
+        mostrarIconoMetodo();
+        metodoPagoSelect.addEventListener('change', mostrarIconoMetodo);
         guardarBtn.addEventListener('click', function(e) {
             if (metodoPagoSelect.value === 'paypal' && estadoSelect.value === 'pagado') {
                 e.preventDefault();
@@ -205,7 +316,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script src="https://www.paypal.com/sdk/js?client-id={{ PAYPAL_CLIENT_ID }}&currency=USD"></script>
-            </form>
-        </div>
-    </section>
 {% endblock %}

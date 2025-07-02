@@ -1,65 +1,191 @@
-{# applications/doctor/templates/doctor/marcamedicamento/form.html #}
-
-{% extends 'home.html' %} {# Asegúrate de que 'home.html' sea tu plantilla base #}
-{% load static %} {# Para cargar archivos estáticos si los necesitas #}
+{% extends 'home.html' %}
+{% load static %}
 
 {% block title %}
-    {% if form.instance.pk %}Editar Marca de Medicamento{% else %}Añadir Marca de Medicamento{% endif %}
+    {% if object %}Editar Marca de Medicamento{% else %}Nueva Marca de Medicamento{% endif %}
 {% endblock %}
 
 {% block content %}
-<section class="dark:bg-principal mt-4">
-    <div class="flex justify-center items-center h-full">
-        <div class="w-full max-w-lg bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-6">
-                {% if form.instance.pk %}Editar Marca de Medicamento{% else %}Añadir Marca de Medicamento{% endif %}
-            </h1>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-            <form method="post" class="space-y-4">
-                {% csrf_token %} {# Token CSRF para seguridad en formularios #}
+<style>
+    .main-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .form-section {
+        background: #fff;
+        border-radius: 15px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+    .form-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4f46e5;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .form-title i {
+        color: #059669;
+        font-size: 1.5rem;
+        background: #e0f2fe;
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    input[type="text"], textarea {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 1rem;
+        transition: border-color 0.2s, background 0.2s;
+        margin-bottom: 0.5rem;
+    }
+    input[type="text"]:focus, textarea:focus {
+        border-color: #10b981;
+        background: #fff;
+        outline: none;
+    }
+    input[type="checkbox"] {
+        accent-color: #10b981;
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-right: 0.5rem;
+    }
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .btn {
+        padding: 0.9rem 2.2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-save {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+    }
+    .btn-save:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+    }
+    .btn-cancel {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: #fff;
+    }
+    .btn-cancel:hover {
+        background: linear-gradient(135deg, #4b5563, #374151);
+        transform: translateY(-1px);
+    }
+    .error-text {
+        color: #ef4444;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    .vertical-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+</style>
 
-                {# Itera sobre los campos del formulario para renderizarlos dinámicamente #}
-                {% for field in form %}
-                <div class="mb-4">
-                    {# Si el campo NO es el checkbox 'activo', renderiza la etiqueta arriba #}
-                    {% if field.name != 'activo' %}
-                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {{ field.label }}
-                        </label>
-                        {{ field }} {# Esto renderiza el widget del campo con sus clases y atributos #}
-                    {% else %}
-                        {# Para el campo 'activo', renderiza el checkbox y su etiqueta en la misma línea #}
-                        <div class="flex items-center">
-                            {{ field }} {# Esto renderiza el input checkbox HTML con sus clases y el estado checked #}
-                            <label for="{{ field.id_for_label }}" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {{ field.label }}
-                            </label>
-                        </div>
-                    {% endif %}
-                    
-                    {# Mostrar texto de ayuda y errores de validación para cada campo #}
-                    {% if field.help_text %}
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ field.help_text }}</p>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-                    {% endfor %}
-                </div>
-                {% endfor %}
-                
-                {# Botones de Guardar y Cancelar #}
-                <div class="flex justify-between items-center mt-6">
-                    <button type="submit"
-                        class="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:bg-blue-700">
-                        Guardar Marca de Medicamento
-                    </button>
-                    <button type="button" onclick="window.history.back()" {# Vuelve a la página anterior #}
-                        class="px-6 py-2 leading-5 text-gray-700 transition-colors duration-200 transform bg-gray-300 rounded-md hover:bg-gray-400 focus:outline-none focus:bg-gray-400 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-700">
-                        Cancelar
-                    </button>
-                </div>
-            </form>
-        </div>
+<div id="msg-success" style="display:none;" class="mb-6">
+    <div class="bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded flex items-center gap-2" role="alert">
+        <i class="fas fa-check-circle"></i>
+        <span id="msg-success-text"></span>
     </div>
-</section>
+</div>
+<div id="msg-delete" style="display:none;" class="mb-6">
+    <div class="bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded flex items-center gap-2" role="alert">
+        <i class="fas fa-trash"></i>
+        <span id="msg-delete-text"></span>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="form-section">
+        <div class="form-title">
+            <i class="fa-solid fa-capsules"></i>
+            {% if object %}Editar Marca de Medicamento{% else %}Registrar Nueva Marca de Medicamento{% endif %}
+        </div>
+        <form method="post" autocomplete="off" class="vertical-form" id="marcaMedicamentoForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_nombre" class="form-label">Nombre </label>
+                {{ form.nombre }}
+                {% for error in form.nombre.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="id_descripcion" class="form-label">Descripción</label>
+                {{ form.descripcion }}
+                {% for error in form.descripcion.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group flex items-center">
+                {{ form.activo }}
+                <label for="id_activo" class="form-label mb-0">Activo</label>
+                {% for error in form.activo.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save" id="btn-save">
+                    <i class="fas fa-save"></i>
+                    {% if object %}Actualizar{% else %}Guardar{% endif %}
+                </button>
+                <a href="{% url 'doctor:marcasmedicamento_list' %}" class="btn btn-cancel" id="btn-cancel">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('created')) showMsg('La marca fue creada exitosamente.');
+    if (params.has('updated')) showMsg('La marca fue actualizada exitosamente.');
+    if (params.has('deleted')) showDeleteMsg('La marca fue eliminada exitosamente.');
+});
+function showMsg(msg) {
+    const msgDiv = document.getElementById('msg-success');
+    const msgText = document.getElementById('msg-success-text');
+    msgText.textContent = msg;
+    msgDiv.style.display = 'block';
+    setTimeout(() => { msgDiv.style.display = 'none'; }, 3500);
+}
+function showDeleteMsg(msg) {
+    const msgDiv = document.getElementById('msg-delete');
+    const msgText = document.getElementById('msg-delete-text');
+    msgText.textContent = msg;
+    msgDiv.style.display = 'block';
+    setTimeout(() => { msgDiv.style.display = 'none'; }, 3500);
+}
+</script>
 {% endblock %}

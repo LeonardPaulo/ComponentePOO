@@ -25,7 +25,7 @@ class MarcaMedicamentoListView(LoginRequiredMixin, PermissionRequiredMixin, View
                 Q(descripcion__icontains=search_query)
             )
 
-        paginator = Paginator(marcas_medicamento, 10)
+        paginator = Paginator(marcas_medicamento, 2)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 

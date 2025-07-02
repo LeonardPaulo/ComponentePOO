@@ -11,7 +11,7 @@ class DiagnosticoListView(ListView):
     model = Diagnostico
     template_name = 'doctor/diagnostico/list.html'
     context_object_name = 'diagnosticos'
-    paginate_by = 10
+    paginate_by = 2
 
     # Sobreescribe el método get_queryset para añadir la lógica de búsqueda
     def get_queryset(self):

@@ -12,6 +12,7 @@ class CitaMedicaListView(PermissionMixin, ListViewMixin, ListView):
     model = CitaMedica
     context_object_name = 'citas'
     permission_required = 'view_citamedica'
+    paginate_by = 2
 
     def get_queryset(self):
         q = self.request.GET.get('q')

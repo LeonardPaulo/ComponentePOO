@@ -11,7 +11,7 @@
         padding: 2rem;
     }
     .calendar-header {
-        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         color: white;
         border-radius: 15px;
         padding: 2rem;
@@ -32,7 +32,7 @@
     }
     .calendar-nav-btn {
         padding: 0.85rem 2rem;
-        background: rgba(255,255,255,0.13);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: #fff;
         border-radius: 8px;
         font-weight: 700;
@@ -48,7 +48,7 @@
         cursor: pointer;
     }
     .calendar-nav-btn:hover {
-        background: rgba(255,255,255,0.22);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: #fff;
         transform: translateY(-2px) scale(1.03);
     }
@@ -67,7 +67,7 @@
     .calendar-title i {
         font-size: 1.5rem;
         color: #fff;
-        background: rgba(16,185,129,0.7);
+        background: rgba(139,92,246,0.7);
         border-radius: 8px;
         padding: 0.5rem;
     }
@@ -90,12 +90,19 @@
         flex-direction: column;
         align-items: stretch;
         min-height: 220px;
+        border: 1.5px solid #f3f4f6;
+        transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .calendar-day:hover {
+        box-shadow: 0 8px 25px rgba(139,92,246,0.13);
+        transform: translateY(-3px) scale(1.02);
     }
     .calendar-day h3 {
         font-weight: 700;
         font-size: 1.1rem;
         text-align: center;
         margin-bottom: 0.5rem;
+        color: #6366f1;
     }
     .calendar-day .text-xs {
         font-size: 0.85rem;
@@ -120,6 +127,7 @@
         opacity: 0.85;
         font-size: 0.98rem;
         font-weight: 500;
+        border: 1px solid #fde68a;
     }
     .intervalo-ocupado {
         background: #fee2e2;
@@ -131,6 +139,7 @@
         font-size: 0.98rem;
         font-weight: 500;
         cursor: not-allowed;
+        border: 1px solid #fecaca;
     }
     .intervalo-atendido {
         background: #dbeafe;
@@ -142,22 +151,28 @@
         font-size: 0.98rem;
         font-weight: 500;
         cursor: not-allowed;
+        border: 1px solid #bfdbfe;
     }
     .intervalo-disponible {
-        background: #bbf7d0;
+        background: linear-gradient(135deg, #bbf7d0, #4ade80 80%);
         color: #166534;
         padding: 0.3rem 0.5rem;
         border-radius: 6px;
         text-align: center;
         font-size: 0.98rem;
         font-weight: 500;
-        transition: background 0.2s, color 0.2s;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
         text-decoration: none;
         display: block;
+        border: 1.5px solid #a7f3d0;
+        box-shadow: 0 2px 8px rgba(139,92,246,0.07);
     }
     .intervalo-disponible:hover {
-        background: #4ade80;
-        color: #065f46;
+        background: linear-gradient(135deg, #4ade80, #6366f1 80%);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(16,185,129,0.13);
+        border-color: #6366f1;
+        transform: scale(1.04);
     }
     .sin-horario {
         color: #9ca3af;
@@ -171,7 +186,7 @@
         margin: 2.5rem 0 0 0;
     }
     .btn-lista-citas {
-        background: linear-gradient(135deg, #6b7280, #4b5563);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: #fff;
         padding: 0.85rem 2rem;
         border-radius: 9999px;
@@ -180,12 +195,13 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        transition: background 0.2s;
+        transition: background 0.2s, transform 0.2s;
         text-decoration: none;
         font-size: 1.1rem;
+        border: none;
     }
     .btn-lista-citas:hover {
-        background: linear-gradient(135deg, #4b5563, #374151);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: #fff;
         transform: translateY(-2px) scale(1.03);
     }

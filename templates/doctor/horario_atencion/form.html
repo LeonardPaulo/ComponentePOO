@@ -1,110 +1,190 @@
 {% extends 'home.html' %}
+{% load static %}
+
 {% block title %}{{ title|default:"Horario de Atención" }}{% endblock %}
 
 {% block content %}
-    {% load static %}
-    {% include 'fragments/messages.html' %}
-    <section class="bg-gray-50 mt-2 flex justify-center items-center min-h-[calc(100vh-100px)]">
-        <div class="w-full max-w-xl bg-white rounded-lg shadow-xl p-8 border-2 border-black transform transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl"
-            data-aos="fade-up" data-aos-delay="200">
-            <h1 class="text-center rounded-2xl bg-blue-100 px-2 py-1 text-blue-800 uppercase text-3xl mb-6 font-bold">
-                {{ grabar|default:"Registrar Horario de Atención" }}
-            </h1>
-            
-            <form method="post" enctype="multipart/form-data" class="space-y-6">
-                {% csrf_token %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-                {% if form.non_field_errors %}
-                    <div class="bg-red-100 text-red-700 p-2 rounded mb-4 text-center font-semibold">
-                        {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
+<style>
+    .main-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .form-section {
+        background: #fff;
+        border-radius: 15px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+    .form-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4f46e5;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .form-title i {
+        color: #10b981;
+        font-size: 1.5rem;
+        background: #e0f2fe;
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    input[type="text"], input[type="time"], select {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 1rem;
+        transition: border-color 0.2s, background 0.2s;
+        margin-bottom: 0.5rem;
+    }
+    input[type="text"]:focus, input[type="time"]:focus, select:focus {
+        border-color: #10b981;
+        background: #fff;
+        outline: none;
+    }
+    input[type="checkbox"] {
+        accent-color: #10b981;
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-right: 0.5rem;
+    }
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .btn {
+        padding: 0.9rem 2.2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-save {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+    }
+    .btn-save:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+    }
+    .btn-cancel {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: #fff;
+    }
+    .btn-cancel:hover {
+        background: linear-gradient(135deg, #4b5563, #374151);
+        transform: translateY(-1px);
+    }
+    .error-text {
+        color: #ef4444;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    .vertical-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+</style>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.dia_semana.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.dia_semana.label }}
-                        </label>
-                        {{ form.dia_semana }}
-                        {% if form.dia_semana.errors %}
-                            {% for error in form.dia_semana.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.hora_inicio.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.hora_inicio.label }}
-                        </label>
-                        {{ form.hora_inicio }}
-                        {% if form.hora_inicio.errors %}
-                            {% for error in form.hora_inicio.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.hora_fin.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.hora_fin.label }}
-                        </label>
-                        {{ form.hora_fin }}
-                        {% if form.hora_fin.errors %}
-                            {% for error in form.hora_fin.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.intervalo_desde.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.intervalo_desde.label }}
-                        </label>
-                        {{ form.intervalo_desde }}
-                        {% if form.intervalo_desde.errors %}
-                            {% for error in form.intervalo_desde.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.intervalo_hasta.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.intervalo_hasta.label }}
-                        </label>
-                        {{ form.intervalo_hasta }}
-                        {% if form.intervalo_hasta.errors %}
-                            {% for error in form.intervalo_hasta.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.activo.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.activo.label }}
-                        </label>
-                        {{ form.activo }}
-                        {% if form.activo.errors %}
-                            {% for error in form.activo.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 justify-center mt-4">
-                    <button type="submit"
-                        class="w-full md:w-auto px-6 py-3 bg-blue-700 text-white font-medium rounded-full shadow-lg hover:bg-blue-800 transition duration-300 transform hover:scale-105">
-                        Guardar Horario
-                    </button>
-                    <a href="{{ back_url|default:request.META.HTTP_REFERER }}"
-                        class="w-full md:w-auto px-6 py-3 bg-gray-600 text-white font-medium rounded-full shadow-lg hover:bg-gray-700 transition duration-300 transform hover:scale-105 text-center">
-                        Cancelar
-                    </a>
-                </div>
-            </form>
+<div class="main-container">
+    <div class="form-section">
+        <div class="form-title">
+            <i class="fa-solid fa-clock"></i>
+            {{ grabar|default:"Registrar Horario de Atención" }}
         </div>
-    </section>
+        <form method="post" enctype="multipart/form-data" class="vertical-form" autocomplete="off">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="error-text mb-4">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.dia_semana.id_for_label }}" class="form-label">
+                    {{ form.dia_semana.label }}
+                </label>
+                {{ form.dia_semana }}
+                {% for error in form.dia_semana.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.hora_inicio.id_for_label }}" class="form-label">
+                    {{ form.hora_inicio.label }}
+                </label>
+                {{ form.hora_inicio }}
+                {% for error in form.hora_inicio.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.hora_fin.id_for_label }}" class="form-label">
+                    {{ form.hora_fin.label }}
+                </label>
+                {{ form.hora_fin }}
+                {% for error in form.hora_fin.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.intervalo_desde.id_for_label }}" class="form-label">
+                    {{ form.intervalo_desde.label }}
+                </label>
+                {{ form.intervalo_desde }}
+                {% for error in form.intervalo_desde.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.intervalo_hasta.id_for_label }}" class="form-label">
+                    {{ form.intervalo_hasta.label }}
+                </label>
+                {{ form.intervalo_hasta }}
+                {% for error in form.intervalo_hasta.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group flex items-center">
+                {{ form.activo }}
+                <label for="{{ form.activo.id_for_label }}" class="form-label mb-0">Activo</label>
+                {% for error in form.activo.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i>
+                    Guardar Horario
+                </button>
+                <a href="{{ back_url|default:request.META.HTTP_REFERER }}" class="btn btn-cancel">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

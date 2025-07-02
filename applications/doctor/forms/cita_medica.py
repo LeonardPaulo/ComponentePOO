@@ -23,6 +23,7 @@ class CitaMedicaForm(forms.ModelForm):
             'hora_cita': forms.TimeInput(attrs={'type': 'time', 'class': 'form-input'}),
             'estado': forms.Select(attrs={'class': 'form-select'}),
             'observaciones': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 3}),
+            'fecha': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-input'}),
         }
         labels = {
             'nombre_paciente': 'Nombre',

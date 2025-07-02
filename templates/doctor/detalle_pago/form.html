@@ -1,134 +1,210 @@
 {% extends 'home.html' %}
-{% block title %}{{ title|default:"Detalle de Pago" }}{% endblock %}
+{% load static %}
+
+{% block title %}
+    {% if object %}Editar Detalle de Pago{% else %}Registrar Detalle de Pago{% endif %}
+{% endblock %}
 
 {% block content %}
-    {% load static %}
-    {% include 'fragments/messages.html' %}
-    <section class="bg-gray-50 mt-2 flex justify-center items-center min-h-[calc(100vh-100px)]">
-        <div class="w-full max-w-2xl bg-white rounded-lg shadow-xl p-8 border-2 border-black transform transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl"
-            data-aos="fade-up" data-aos-delay="200">
-            <h1 class="text-center rounded-2xl bg-blue-100 px-2 py-1 text-blue-800 uppercase text-3xl mb-6 font-bold">
-                {{ grabar|default:"Registrar Detalle de Pago" }}
-            </h1>
-            
-            <form method="post" enctype="multipart/form-data" class="space-y-6">
-                {% csrf_token %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-                {% if form.non_field_errors %}
-                    <div class="bg-red-100 text-red-700 p-2 rounded mb-4 text-center font-semibold">
-                        {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
+<style>
+    .main-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .form-section {
+        background: #fff;
+        border-radius: 15px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+    .form-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4f46e5;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .form-title i {
+        color: #10b981;
+        font-size: 1.5rem;
+        background: #e0f2fe;
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    input[type="text"], input[type="number"], textarea, select {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 1rem;
+        transition: border-color 0.2s, background 0.2s;
+        margin-bottom: 0.5rem;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+        border-color: #10b981;
+        background: #fff;
+        outline: none;
+    }
+    input[type="checkbox"] {
+        accent-color: #10b981;
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-right: 0.5rem;
+    }
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .btn {
+        padding: 0.9rem 2.2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-save {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+    }
+    .btn-save:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+    }
+    .btn-cancel {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: #fff;
+    }
+    .btn-cancel:hover {
+        background: linear-gradient(135deg, #4b5563, #374151);
+        transform: translateY(-1px);
+    }
+    .error-text {
+        color: #ef4444;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    .vertical-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+</style>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.pago.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.pago.label }}
-                        </label>
-                        {{ form.pago }}
-                        {% if form.pago.errors %}
-                            {% for error in form.pago.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.servicio_adicional.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.servicio_adicional.label }}
-                        </label>
-                        {{ form.servicio_adicional }}
-                        {% if form.servicio_adicional.errors %}
-                            {% for error in form.servicio_adicional.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.cantidad.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.cantidad.label }}
-                        </label>
-                        {{ form.cantidad }}
-                        {% if form.cantidad.errors %}
-                            {% for error in form.cantidad.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.precio_unitario.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.precio_unitario.label }}
-                        </label>
-                        {{ form.precio_unitario }}
-                        {% if form.precio_unitario.errors %}
-                            {% for error in form.precio_unitario.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.descuento_porcentaje.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.descuento_porcentaje.label }}
-                        </label>
-                        {{ form.descuento_porcentaje }}
-                        {% if form.descuento_porcentaje.errors %}
-                            {% for error in form.descuento_porcentaje.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.aplica_seguro.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.aplica_seguro.label }}
-                        </label>
-                        {{ form.aplica_seguro }}
-                        {% if form.aplica_seguro.errors %}
-                            {% for error in form.aplica_seguro.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.valor_seguro.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.valor_seguro.label }}
-                        </label>
-                        {{ form.valor_seguro }}
-                        {% if form.valor_seguro.errors %}
-                            {% for error in form.valor_seguro.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="border border-black rounded-lg p-4">
-                        <label for="{{ form.descripcion_seguro.id_for_label }}" class="block mb-2 text-base font-semibold text-gray-900 text-center">
-                            {{ form.descripcion_seguro.label }}
-                        </label>
-                        {{ form.descripcion_seguro }}
-                        {% if form.descripcion_seguro.errors %}
-                            {% for error in form.descripcion_seguro.errors %}
-                                <p class="mt-2 text-sm text-red-600 text-center">{{ error }}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 justify-center mt-4">
-                    <button type="submit"
-                        class="w-full md:w-auto px-6 py-3 bg-blue-700 text-white font-medium rounded-full shadow-lg hover:bg-blue-800 transition duration-300 transform hover:scale-105">
-                        Guardar Detalle
-                    </button>
-                    <a href="{{ back_url|default:request.META.HTTP_REFERER }}"
-                        class="w-full md:w-auto px-6 py-3 bg-gray-600 text-white font-medium rounded-full shadow-lg hover:bg-gray-700 transition duration-300 transform hover:scale-105 text-center">
-                        Cancelar
-                    </a>
-                </div>
-            </form>
+<div class="main-container">
+    <div class="form-section">
+        <div class="form-title">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            {% if object %}Editar Detalle de Pago{% else %}Registrar Detalle de Pago{% endif %}
         </div>
-    </section>
+        <form method="post" enctype="multipart/form-data" class="vertical-form" autocomplete="off">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="error-text mb-4">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.pago.id_for_label }}" class="form-label">
+                    {{ form.pago.label }}
+                </label>
+                {{ form.pago }}
+                {% for error in form.pago.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.servicio_adicional.id_for_label }}" class="form-label">
+                    {{ form.servicio_adicional.label }}
+                </label>
+                {{ form.servicio_adicional }}
+                {% for error in form.servicio_adicional.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.cantidad.id_for_label }}" class="form-label">
+                    {{ form.cantidad.label }}
+                </label>
+                {{ form.cantidad }}
+                {% for error in form.cantidad.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.precio_unitario.id_for_label }}" class="form-label">
+                    {{ form.precio_unitario.label }}
+                </label>
+                {{ form.precio_unitario }}
+                {% for error in form.precio_unitario.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.descuento_porcentaje.id_for_label }}" class="form-label">
+                    {{ form.descuento_porcentaje.label }}
+                </label>
+                {{ form.descuento_porcentaje }}
+                {% for error in form.descuento_porcentaje.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group flex items-center">
+                {{ form.aplica_seguro }}
+                <label for="{{ form.aplica_seguro.id_for_label }}" class="form-label mb-0">{{ form.aplica_seguro.label }}</label>
+                {% for error in form.aplica_seguro.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.valor_seguro.id_for_label }}" class="form-label">
+                    {{ form.valor_seguro.label }}
+                </label>
+                {{ form.valor_seguro }}
+                {% for error in form.valor_seguro.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.descripcion_seguro.id_for_label }}" class="form-label">
+                    {{ form.descripcion_seguro.label }}
+                </label>
+                {{ form.descripcion_seguro }}
+                {% for error in form.descripcion_seguro.errors %}
+                    <div class="error-text">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i>
+                    {% if object %}Actualizar{% else %}Guardar Detalle{% endif %}
+                </button>
+                <a href="{{ back_url|default:request.META.HTTP_REFERER }}" class="btn btn-cancel">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

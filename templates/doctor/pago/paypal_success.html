@@ -1,6 +1,8 @@
 {% extends 'home.html' %}
 {% load static %}
 
+{% block title %}Pago Exitoso{% endblock %}
+
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -35,10 +37,30 @@
     
     .success-title {
         font-size: 2.2rem;
+        max-width: 500px;
+        margin: 4rem auto 0 auto;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+        padding: 2.5rem 2rem 2rem 2rem;
+        text-align: center;
+    }
+    .success-icon {
+        font-size: 3.5rem;
+        color: #10b981;
+        margin-bottom: 1.2rem;
+        background: #d1fae5;
+        border-radius: 50%;
+        padding: 1.2rem;
+        display: inline-block;
+    }
+    .success-title {
+        font-size: 2rem;
         font-weight: 700;
         color: #10b981;
         margin-bottom: 1rem;
     }
+
     
     .success-message {
         font-size: 1.1rem;
@@ -148,5 +170,46 @@
             </a>
         </div>
     </div>
+=======
+    .success-text {
+        font-size: 1.1rem;
+        color: #374151;
+        margin-bottom: 2rem;
+    }
+    .btn-success-back {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        padding: 0.9rem 2.2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-success-back:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+</style>
+
+<div class="success-container">
+    <span class="success-icon">
+        <i class="fa-solid fa-circle-check"></i>
+    </span>
+    <div class="success-title">¡Pago realizado con éxito!</div>
+    <div class="success-text">
+        El pago #{{ pago.id }} fue procesado correctamente.<br>
+        Gracias por tu confianza.
+    </div>
+    <a href="{% url 'doctor:pago_list' %}" class="btn-success-back">
+        <i class="fas fa-arrow-left"></i> Volver a Pagos
+    </a>
+>>>>>>> Stashed changes
 </div>
 {% endblock %}

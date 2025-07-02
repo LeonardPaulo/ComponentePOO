@@ -111,7 +111,6 @@
         </div>
         <form method="post" enctype="multipart/form-data" class="vertical-form" autocomplete="off">
             {% csrf_token %}
-
             {% if form.non_field_errors %}
                 <div class="error-text mb-4">
                     {{ form.non_field_errors }}

@@ -14,7 +14,7 @@
         padding: 2rem;
     }
     .header-section {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         color: white;
         border-radius: 15px;
         padding: 2rem;
@@ -48,10 +48,12 @@
         border-left: 4px solid;
         transition: transform 0.2s ease;
     }
-    .stat-card:hover { transform: translateY(-2px); }
-    .stat-card.total { border-left-color: #3b82f6; }
-    .stat-card.current { border-left-color: #6366f1; }
-    .stat-card.showing { border-left-color: #10b981; }
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+    .stat-card.total { border-left-color: #8b5cf6; }
+    .stat-card.current { border-left-color: #3b82f6; }
+    .stat-card.showing { border-left-color: #8b5cf6; }
     .stat-header {
         display: flex;
         align-items: center;
@@ -68,9 +70,9 @@
         color: white;
         font-size: 1.5rem;
     }
-    .stat-icon.total { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-    .stat-icon.current { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-    .stat-icon.showing { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.total { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+    .stat-icon.current { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .stat-icon.showing { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
     .stat-number {
         font-size: 2.5rem;
         font-weight: 700;
@@ -105,8 +107,8 @@
         transition: all 0.3s ease;
     }
     .search-input:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         outline: none;
     }
     .btn {
@@ -123,33 +125,33 @@
         font-size: 0.95rem;
     }
     .btn-search {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     .btn-search:hover {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
     .btn-create {
-        background: linear-gradient(135deg, #10b981, #059669);
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
         color: white;
     }
     .btn-create:hover {
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
         color: white;
         transform: translateY(-1px);
     }
     .btn-home {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
         color: white;
     }
     .btn-home:hover {
-        background: linear-gradient(135deg, #8b5cf6, #6366f1);
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
         color: white;
         transform: translateY(-1px);
     }
-    .cita-grid {
+    .citas-grid {
         display: grid;
         gap: 1rem;
     }
@@ -167,10 +169,9 @@
     }
     .cita-header {
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: auto auto 1fr auto;
         gap: 1.5rem;
         align-items: center;
-        margin-bottom: 1rem;
     }
     .cita-id {
         display: flex;
@@ -186,12 +187,8 @@
         justify-content: center;
         color: white;
         font-size: 1.1rem;
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-    }
-    .id-text {
         font-weight: 600;
-        color: #1f2937;
-        font-size: 1rem;
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
     }
     .cita-info h4 {
         margin: 0;
@@ -204,16 +201,20 @@
         font-size: 0.95rem;
         color: #6b7280;
     }
-    .cita-info .estado {
-        display: inline-block;
-        margin-top: 0.5rem;
-        padding: 0.3rem 0.9rem;
-        border-radius: 9999px;
-        font-size: 0.95rem;
+    .estado-badge {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
         font-weight: 600;
-        border: 1.5px solid #e5e7eb;
-        background: #f3f4f6;
-        color: #2563eb;
+        font-size: 0.9rem;
+        display: inline-block;
+    }
+    .estado-badge.confirmada {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    .estado-badge.cancelada {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
     }
     .actions-group {
         display: flex;
@@ -288,9 +289,9 @@
         color: #374151;
     }
     .pagination .current {
-        background: #3b82f6;
+        background: #8b5cf6;
         color: white;
-        border-color: #3b82f6;
+        border-color: #8b5cf6;
     }
     .pagination a:first-child,
     .pagination span:first-child {
@@ -357,7 +358,7 @@
                     <div class="stat-label">Página Actual</div>
                 </div>
                 <div class="stat-icon current">
-                    <i class="fa-solid fa-list-ol"></i>
+                    <i class="fas fa-file-alt"></i>
                 </div>
             </div>
         </div>
@@ -368,7 +369,7 @@
                     <div class="stat-label">Mostrando</div>
                 </div>
                 <div class="stat-icon showing">
-                    <i class="fa-solid fa-eye"></i>
+                    <i class="fas fa-list"></i>
                 </div>
             </div>
         </div>
@@ -395,45 +396,45 @@
     </div>
 
     <!-- Lista de Citas Médicas -->
-    <div class="cita-grid">
+    <div class="citas-grid">
         {% if page_obj %}
             {% for cita in page_obj %}
             <div class="cita-card">
-                <div class="cita-header">
-                    <div class="cita-id">
-                        <div class="id-icon">
-                            {{ cita.id }}
-                        </div>
-                        <div class="id-text">
-                            {{ cita.nombre_paciente }} {{ cita.apellido_paciente }}
-                        </div>
-                    </div>
-                    <div class="cita-info">
-                        <h4>
-                            {{ cita.fecha|date:"d/m/Y" }} - {{ cita.hora_cita|time:"H:i" }}
-                        </h4>
-                        <p>
-                            <span class="estado">{{ cita.get_estado_display }}</span>
-                        </p>
-                        <p>
-                            <strong>Observaciones:</strong> {{ cita.observaciones|default:"N/A" }}
-                        </p>
-                    </div>
-                    <div class="actions-group">
-                        {% if permissions.change_citamedica %}
-                        <a href="{% url 'doctor:cita_update' cita.id %}" class="btn btn-sm btn-edit" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        {% endif %}
-                        {% if permissions.delete_citamedica %}
-                        <a href="#" class="btn btn-sm btn-delete" 
-                           onclick="openDeleteModal('{{ cita.id }}', '{{ cita.nombre_paciente }} {{ cita.apellido_paciente }}')"
-                           title="Eliminar">
-                            <i class="fas fa-trash"></i>
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
+<div class="cita-header" style="display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;">
+    <div class="cita-id">
+        <div class="id-icon">
+            {{ cita.id }}
+        </div>
+        <div>
+            <strong>{{ cita.nombre_paciente }} {{ cita.apellido_paciente }}</strong>
+        </div>
+    </div>
+    <div class="cita-info">
+        <h4>
+            {{ cita.fecha|date:"d/m/Y" }} - {{ cita.hora_cita|time:"H:i" }}
+        </h4>
+        <p>
+            <strong>Observaciones:</strong> {{ cita.observaciones|default:"N/A" }}
+        </p>
+    </div>
+    <div class="actions-group" style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
+        <span class="estado-badge {{ cita.estado|lower }}" style="margin-right: 0.5rem;">
+            {{ cita.get_estado_display }}
+        </span>
+        {% if permissions.change_citamedica %}
+        <a href="{% url 'doctor:cita_update' cita.id %}" class="btn btn-sm btn-edit" title="Editar">
+            <i class="fas fa-edit"></i>
+        </a>
+        {% endif %}
+        {% if permissions.delete_citamedica %}
+        <a href="#" class="btn btn-sm btn-delete" 
+           onclick="openDeleteModal('{{ cita.id }}', '{{ cita.nombre_paciente }} {{ cita.apellido_paciente }}')"
+           title="Eliminar">
+            <i class="fas fa-trash"></i>
+        </a>
+        {% endif %}
+    </div>
+</div>
             </div>
             {% endfor %}
         {% else %}

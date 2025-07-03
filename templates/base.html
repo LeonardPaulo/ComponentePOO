@@ -127,94 +127,7 @@
 {% endblock navBar %}
 {%  block css %}{% endblock css %}
 {% block js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const openBtn = document.getElementById('open-chatbot');
-    const closeBtn = document.getElementById('close-chatbot');
-    const chatBox = document.getElementById('chatbot-box');
-    const form = document.getElementById('chatbot-form');
-    const input = document.getElementById('chatbot-input');
-    const messages = document.getElementById('chatbot-messages');
 
-    openBtn.onclick = (e) => {
-        // Animación de ripple al abrir
-        const btn = openBtn;
-        const ripple = document.createElement('span');
-        ripple.style.position = 'absolute';
-        ripple.style.left = '50%';
-        ripple.style.top = '50%';
-        ripple.style.transform = 'translate(-50%, -50%)';
-        ripple.style.width = '0px';
-        ripple.style.height = '0px';
-        ripple.style.background = 'rgba(99,102,241,0.18)';
-        ripple.style.borderRadius = '50%';
-        ripple.style.pointerEvents = 'none';
-        ripple.style.zIndex = '2';
-        btn.appendChild(ripple);
-        setTimeout(() => {
-            ripple.style.transition = 'width 0.4s, height 0.4s, opacity 0.4s';
-            ripple.style.width = '120px';
-            ripple.style.height = '120px';
-            ripple.style.opacity = '0';
-        }, 10);
-        setTimeout(() => {
-            if (btn.contains(ripple)) btn.removeChild(ripple);
-        }, 420);
-
-        chatBox.style.display = 'block';
-        openBtn.style.display = 'none';
-        messages.innerHTML = '';
-        // Mensaje de bienvenida personalizado
-        const welcomeMsg = `¡Hola! Soy el asistente virtual de SaludTotal.<br>
-Puedo ayudarte con información general sobre salud, consejos médicos básicos y responder preguntas frecuentes.<br><br>
-¡Escríbeme tu pregunta!`;
-        appendMessage('bot', welcomeMsg);
-    };
-
-    closeBtn.onclick = () => {
-        chatBox.style.display = 'none';
-        openBtn.style.display = 'flex';
-    };
-
-    form.onsubmit = async function(e) {
-        e.preventDefault();
-        const userMsg = input.value.trim();
-        if (!userMsg) return;
-        appendMessage('Tú', userMsg, 'right');
-        input.value = '';
-        appendMessage('Bot', '<span style="color:#aaa">Escribiendo...</span>', 'left', true);
-
-        try {
-            const resp = await fetch('/chatbot/chat/', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: userMsg})
-            });
-            const data = await resp.json();
-            messages.removeChild(messages.lastChild); // Remove "Escribiendo..."
-            if (data.response) {
-                appendMessage('Bot', data.response, 'left');
-            } else {
-                appendMessage('Bot', 'Ocurrió un error. Intenta de nuevo.', 'left');
-            }
-        } catch {
-            messages.removeChild(messages.lastChild);
-            appendMessage('Bot', 'Ocurrió un error de red.', 'left');
-        }
-        messages.scrollTop = messages.scrollHeight;
-    };
-
-    function appendMessage(sender, text, align, temp=false) {
-        const msg = document.createElement('div');
-        msg.style.margin = '8px 0';
-        msg.style.textAlign = align;
-        msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
-        if (temp) msg.style.color = '#aaa';
-        messages.appendChild(msg);
-        messages.scrollTop = messages.scrollHeight;
-    }
-});
-</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -634,12 +547,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         chatBox.style.display = 'block';
         openBtn.style.display = 'none';
-        messages.innerHTML = '';
-        // Mensaje de bienvenida personalizado
-        const welcomeMsg = `¡Hola! Soy el asistente virtual de SaludTotal.<br>
-Puedo ayudarte con información general sobre salud, consejos médicos básicos y responder preguntas frecuentes.<br><br>
-¡Escríbeme tu pregunta!`;
-        appendMessage('bot', welcomeMsg);
+        loadHistory();
     };
     closeBtn.onclick = () => {
         chatBox.style.display = 'none';

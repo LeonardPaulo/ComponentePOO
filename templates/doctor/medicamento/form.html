@@ -229,7 +229,7 @@
                 <div class="form-group field-container {% if form.nombre.errors %}has-error{% endif %}">
                     <label for="{{ form.nombre.id_for_label }}" class="form-label">
                         {{ form.nombre.label }}
-                        {% if form.nombre.field.required %} *{% endif %}
+                        {% if form.nombre.field.required %} {% endif %}
                     </label>
                     {{ form.nombre }}
                     {% for error in form.nombre.errors %}
@@ -241,7 +241,7 @@
                 <div class="form-group field-container {% if form.tipo.errors %}has-error{% endif %}">
                     <label for="{{ form.tipo.id_for_label }}" class="form-label">
                         {{ form.tipo.label }}
-                        {% if form.tipo.field.required %} *{% endif %}
+                        {% if form.tipo.field.required %} {% endif %}
                     </label>
                     {{ form.tipo }}
                     {% for error in form.tipo.errors %}
@@ -253,7 +253,7 @@
                 <div class="form-group field-container {% if form.marca_medicamento.errors %}has-error{% endif %}">
                     <label for="{{ form.marca_medicamento.id_for_label }}" class="form-label">
                         {{ form.marca_medicamento.label }}
-                        {% if form.marca_medicamento.field.required %} *{% endif %}
+                        {% if form.marca_medicamento.field.required %} {% endif %}
                     </label>
                     {{ form.marca_medicamento }}
                     {% for error in form.marca_medicamento.errors %}
@@ -265,7 +265,7 @@
                 <div class="form-group field-container {% if form.concentracion.errors %}has-error{% endif %}">
                     <label for="{{ form.concentracion.id_for_label }}" class="form-label">
                         {{ form.concentracion.label }}
-                        {% if form.concentracion.field.required %} *{% endif %}
+                        {% if form.concentracion.field.required %} {% endif %}
                     </label>
                     {{ form.concentracion }}
                     {% for error in form.concentracion.errors %}
@@ -277,7 +277,7 @@
                 <div class="form-group field-container {% if form.via_administracion.errors %}has-error{% endif %}">
                     <label for="{{ form.via_administracion.id_for_label }}" class="form-label">
                         {{ form.via_administracion.label }}
-                        {% if form.via_administracion.field.required %} *{% endif %}
+                        {% if form.via_administracion.field.required %} {% endif %}
                     </label>
                     {{ form.via_administracion }}
                     {% for error in form.via_administracion.errors %}
@@ -289,7 +289,7 @@
                 <div class="form-group field-container {% if form.cantidad.errors %}has-error{% endif %}">
                     <label for="{{ form.cantidad.id_for_label }}" class="form-label">
                         {{ form.cantidad.label }}
-                        {% if form.cantidad.field.required %} *{% endif %}
+                        {% if form.cantidad.field.required %} {% endif %}
                     </label>
                     {{ form.cantidad }}
                     {% for error in form.cantidad.errors %}
@@ -301,7 +301,7 @@
                 <div class="form-group field-container {% if form.precio.errors %}has-error{% endif %}">
                     <label for="{{ form.precio.id_for_label }}" class="form-label">
                         {{ form.precio.label }}
-                        {% if form.precio.field.required %} *{% endif %}
+                        {% if form.precio.field.required %} {% endif %}
                     </label>
                     <div class="price-input-container">
                         <span class="price-prefix">$</span>
@@ -318,9 +318,15 @@
                 <div class="form-group form-group-full field-container {% if form.descripcion.errors %}has-error{% endif %}">
                     <label for="{{ form.descripcion.id_for_label }}" class="form-label">
                         {{ form.descripcion.label }}
-                        {% if form.descripcion.field.required %} *{% endif %}
+                        {% if form.descripcion.field.required %} {% endif %}
                     </label>
                     {{ form.descripcion }}
+                    <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_descripcion', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                     {% for error in form.descripcion.errors %}
                         <div class="error-text">{{ error }}</div>
                     {% endfor %}
@@ -380,6 +386,38 @@
 </div>
 
 <script>
+    // Función para iniciar el dictado de voz
+function startDictation(fieldId, btn) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('El reconocimiento de voz no es soportado en este navegador.');
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    btn.disabled = true;
+    btn.classList.add('animate-pulse');
+
+    recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.getElementById(fieldId);
+        if (campo) {
+            campo.value += (campo.value ? ' ' : '') + texto;
+        }
+    };
+    recognition.onend = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.onerror = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.start();
+}
 // Inicializar cuando cargue la página
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('medicamentoForm');

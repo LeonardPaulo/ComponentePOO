@@ -88,28 +88,28 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="{{ form.nombres.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Nombre *</label>
+                        <label for="{{ form.nombres.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Nombre </label>
                         {{ form.nombres }}
                         {% if form.nombres.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.nombres.errors }}</p>
                         {% endif %}
                     </div>
                     <div>
-                        <label for="{{ form.apellidos.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Apellido *</label>
+                        <label for="{{ form.apellidos.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Apellido </label>
                         {{ form.apellidos }}
                         {% if form.apellidos.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.apellidos.errors }}</p>
                         {% endif %}
                     </div>
                     <div>
-                        <label for="{{ form.cedula_ecuatoriana.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Cédula *</label>
+                        <label for="{{ form.cedula_ecuatoriana.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Cédula </label>
                         {{ form.cedula_ecuatoriana }}
                         {% if form.cedula_ecuatoriana.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.cedula_ecuatoriana.errors }}</p>
                         {% endif %}
                     </div>
                     <div>
-                        <label for="{{ form.fecha_nacimiento.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Fecha de Nacimiento *</label>
+                        <label for="{{ form.fecha_nacimiento.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Fecha de Nacimiento </label>
                         {{ form.fecha_nacimiento }}
                         {% if form.fecha_nacimiento.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.fecha_nacimiento.errors }}</p>
@@ -130,14 +130,14 @@
                         {% endif %}
                     </div>
                     <div class="md:col-span-2">
-                        <label for="{{ form.direccion.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Dirección *</label>
+                        <label for="{{ form.direccion.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Dirección </label>
                         {{ form.direccion }}
                         {% if form.direccion.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.direccion.errors }}</p>
                         {% endif %}
                     </div>
                     <div>
-                        <label for="{{ form.sexo.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Género *</label>
+                        <label for="{{ form.sexo.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Género </label>
                         {{ form.sexo }}
                         {% if form.sexo.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.sexo.errors }}</p>
@@ -244,6 +244,12 @@
                     <div>
                         <label for="{{ form.antecedentes_personales.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Antecedentes Personales</label>
                         {{ form.antecedentes_personales }}
+                        <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_antecedentes_personales', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                         {% if form.antecedentes_personales.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.antecedentes_personales.errors }}</p>
                         {% endif %}
@@ -251,6 +257,12 @@
                     <div>
                         <label for="{{ form.antecedentes_quirurgicos.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Antecedentes Quirúrgicos</label>
                         {{ form.antecedentes_quirurgicos }}
+                        <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_antecedentes_quirurgicos', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                         {% if form.antecedentes_quirurgicos.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.antecedentes_quirurgicos.errors }}</p>
                         {% endif %}
@@ -258,6 +270,12 @@
                     <div>
                         <label for="{{ form.antecedentes_familiares.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Antecedentes Familiares</label>
                         {{ form.antecedentes_familiares }}
+                        <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_antecedentes_familiares', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                         {% if form.antecedentes_familiares.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.antecedentes_familiares.errors }}</p>
                         {% endif %}
@@ -265,6 +283,12 @@
                     <div>
                         <label for="{{ form.alergias.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Alergias</label>
                         {{ form.alergias }}
+                        <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_alergias', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                         {% if form.alergias.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.alergias.errors }}</p>
                         {% endif %}
@@ -272,6 +296,12 @@
                     <div>
                         <label for="{{ form.medicamentos_actuales.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Medicamentos Actuales</label>
                         {{ form.medicamentos_actuales }}
+                        <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_medicamentos_actuales', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                         {% if form.medicamentos_actuales.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.medicamentos_actuales.errors }}</p>
                         {% endif %}
@@ -286,6 +316,12 @@
                     <div>
                         <label for="{{ form.vacunas.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Vacunas</label>
                         {{ form.vacunas }}
+                        <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_vacunas', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                         {% if form.vacunas.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.vacunas.errors }}</p>
                         {% endif %}
@@ -293,6 +329,12 @@
                     <div>
                         <label for="{{ form.antecedentes_gineco_obstetricos.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Antecedentes Gineco-Obstétricos</label>
                         {{ form.antecedentes_gineco_obstetricos }}
+                        <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_antecedentes_gineco_obstetricos', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                         {% if form.antecedentes_gineco_obstetricos.errors %}
                             <p class="text-red-500 text-xs mt-1">{{ form.antecedentes_gineco_obstetricos.errors }}</p>
                         {% endif %}
@@ -322,6 +364,38 @@
 </section>
 
 <script>
+// Función para iniciar el dictado de voz
+function startDictation(fieldId, btn) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('El reconocimiento de voz no es soportado en este navegador.');
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    btn.disabled = true;
+    btn.classList.add('animate-pulse');
+
+    recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.getElementById(fieldId);
+        if (campo) {
+            campo.value += (campo.value ? ' ' : '') + texto;
+        }
+    };
+    recognition.onend = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.onerror = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.start();
+}
 // Datos de fotos desde el contexto de Django
 const fotosData = JSON.parse('{{ fotos_data|default:"{}"|escapejs }}');
 

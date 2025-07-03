@@ -136,8 +136,45 @@ document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('chatbot-input');
     const messages = document.getElementById('chatbot-messages');
 
-    openBtn.onclick = () => { chatBox.style.display = 'block'; openBtn.style.display = 'none'; };
-    closeBtn.onclick = () => { chatBox.style.display = 'none'; openBtn.style.display = 'block'; };
+    openBtn.onclick = (e) => {
+        // Animación de ripple al abrir
+        const btn = openBtn;
+        const ripple = document.createElement('span');
+        ripple.style.position = 'absolute';
+        ripple.style.left = '50%';
+        ripple.style.top = '50%';
+        ripple.style.transform = 'translate(-50%, -50%)';
+        ripple.style.width = '0px';
+        ripple.style.height = '0px';
+        ripple.style.background = 'rgba(99,102,241,0.18)';
+        ripple.style.borderRadius = '50%';
+        ripple.style.pointerEvents = 'none';
+        ripple.style.zIndex = '2';
+        btn.appendChild(ripple);
+        setTimeout(() => {
+            ripple.style.transition = 'width 0.4s, height 0.4s, opacity 0.4s';
+            ripple.style.width = '120px';
+            ripple.style.height = '120px';
+            ripple.style.opacity = '0';
+        }, 10);
+        setTimeout(() => {
+            if (btn.contains(ripple)) btn.removeChild(ripple);
+        }, 420);
+
+        chatBox.style.display = 'block';
+        openBtn.style.display = 'none';
+        messages.innerHTML = '';
+        // Mensaje de bienvenida personalizado
+        const welcomeMsg = `¡Hola! Soy el asistente virtual de SaludTotal.<br>
+Puedo ayudarte con información general sobre salud, consejos médicos básicos y responder preguntas frecuentes.<br><br>
+¡Escríbeme tu pregunta!`;
+        appendMessage('bot', welcomeMsg);
+    };
+
+    closeBtn.onclick = () => {
+        chatBox.style.display = 'none';
+        openBtn.style.display = 'flex';
+    };
 
     form.onsubmit = async function(e) {
         e.preventDefault();
@@ -616,7 +653,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         chatBox.style.display = 'block';
         openBtn.style.display = 'none';
-        loadHistory();
+        messages.innerHTML = '';
+        // Mensaje de bienvenida personalizado
+        const welcomeMsg = `¡Hola! Soy el asistente virtual de SaludTotal.<br>
+Puedo ayudarte con información general sobre salud, consejos médicos básicos y responder preguntas frecuentes.<br><br>
+¡Escríbeme tu pregunta!`;
+        appendMessage('bot', welcomeMsg);
     };
     closeBtn.onclick = () => {
         chatBox.style.display = 'none';

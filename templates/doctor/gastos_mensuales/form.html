@@ -192,7 +192,7 @@
             <div class="form-group field-container {% if form.tipo_gasto.errors %}has-error{% endif %}">
                 <label for="{{ form.tipo_gasto.id_for_label }}" class="form-label">
                     {{ form.tipo_gasto.label }}
-                    {% if form.tipo_gasto.field.required %} *{% endif %}
+                    {% if form.tipo_gasto.field.required %} {% endif %}
                 </label>
                 {{ form.tipo_gasto }}
                 {% for error in form.tipo_gasto.errors %}
@@ -204,7 +204,7 @@
             <div class="form-group field-container {% if form.fecha.errors %}has-error{% endif %}">
                 <label for="{{ form.fecha.id_for_label }}" class="form-label">
                     {{ form.fecha.label }}
-                    {% if form.fecha.field.required %} *{% endif %}
+                    {% if form.fecha.field.required %} {% endif %}
                 </label>
                 {{ form.fecha }}
                 {% for error in form.fecha.errors %}
@@ -216,7 +216,7 @@
             <div class="form-group field-container {% if form.valor.errors %}has-error{% endif %}">
                 <label for="{{ form.valor.id_for_label }}" class="form-label">
                     {{ form.valor.label }}
-                    {% if form.valor.field.required %} *{% endif %}
+                    {% if form.valor.field.required %} {% endif %}
                 </label>
                 <div class="value-input-container">
                     <span class="value-prefix">$</span>
@@ -231,13 +231,19 @@
             <div class="form-group field-container {% if form.observacion.errors %}has-error{% endif %}">
                 <label for="{{ form.observacion.id_for_label }}" class="form-label">
                     {{ form.observacion.label }}
-                    {% if form.observacion.field.required %} *{% endif %}
+                    {% if form.observacion.field.required %} {% endif %}
                 </label>
                 {{ form.observacion }}
                 {% for error in form.observacion.errors %}
                     <div class="error-text">{{ error }}</div>
                 {% endfor %}
                 <p class="text-sm text-gray-500 mt-1">Detalles adicionales del gasto (opcional)</p>
+                <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_observacion', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
             </div>
 
             <div class="form-actions">
@@ -255,6 +261,38 @@
 </div>
 
 <script>
+    // Función para iniciar el dictado de voz
+function startDictation(fieldId, btn) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('El reconocimiento de voz no es soportado en este navegador.');
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    btn.disabled = true;
+    btn.classList.add('animate-pulse');
+
+    recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.getElementById(fieldId);
+        if (campo) {
+            campo.value += (campo.value ? ' ' : '') + texto;
+        }
+    };
+    recognition.onend = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.onerror = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.start();
+}
 // Inicializar cuando cargue la página
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('gastoForm');

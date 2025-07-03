@@ -201,7 +201,7 @@
             <div class="form-group field-container {% if form.nombre_servicio.errors %}has-error{% endif %}">
                 <label for="{{ form.nombre_servicio.id_for_label }}" class="form-label">
                     {{ form.nombre_servicio.label }}
-                    {% if form.nombre_servicio.field.required %} *{% endif %}
+                    {% if form.nombre_servicio.field.required %} {% endif %}
                 </label>
                 <input type="text" 
                        name="{{ form.nombre_servicio.name }}" 
@@ -218,7 +218,7 @@
             <div class="form-group field-container {% if form.costo_servicio.errors %}has-error{% endif %}">
                 <label for="{{ form.costo_servicio.id_for_label }}" class="form-label">
                     {{ form.costo_servicio.label }}
-                    {% if form.costo_servicio.field.required %} *{% endif %}
+                    {% if form.costo_servicio.field.required %} {% endif %}
                 </label>
                 <div class="cost-input-container">
                     <span class="cost-prefix">$</span>
@@ -252,6 +252,12 @@
                     <div class="error-text">{{ error }}</div>
                 {% endfor %}
                 <p class="text-sm text-gray-500 mt-1">Máximo 500 caracteres</p>
+                <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_descripcion', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
             </div>
 
             <!-- Campo Activo -->
@@ -284,6 +290,38 @@
 </div>
 
 <script>
+// Función para iniciar el dictado de voz
+function startDictation(fieldId, btn) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('El reconocimiento de voz no es soportado en este navegador.');
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    btn.disabled = true;
+    btn.classList.add('animate-pulse');
+
+    recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.getElementById(fieldId);
+        if (campo) {
+            campo.value += (campo.value ? ' ' : '') + texto;
+        }
+    };
+    recognition.onend = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.onerror = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.start();
+}
 // Inicializar cuando cargue la página
 document.addEventListener('DOMContentLoaded', function() {
     // Mostrar mensajes según parámetros URL

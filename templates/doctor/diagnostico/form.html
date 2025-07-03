@@ -132,14 +132,14 @@
         <form method="post" autocomplete="off" class="vertical-form" id="diagnosticoForm">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_codigo" class="form-label">Código *</label>
+                <label for="id_codigo" class="form-label">Código </label>
                 {{ form.codigo }}
                 {% for error in form.codigo.errors %}
                     <div class="error-text">{{ error }}</div>
                 {% endfor %}
             </div>
             <div class="form-group">
-                <label for="id_descripcion" class="form-label">Descripción *</label>
+                <label for="id_descripcion" class="form-label">Descripción </label>
                 {{ form.descripcion }}
                 {% for error in form.descripcion.errors %}
                     <div class="error-text">{{ error }}</div>
@@ -148,6 +148,12 @@
             <div class="form-group">
                 <label for="id_datos_adicionales" class="form-label">Datos Adicionales</label>
                 {{ form.datos_adicionales }}
+                <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_datos_adicionales', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                 {% for error in form.datos_adicionales.errors %}
                     <div class="error-text">{{ error }}</div>
                 {% endfor %}
@@ -174,6 +180,38 @@
 </div>
 
 <script>
+    // Función para iniciar el dictado de voz
+function startDictation(fieldId, btn) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('El reconocimiento de voz no es soportado en este navegador.');
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    btn.disabled = true;
+    btn.classList.add('animate-pulse');
+
+    recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.getElementById(fieldId);
+        if (campo) {
+            campo.value += (campo.value ? ' ' : '') + texto;
+        }
+    };
+    recognition.onend = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.onerror = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.start();
+}
 document.addEventListener('DOMContentLoaded', function() {
     const params = new URLSearchParams(window.location.search);
     if (params.has('created')) showMsg('El diagnóstico fue creado exitosamente.');

@@ -372,18 +372,37 @@
                         <div class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Motivo de Consulta *</label>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Motivo de Consulta </label>
                                     <textarea id="id_motivo_consulta" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="3" placeholder="Ingrese el motivo de la consulta...">{{ atencion.motivo_consulta|default:'' }}</textarea>
+                                    <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_motivo_consulta', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Síntomas *</label>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Síntomas </label>
                                     <textarea id="id_sintomas" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="3" placeholder="Describa los síntomas presentados...">{{ atencion.sintomas|default:'' }}</textarea>
+                                    <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_sintomas', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Examen Físico</label>
-                                <textarea id="id_examen_fisico" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="4" placeholder="Hallazgos del examen físico...">{{ atencion.examen_fisico|default:'' }}</textarea>
+                                <textarea id="id_examen_fisico" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="4" placeholder="Hallazgos del examen físico...">{{ atencion.examen_fisico|default:'' }}
+                                </textarea>
+                                <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_examen_fisico', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                             </div>
                            <!-- diagnosticos-->
                            <div class="bg-pink-50 border border-gray-300 rounded-lg ">
@@ -430,25 +449,37 @@
 
                         <div class="space-y-6">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Plan de Tratamiento *</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Plan de Tratamiento </label>
                                 <textarea id="id_tratamiento" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="4" placeholder="Detalle el plan de tratamiento...">{{ atencion.tratamiento|default:'' }}</textarea>
+                                <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_tratamiento', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Exámenes Solicitados</label>
                                 <textarea id="id_examenes_enviados" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="3" placeholder="Lista de exámenes solicitados...">{{ atencion.examenes_enviados|default:'' }}</textarea>
+                                <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_examenes_enviados', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Comentario Adicional</label>
                                 <textarea id="id_comentario_adicional" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="3" placeholder="Comentarios adicionales...">{{ atencion.comentario_adicional|default:'' }}</textarea>
                                 <div class="flex items-center space-x-2 mt-2">
-                                    <button type="button" id="btn-mic-comentario" title="Dictar comentario"
-                                        class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-2 rounded-full shadow transition">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18v2m0 0a4 4 0 004-4h-8a4 4 0 004 4zm0-14a4 4 0 00-4 4v4a4 4 0 008 0V8a4 4 0 00-4-4z" />
-                                        </svg>
-                                    </button>
+                                    <button type="button"
+                        class="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                        onclick="startDictation('id_comentario_adicional', this)"
+                        title="Dictar con micrófono">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                                     <span id="mic-status" class="text-sm text-gray-500"></span>
                                 </div>
                     </div>
@@ -485,15 +516,15 @@
                                 </div>
                                 <!-- fin select -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad *</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad </label>
                                     <input type="number" id="cantidad-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500" placeholder="30">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Prescripción *</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Prescripción </label>
                                     <input type="text" id="prescripcion-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500" placeholder="1 cada 8 horas">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Duración (días) *</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Duración (días) </label>
                                     <input type="number" id="duracion-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500" placeholder="7">
                                 </div>
                                 <div>
@@ -786,6 +817,38 @@
         }
  </style>
 <script>
+// Función para iniciar el dictado de voz
+function startDictation(fieldId, btn) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('El reconocimiento de voz no es soportado en este navegador.');
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    btn.disabled = true;
+    btn.classList.add('animate-pulse');
+
+    recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.getElementById(fieldId);
+        if (campo) {
+            campo.value += (campo.value ? ' ' : '') + texto;
+        }
+    };
+    recognition.onend = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.onerror = function() {
+        btn.disabled = false;
+        btn.classList.remove('animate-pulse');
+    };
+    recognition.start();
+}
 document.addEventListener('DOMContentLoaded', function() {
     const micBtn = document.getElementById('btn-mic-comentario');
     const comentarioInput = document.getElementById('id_comentario_adicional');

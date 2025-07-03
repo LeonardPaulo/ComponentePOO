@@ -1,98 +1,111 @@
 # applications/doctor/views/tiposangre.py
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, permission_required
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.db.models import Q
 from django.contrib import messages
-from django.core.paginator import Paginator
+from django.shortcuts import redirect
 
-# CORREGIDO: 'aplicaciones' cambiado a 'applications'
 from applications.core.models import TipoSangre
+from applications.doctor.forms.tiposangre import TipoSangreForm
+from applications.security.components.mixin_crud import (
+    CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
+)
 
-# CORREGIDO: La ruta del formulario debe ser absoluta desde la raíz del proyecto
-from applications.doctor.forms.tiposangre import TipoSangreForm 
+# Vistas para TipoSangre
+class TipoSangreListView(PermissionMixin, ListViewMixin, ListView):
+    model = TipoSangre
+    template_name = 'doctor/tipos_sangre/list.html'
+    context_object_name = 'tipos_sangre'
+    paginate_by = 2
+    permission_required = 'view_tiposangre'
 
+    def get_queryset(self):
+        search_query = self.request.GET.get('q', '')
+        if search_query:
+            self.query.add(Q(tipo__icontains=search_query), Q.OR)
+            self.query.add(Q(descripcion__icontains=search_query), Q.OR)
+        return self.model.objects.filter(self.query).order_by('tipo')
 
-# Vistas para TipoSangre (CRUD)
-@login_required
-@permission_required('core.view_tiposangre', raise_exception=True)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Lista de Tipos de Sangre'
+        context['title1'] = 'Tipos de Sangre'
+        context['search_query'] = self.request.GET.get('q', '')
+        return context
+
+class TipoSangreCreateView(PermissionMixin, CreateViewMixin, CreateView):
+    model = TipoSangre
+    form_class = TipoSangreForm
+    template_name = 'doctor/tipos_sangre/form.html'
+    success_url = reverse_lazy('doctor:tiposangre_list')
+    permission_required = 'add_tiposangre'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Tipo de sangre creado exitosamente.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Hubo un error al crear el tipo de sangre. Revisa los datos.')
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Añadir Nuevo Tipo de Sangre'
+        context['title1'] = 'Tipos de Sangre'
+        context['action_url'] = 'doctor:tiposangre_create'
+        context['btn_text'] = 'Guardar Tipo de Sangre'
+        context['is_update'] = False
+        return context
+
+class TipoSangreUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
+    model = TipoSangre
+    form_class = TipoSangreForm
+    template_name = 'doctor/tipos_sangre/form.html'
+    success_url = reverse_lazy('doctor:tiposangre_list')
+    permission_required = 'change_tiposangre'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Tipo de sangre actualizado exitosamente.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Hubo un error al actualizar el tipo de sangre. Revisa los datos.')
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Editar Tipo de Sangre'
+        context['title1'] = f'Editar Tipo de Sangre: {self.object.tipo}'
+        context['action_url'] = 'doctor:tiposangre_update'
+        context['btn_text'] = 'Actualizar Tipo de Sangre'
+        context['is_update'] = True
+        context['tiposangre'] = self.object
+        return context
+
+class TipoSangreDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
+    model = TipoSangre
+    success_url = reverse_lazy('doctor:tiposangre_list')
+    permission_required = 'delete_tiposangre'
+
+    def post(self, request, *args, **kwargs):
+        try:
+            tiposangre_tipo = self.get_object().tipo
+            self.get_object().delete()
+            messages.success(self.request, f'Tipo de sangre "{tiposangre_tipo}" eliminado exitosamente.')
+        except Exception as e:
+            messages.error(self.request, f'Error al eliminar el tipo de sangre: {e}')
+        return redirect(self.success_url)
+
+# Funciones wrapper para mantener compatibilidad con URLs existentes
 def tiposangre_list(request):
-    tipos_sangre = TipoSangre.objects.all()
-    query = request.GET.get('q')
-    if query:
-        tipos_sangre = tipos_sangre.filter(tipo__icontains=query)
+    return TipoSangreListView.as_view()(request)
 
-    paginator = Paginator(tipos_sangre, 2)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        'title': 'Listado de Tipos de Sangre',
-        'title1': 'Tipos de Sangre',
-        'page_obj': page_obj,
-        'permissions': {
-            'add_tiposangre': request.user.has_perm('core.add_tiposangre'),
-            'change_tiposangre': request.user.has_perm('core.change_tiposangre'),
-            'delete_tiposangre': request.user.has_perm('core.delete_tiposangre'),
-            'view_tiposangre': request.user.has_perm('core.view_tiposangre'),
-        }
-    }
-    return render(request, 'doctor/tipos_sangre/list.html', context)
-
-@login_required
-@permission_required('core.add_tiposangre', raise_exception=True)
 def tiposangre_create(request):
-    if request.method == 'POST':
-        form = TipoSangreForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Tipo de sangre agregado exitosamente.')
-            return redirect('doctor:tiposangre_list')
-        else:
-            messages.error(request, 'Error al agregar el tipo de sangre. Por favor, revisa los datos.')
-    else:
-        form = TipoSangreForm()
+    return TipoSangreCreateView.as_view()(request)
 
-    context = {
-        'title': 'Agregar Tipo de Sangre',
-        'form': form,
-        'action_url': 'doctor:tiposangre_create',
-        'btn_text': 'Guardar Tipo de Sangre',
-        'is_update': False,
-    }
-    return render(request, 'doctor/tipos_sangre/form.html', context)
-
-@login_required
-@permission_required('core.change_tiposangre', raise_exception=True)
 def tiposangre_update(request, pk):
-    tipo_sangre = get_object_or_404(TipoSangre, pk=pk)
-    if request.method == 'POST':
-        form = TipoSangreForm(request.POST, instance=tipo_sangre)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Tipo de sangre actualizado exitosamente.')
-            return redirect('doctor:tiposangre_list')
-        else:
-            messages.error(request, 'Error al actualizar el tipo de sangre. Por favor, revisa los datos.')
-    else:
-        form = TipoSangreForm(instance=tipo_sangre)
+    return TipoSangreUpdateView.as_view()(request, pk=pk)
 
-    context = {
-        'title': 'Editar Tipo de Sangre',
-        'form': form,
-        'action_url': 'doctor:tiposangre_update',
-        'btn_text': 'Actualizar Tipo de Sangre',
-        'is_update': True,
-        'tipo_sangre': tipo_sangre, # <--- ¡ESTA ES LA LÍNEA CRÍTICA AÑADIDA!
-    }
-    return render(request, 'doctor/tipos_sangre/form.html', context)
-
-@login_required
-@permission_required('core.delete_tiposangre', raise_exception=True)
 def tiposangre_delete(request, pk):
-    tipo_sangre = get_object_or_404(TipoSangre, pk=pk)
-    if request.method == 'POST':
-        tipo_sangre.delete()
-        messages.success(request, 'Tipo de sangre eliminado exitosamente.')
-        return redirect('doctor:tiposangre_list')
-    messages.error(request, 'Método no permitido para eliminar el tipo de sangre.')
-    return redirect('doctor:tiposangre_list')
+    return TipoSangreDeleteView.as_view()(request, pk=pk)

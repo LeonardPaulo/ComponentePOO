@@ -3,54 +3,44 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Q
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect
 
 from applications.core.models import Doctor, Especialidad
 from applications.doctor.forms.doctor import DoctorForm
+from applications.security.components.mixin_crud import (
+    CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
+)
 
-class DoctorListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class DoctorListView(PermissionMixin, ListViewMixin, ListView):
     model = Doctor
     template_name = 'doctor/doctor/list.html' 
     context_object_name = 'doctores'
     paginate_by = 10
-    permission_required = 'core.view_doctor'
+    permission_required = 'view_doctor'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
         search_query = self.request.GET.get('q', '')
         if search_query:
-            queryset = queryset.filter(
-                Q(nombres__icontains=search_query) |
-                Q(apellidos__icontains=search_query) |
-                Q(ruc__icontains=search_query) |
-                Q(especialidad__nombre__icontains=search_query)
-            ).distinct()
-        queryset = queryset.order_by('apellidos', 'nombres')
-        return queryset
+            self.query.add(Q(nombres__icontains=search_query), Q.OR)
+            self.query.add(Q(apellidos__icontains=search_query), Q.OR)
+            self.query.add(Q(ruc__icontains=search_query), Q.OR)
+            self.query.add(Q(especialidad__nombre__icontains=search_query), Q.OR)
+        return self.model.objects.filter(self.query).order_by('apellidos', 'nombres')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Lista de Doctores'
         context['title1'] = 'Doctores'
         context['search_query'] = self.request.GET.get('q', '')
-        context['permissions'] = self.get_permissions_context(self.request)
         return context
 
-    def get_permissions_context(self, request):
-        return {
-            'add_doctor': request.user.has_perm('core.add_doctor'),
-            'change_doctor': request.user.has_perm('core.change_doctor'),
-            'delete_doctor': request.user.has_perm('core.delete_doctor'),
-        }
-
-class DoctorCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class DoctorCreateView(PermissionMixin, CreateViewMixin, CreateView):
     model = Doctor
     form_class = DoctorForm
     template_name = 'doctor/doctor/form.html'
     success_url = reverse_lazy('doctor:doctor_list')
-    permission_required = 'core.add_doctor'
+    permission_required = 'add_doctor'
 
     def form_valid(self, form):
         messages.success(self.request, 'Doctor creado exitosamente.')
@@ -67,12 +57,12 @@ class DoctorCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         context['title1'] = 'Doctores'
         return context
 
-class DoctorUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class DoctorUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
     model = Doctor
     form_class = DoctorForm
     template_name = 'doctor/doctor/form.html'
     success_url = reverse_lazy('doctor:doctor_list')
-    permission_required = 'core.change_doctor'
+    permission_required = 'change_doctor'
 
     def form_valid(self, form):
         messages.success(self.request, 'Doctor actualizado exitosamente.')
@@ -89,15 +79,10 @@ class DoctorUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         context['title1'] = 'Doctores'
         return context
 
-class DoctorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class DoctorDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
     model = Doctor
     success_url = reverse_lazy('doctor:doctor_list')
-    permission_required = 'core.delete_doctor'
-    # ¡¡IMPORTANTE: NO DEBE HABER template_name AQUÍ!!
-    # Si DeleteView recibe un GET y no tiene template_name, intentará buscar uno por defecto,
-    # lo cual causaba el TemplateDoesNotExist.
-    # Al sobrescribir `post` y no tener `template_name`, el GET seguirá buscando una plantilla,
-    # pero el POST se manejará correctamente. La clave es que el botón de eliminar envíe POST.
+    permission_required = 'delete_doctor'
 
     def post(self, request, *args, **kwargs):
         try:
@@ -107,4 +92,4 @@ class DoctorDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
         except Exception as e:
             messages.error(self.request, f'Error al eliminar el doctor: {e}')
             print(f"Error al eliminar doctor: {e}")
-        return redirect(self.success_url)
+        return

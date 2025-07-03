@@ -1,139 +1,111 @@
 # applications/doctor/views/marcamedicamento.py
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib import messages
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from django.db.models import Q
-from django.core.paginator import Paginator
-# Eliminamos la importación de reverse_lazy ya que no usaremos Generic Views para Delete
+from django.contrib import messages
+from django.shortcuts import redirect
 
 from applications.core.models import MarcaMedicamento
-from ..forms.marcamedicamento import MarcaMedicamentoForm
+from applications.doctor.forms.marcamedicamento import MarcaMedicamentoForm
+from applications.security.components.mixin_crud import (
+    CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
+)
 
-class MarcaMedicamentoListView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = 'core.view_marcamedicamento'
+# Vistas para Marca de Medicamento
+class MarcaMedicamentoListView(PermissionMixin, ListViewMixin, ListView):
+    model = MarcaMedicamento
     template_name = 'doctor/marcamedicamento/list.html'
+    context_object_name = 'marcas'
+    paginate_by = 2
+    permission_required = 'view_marcamedicamento'
 
-    def get(self, request):
-        search_query = request.GET.get('q', '')
-        marcas_medicamento = MarcaMedicamento.objects.all()
-
+    def get_queryset(self):
+        search_query = self.request.GET.get('q', '')
         if search_query:
-            marcas_medicamento = marcas_medicamento.filter(
-                Q(nombre__icontains=search_query) |
-                Q(descripcion__icontains=search_query)
-            )
+            self.query.add(Q(nombre__icontains=search_query), Q.OR)
+            self.query.add(Q(descripcion__icontains=search_query), Q.OR)
+        return self.model.objects.filter(self.query).order_by('nombre')
 
-        paginator = Paginator(marcas_medicamento, 2)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Lista de Marcas de Medicamentos'
+        context['title1'] = 'Marcas de Medicamentos'
+        context['search_query'] = self.request.GET.get('q', '')
+        return context
 
-        context = {
-            'title': 'Lista de Marcas de Medicamentos',
-            'title1': 'Marcas de Medicamentos',
-            'page_obj': page_obj,
-            'search_query': search_query,
-            'permissions': self.get_permissions_context(request),
-        }
-        return render(request, self.template_name, context)
-    
-    def get_permissions_context(self, request):
-        return {
-            'add_marcamedicamento': request.user.has_perm('core.add_marcamedicamento'),
-            'change_marcamedicamento': request.user.has_perm('core.change_marcamedicamento'),
-            'delete_marcamedicamento': request.user.has_perm('core.delete_marcamedicamento'),
-        }
-
-class MarcaMedicamentoCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = 'core.add_marcamedicamento'
+class MarcaMedicamentoCreateView(PermissionMixin, CreateViewMixin, CreateView):
+    model = MarcaMedicamento
+    form_class = MarcaMedicamentoForm
     template_name = 'doctor/marcamedicamento/form.html'
+    success_url = reverse_lazy('doctor:marcasmedicamento_list')
+    permission_required = 'add_marcamedicamento'
 
-    def get(self, request):
-        form = MarcaMedicamentoForm()
-        context = {
-            'title': 'Crear Marca de Medicamento',
-            'title1': 'Crear Nueva Marca de Medicamento',
-            'form': form,
-            'permissions': self.get_permissions_context(request),
-        }
-        return render(request, self.template_name, context)
+    def form_valid(self, form):
+        messages.success(self.request, 'Marca de Medicamento creada exitosamente.')
+        return super().form_valid(form)
 
-    def post(self, request):
-        form = MarcaMedicamentoForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Marca de Medicamento creada exitosamente.')
-            return redirect('doctor:marcasmedicamento_list')
-        else:
-            messages.error(request, 'Hubo un error al crear la Marca de Medicamento. Por favor, revisa los datos.')
-            context = {
-                'title': 'Crear Marca de Medicamento',
-                'title1': 'Crear Nueva Marca de Medicamento',
-                'form': form,
-                'permissions': self.get_permissions_context(request),
-            }
-            return render(request, self.template_name, context)
+    def form_invalid(self, form):
+        messages.error(self.request, 'Hubo un error al crear la Marca de Medicamento. Por favor, revisa los datos.')
+        return super().form_invalid(form)
 
-    def get_permissions_context(self, request):
-        return {
-            'add_marcamedicamento': request.user.has_perm('core.add_marcamedicamento'),
-            'change_marcamedicamento': request.user.has_perm('core.change_marcamedicamento'),
-            'delete_marcamedicamento': request.user.has_perm('core.delete_marcamedicamento'),
-        }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Crear Marca de Medicamento'
+        context['title1'] = 'Crear Nueva Marca de Medicamento'
+        context['action_url'] = 'doctor:marcamedicamento_create'
+        context['btn_text'] = 'Guardar Marca'
+        context['is_update'] = False
+        return context
 
-class MarcaMedicamentoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = 'core.change_marcamedicamento'
+class MarcaMedicamentoUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
+    model = MarcaMedicamento
+    form_class = MarcaMedicamentoForm
     template_name = 'doctor/marcamedicamento/form.html'
+    success_url = reverse_lazy('doctor:marcasmedicamento_list')
+    permission_required = 'change_marcamedicamento'
 
-    def get(self, request, pk):
-        marca_medicamento = get_object_or_404(MarcaMedicamento, pk=pk)
-        form = MarcaMedicamentoForm(instance=marca_medicamento)
-        context = {
-            'title': 'Editar Marca de Medicamento',
-            'title1': f'Editar Marca de Medicamento: {marca_medicamento.nombre}',
-            'form': form,
-            'permissions': self.get_permissions_context(request),
-        }
-        return render(request, self.template_name, context)
+    def form_valid(self, form):
+        messages.success(self.request, 'Marca de Medicamento actualizada exitosamente.')
+        return super().form_valid(form)
 
-    def post(self, request, pk):
-        marca_medicamento = get_object_or_404(MarcaMedicamento, pk=pk)
-        form = MarcaMedicamentoForm(request.POST, instance=marca_medicamento)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Marca de Medicamento actualizada exitosamente.')
-            return redirect('doctor:marcasmedicamento_list')
-        else:
-            messages.error(request, 'Hubo un error al actualizar la Marca de Medicamento. Por favor, revisa los datos.')
-            context = {
-                'title': 'Editar Marca de Medicamento',
-                'title1': f'Editar Marca de Medicamento: {marca_medicamento.nombre}',
-                'form': form,
-                'permissions': self.get_permissions_context(request),
-            }
-            return render(request, self.template_name, context)
+    def form_invalid(self, form):
+        messages.error(self.request, 'Hubo un error al actualizar la Marca de Medicamento. Por favor, revisa los datos.')
+        return super().form_invalid(form)
 
-    def get_permissions_context(self, request):
-        return {
-            'add_marcamedicamento': request.user.has_perm('core.add_marcamedicamento'),
-            'change_marcamedicamento': request.user.has_perm('core.change_marcamedicamento'),
-            'delete_marcamedicamento': request.user.has_perm('core.delete_marcamedicamento'),
-        }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Editar Marca de Medicamento'
+        context['title1'] = f'Editar Marca de Medicamento: {self.object.nombre}'
+        context['action_url'] = 'doctor:marcamedicamento_update'
+        context['btn_text'] = 'Actualizar Marca'
+        context['is_update'] = True
+        context['marca'] = self.object
+        return context
 
-# Vista de Eliminación directa (sin plantilla de confirmación dedicada)
-class MarcaMedicamentoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = 'core.delete_marcamedicamento'
+class MarcaMedicamentoDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
+    model = MarcaMedicamento
+    success_url = reverse_lazy('doctor:marcasmedicamento_list')
+    permission_required = 'delete_marcamedicamento'
 
-    def post(self, request, pk): # Cambiamos a POST para una eliminación segura
-        marca_medicamento = get_object_or_404(MarcaMedicamento, pk=pk)
+    def post(self, request, *args, **kwargs):
         try:
-            marca_medicamento.delete()
-            messages.success(request, f'Marca "{marca_medicamento.nombre}" eliminada exitosamente.')
+            marca_nombre = self.get_object().nombre
+            self.get_object().delete()
+            messages.success(self.request, f'Marca "{marca_nombre}" eliminada exitosamente.')
         except Exception as e:
-            messages.error(request, f'No se pudo eliminar la marca "{marca_medicamento.nombre}": {e}')
-        
-        return redirect('doctor:marcasmedicamento_list')
+            messages.error(self.request, f'Error al eliminar la marca: {e}')
+        return redirect(self.success_url)
 
-    # No necesitamos un método get aquí porque no hay una página de confirmación.
-    # La eliminación se activará vía POST desde el list.html.
+# Funciones wrapper para mantener compatibilidad con URLs existentes
+def marcasmedicamento_list(request):
+    return MarcaMedicamentoListView.as_view()(request)
+
+def marcamedicamento_create(request):
+    return MarcaMedicamentoCreateView.as_view()(request)
+
+def marcamedicamento_update(request, pk):
+    return MarcaMedicamentoUpdateView.as_view()(request, pk=pk)
+
+def marcamedicamento_delete(request, pk):
+    return MarcaMedicamentoDeleteView.as_view()(request, pk=pk)

@@ -1,87 +1,110 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, permission_required
+# applications/doctor/views/gastomensual.py
+
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.db.models import Q
 from django.contrib import messages
-from django.core.paginator import Paginator
+from django.shortcuts import redirect
 
 from applications.core.models import GastoMensual
 from applications.doctor.forms.gastomensual import GastoMensualForm
+from applications.security.components.mixin_crud import (
+    CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
+)
 
-@login_required
-@permission_required('core.view_gastomensual', raise_exception=True)
+# Vistas para Gasto Mensual
+class GastoMensualListView(PermissionMixin, ListViewMixin, ListView):
+    model = GastoMensual
+    template_name = 'doctor/gastos_mensuales/list.html'
+    context_object_name = 'gastos'
+    paginate_by = 2
+    permission_required = 'view_gastomensual'
+
+    def get_queryset(self):
+        search_query = self.request.GET.get('q', '')
+        if search_query:
+            self.query.add(Q(tipo_gasto__nombre__icontains=search_query), Q.OR)
+            self.query.add(Q(observacion__icontains=search_query), Q.OR)
+        return self.model.objects.select_related('tipo_gasto').filter(self.query).order_by('-fecha')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Listado de Gastos Mensuales'
+        context['title1'] = 'Gastos Mensuales'
+        context['search_query'] = self.request.GET.get('q', '')
+        return context
+
+class GastoMensualCreateView(PermissionMixin, CreateViewMixin, CreateView):
+    model = GastoMensual
+    form_class = GastoMensualForm
+    template_name = 'doctor/gastos_mensuales/form.html'
+    success_url = reverse_lazy('doctor:gastomensual_list')
+    permission_required = 'add_gastomensual'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Gasto mensual agregado exitosamente.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error al agregar el gasto mensual. Por favor, revisa los datos.')
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Agregar Gasto Mensual'
+        context['title1'] = 'Gastos Mensuales'
+        context['action_url'] = 'doctor:gastomensual_create'
+        context['btn_text'] = 'Guardar Gasto Mensual'
+        context['is_update'] = False
+        return context
+
+class GastoMensualUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
+    model = GastoMensual
+    form_class = GastoMensualForm
+    template_name = 'doctor/gastos_mensuales/form.html'
+    success_url = reverse_lazy('doctor:gastomensual_list')
+    permission_required = 'change_gastomensual'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Gasto mensual actualizado exitosamente.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error al actualizar el gasto mensual. Por favor, revisa los datos.')
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Editar Gasto Mensual'
+        context['title1'] = 'Gastos Mensuales'
+        context['action_url'] = 'doctor:gastomensual_update'
+        context['btn_text'] = 'Actualizar Gasto Mensual'
+        context['is_update'] = True
+        context['gasto'] = self.object
+        return context
+
+class GastoMensualDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
+    model = GastoMensual
+    success_url = reverse_lazy('doctor:gastomensual_list')
+    permission_required = 'delete_gastomensual'
+
+    def post(self, request, *args, **kwargs):
+        try:
+            self.get_object().delete()
+            messages.success(self.request, 'Gasto mensual eliminado exitosamente.')
+        except Exception as e:
+            messages.error(self.request, f'Error al eliminar el gasto mensual: {e}')
+        return redirect(self.success_url)
+
+# Funciones wrapper para mantener compatibilidad con URLs existentes
 def gastomensual_list(request):
-    gastos = GastoMensual.objects.select_related('tipo_gasto').all()
-    query = request.GET.get('q')
-    if query:
-        gastos = gastos.filter(tipo_gasto__nombre__icontains=query)
-    paginator = Paginator(gastos, 2)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    context = {
-        'title': 'Listado de Gastos Mensuales',
-        'title1': 'Gastos Mensuales',
-        'page_obj': page_obj,
-        'permissions': {
-            'add_gastomensual': request.user.has_perm('core.add_gastomensual'),
-            'change_gastomensual': request.user.has_perm('core.change_gastomensual'),
-            'delete_gastomensual': request.user.has_perm('core.delete_gastomensual'),
-            'view_gastomensual': request.user.has_perm('core.view_gastomensual'),
-        }
-    }
-    return render(request, 'doctor/gastos_mensuales/list.html', context)
+    return GastoMensualListView.as_view()(request)
 
-@login_required
-@permission_required('core.add_gastomensual', raise_exception=True)
 def gastomensual_create(request):
-    if request.method == 'POST':
-        form = GastoMensualForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Gasto mensual agregado exitosamente.')
-            return redirect('doctor:gastomensual_list')
-        else:
-            messages.error(request, 'Error al agregar el gasto mensual. Por favor, revisa los datos.')
-    else:
-        form = GastoMensualForm()
-    context = {
-        'title': 'Agregar Gasto Mensual',
-        'form': form,
-        'action_url': 'doctor:gastomensual_create',
-        'btn_text': 'Guardar Gasto Mensual',
-        'is_update': False,
-    }
-    return render(request, 'doctor/gastos_mensuales/form.html', context)
+    return GastoMensualCreateView.as_view()(request)
 
-@login_required
-@permission_required('core.change_gastomensual', raise_exception=True)
 def gastomensual_update(request, pk):
-    gasto = get_object_or_404(GastoMensual, pk=pk)
-    if request.method == 'POST':
-        form = GastoMensualForm(request.POST, instance=gasto)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Gasto mensual actualizado exitosamente.')
-            return redirect('doctor:gastomensual_list')
-        else:
-            messages.error(request, 'Error al actualizar el gasto mensual. Por favor, revisa los datos.')
-    else:
-        form = GastoMensualForm(instance=gasto)
-    context = {
-        'title': 'Editar Gasto Mensual',
-        'form': form,
-        'action_url': 'doctor:gastomensual_update',
-        'btn_text': 'Actualizar Gasto Mensual',
-        'is_update': True,
-        'gasto': gasto,
-    }
-    return render(request, 'doctor/gastos_mensuales/form.html', context)
+    return GastoMensualUpdateView.as_view()(request, pk=pk)
 
-@login_required
-@permission_required('core.delete_gastomensual', raise_exception=True)
 def gastomensual_delete(request, pk):
-    gasto = get_object_or_404(GastoMensual, pk=pk)
-    if request.method == 'POST':
-        gasto.delete()
-        messages.success(request, 'Gasto mensual eliminado exitosamente.')
-        return redirect('doctor:gastomensual_list')
-    messages.error(request, 'Método no permitido para eliminar el gasto mensual.')
-    return redirect('doctor:gastomensual_list')
+    return GastoMensualDeleteView.as_view()(request, pk=pk)

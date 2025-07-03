@@ -216,8 +216,8 @@ Puedo ayudarte con información general sobre salud, consejos médicos básicos 
 });
 </script>
 
- <script>
-    document.addEventListener('DOMContentLoaded', function() {
+<script>
+document.addEventListener('DOMContentLoaded', function() {
     const userDropdown = document.getElementById('userDropdown');
     const userDropdownMenu = document.getElementById('userDropdownMenu');
     const userDropdownIcon = document.getElementById('userDropdownIcon');
@@ -257,21 +257,23 @@ Puedo ayudarte con información general sobre salud, consejos médicos básicos 
         });
     }
 
-    // Groups selector functionality
-    const groupsSelector = document.querySelector('select');
-    if (groupsSelector) {
-        groupsSelector.addEventListener('change', function() {
-            const selectedGroup = this.value;
-            if (selectedGroup) {
-                // Here you can add functionality to handle group selection
-                console.log('Selected group:', selectedGroup);
-                // You could make an AJAX request to change the user's active group
-                // or redirect to a filtered view
+    // Groups selector functionality - CORREGIDO: solo para #groupSelect
+    const groupSelect = document.getElementById('groupSelect');
+    if (groupSelect) {
+        groupSelect.addEventListener('change', function() {
+            const selectedGroupId = this.value;
+            
+            if (selectedGroupId) {
+                // Redirigir con el parámetro gpid
+                window.location.href = `{% url 'home' %}?gpid=${selectedGroupId}`;
+            } else {
+                // Si no hay selección, ir a la página sin parámetros
+                window.location.href = `{% url 'home' %}`;
             }
         });
     }
 
-// Add smooth entrance animations
+    // Add smooth entrance animations
     // Animate stats cards
     const statsCards = document.querySelectorAll('.grid > div');
     statsCards.forEach((card, index) => {
@@ -317,48 +319,27 @@ Puedo ayudarte con información general sobre salud, consejos médicos básicos 
             });
         });
     });
-});
-{% comment %} document.getElementById('groupSelect').addEventListener('change', function() {
-    const selectedGroupId = this.value;
-    
-    if (selectedGroupId) {
-        // Redirigir con el parámetro gpid
-        window.location.href = `{% url 'home' %}?gpid=${selectedGroupId}`;
-    } else {
-        // Si no hay selección, ir a la página sin parámetros
-        window.location.href = `{% url 'home' %}`;
-    }
-}); {% endcomment %}
-// Add intersection observer for animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.animation = 'slideInRight 0.6s ease-out forwards';
-        }
+    // Add intersection observer for animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'slideInRight 0.6s ease-out forwards';
+            }
+        });
+    }, observerOptions);
+
+    // Observe all module cards
+    document.querySelectorAll('.module-card').forEach(card => {
+        observer.observe(card);
     });
-}, observerOptions);
-
-// Observe all module cards
-document.querySelectorAll('.module-card').forEach(card => {
-    observer.observe(card);
 });
-    document.getElementById('groupSelect').addEventListener('change', function() {
-    const selectedGroupId = this.value;
-    
-    if (selectedGroupId) {
-        // Redirigir con el parámetro gpid
-        window.location.href = `{% url 'home' %}?gpid=${selectedGroupId}`;
-    } else {
-        // Si no hay selección, ir a la página sin parámetros
-        window.location.href = `{% url 'home' %}`;
-    }
-});
- </script>
+</script>
 {% endblock %}
 {% block content %}{% endblock content %} 
 </div> 

@@ -3,57 +3,45 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Q
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect
 
-from applications.core.models import Empleado # Asegúrate de importar el modelo Empleado
-from applications.doctor.forms.empleado import EmpleadoForm # Asegúrate de importar el formulario
+from applications.core.models import Empleado
+from applications.doctor.forms.empleado import EmpleadoForm
+from applications.security.components.mixin_crud import (
+    CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
+)
 
 # Vistas para Empleado
-class EmpleadoListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class EmpleadoListView(PermissionMixin, ListViewMixin, ListView):
     model = Empleado
     template_name = 'doctor/empleado/list.html'
-    context_object_name = 'empleados' # Nombre de la variable en el template
-    paginate_by = 10 
-    permission_required = 'core.view_empleado' # Permiso requerido para ver la lista
+    context_object_name = 'empleados'
+    paginate_by = 10
+    permission_required = 'view_empleado'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
         search_query = self.request.GET.get('q', '')
-
         if search_query:
-            queryset = queryset.filter(
-                Q(nombres__icontains=search_query) |
-                Q(apellidos__icontains=search_query) |
-                Q(cedula_ecuatoriana__icontains=search_query) |
-                Q(cargo__nombre__icontains=search_query) # Búsqueda por nombre de cargo relacionado
-            ).distinct()
-        
-        queryset = queryset.order_by('apellidos', 'nombres')
-        return queryset
+            self.query.add(Q(nombres__icontains=search_query), Q.OR)
+            self.query.add(Q(apellidos__icontains=search_query), Q.OR)
+            self.query.add(Q(cedula_ecuatoriana__icontains=search_query), Q.OR)
+            self.query.add(Q(cargo__nombre__icontains=search_query), Q.OR)
+        return self.model.objects.filter(self.query).order_by('apellidos', 'nombres')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Lista de Empleados'
         context['title1'] = 'Empleados'
         context['search_query'] = self.request.GET.get('q', '')
-        context['permissions'] = self.get_permissions_context(self.request)
         return context
 
-    def get_permissions_context(self, request):
-        return {
-            'add_empleado': request.user.has_perm('core.add_empleado'),
-            'change_empleado': request.user.has_perm('core.change_empleado'),
-            'delete_empleado': request.user.has_perm('core.delete_empleado'),
-        }
-
-class EmpleadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class EmpleadoCreateView(PermissionMixin, CreateViewMixin, CreateView):
     model = Empleado
     form_class = EmpleadoForm
     template_name = 'doctor/empleado/form.html'
     success_url = reverse_lazy('doctor:empleado_list')
-    permission_required = 'core.add_empleado'
+    permission_required = 'add_empleado'
 
     def form_valid(self, form):
         messages.success(self.request, 'Empleado creado exitosamente.')
@@ -69,12 +57,12 @@ class EmpleadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
         context['title1'] = 'Empleados'
         return context
 
-class EmpleadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class EmpleadoUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
     model = Empleado
     form_class = EmpleadoForm
     template_name = 'doctor/empleado/form.html'
     success_url = reverse_lazy('doctor:empleado_list')
-    permission_required = 'core.change_empleado'
+    permission_required = 'change_empleado'
 
     def form_valid(self, form):
         messages.success(self.request, 'Empleado actualizado exitosamente.')
@@ -90,10 +78,10 @@ class EmpleadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
         context['title1'] = 'Empleados'
         return context
 
-class EmpleadoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class EmpleadoDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
     model = Empleado
     success_url = reverse_lazy('doctor:empleado_list')
-    permission_required = 'core.delete_empleado'
+    permission_required = 'delete_empleado'
 
     def post(self, request, *args, **kwargs):
         try:

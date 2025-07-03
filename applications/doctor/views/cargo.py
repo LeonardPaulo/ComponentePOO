@@ -3,55 +3,43 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Q
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect
 
-from applications.core.models import Cargo # Asegúrate de importar el modelo Cargo
-from applications.doctor.forms.cargo import CargoForm # Asegúrate de importar el formulario
+from applications.core.models import Cargo
+from applications.doctor.forms.cargo import CargoForm
+from applications.security.components.mixin_crud import (
+    CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
+)
 
 # Vistas para Cargo
-class CargoListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class CargoListView(PermissionMixin, ListViewMixin, ListView):
     model = Cargo
     template_name = 'doctor/cargo/list.html'
-    context_object_name = 'cargos' # Nombre de la variable en el template
-    paginate_by = 2 # Número de elementos por página 
-    permission_required = 'core.view_cargo' # Permiso requerido para ver la lista
+    context_object_name = 'cargos'
+    paginate_by = 2
+    permission_required = 'view_cargo'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
         search_query = self.request.GET.get('q', '')
-
         if search_query:
-            queryset = queryset.filter(
-                Q(nombre__icontains=search_query) |
-                Q(descripcion__icontains=search_query)
-            ).distinct()
-        
-        queryset = queryset.order_by('nombre')
-        return queryset
+            self.query.add(Q(nombre__icontains=search_query), Q.OR)
+            self.query.add(Q(descripcion__icontains=search_query), Q.OR)
+        return self.model.objects.filter(self.query).order_by('nombre')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Lista de Cargos'
         context['title1'] = 'Cargos'
         context['search_query'] = self.request.GET.get('q', '')
-        context['permissions'] = self.get_permissions_context(self.request)
         return context
 
-    def get_permissions_context(self, request):
-        return {
-            'add_cargo': request.user.has_perm('core.add_cargo'),
-            'change_cargo': request.user.has_perm('core.change_cargo'),
-            'delete_cargo': request.user.has_perm('core.delete_cargo'),
-        }
-
-class CargoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class CargoCreateView(PermissionMixin, CreateViewMixin, CreateView):
     model = Cargo
     form_class = CargoForm
     template_name = 'doctor/cargo/form.html'
     success_url = reverse_lazy('doctor:cargo_list')
-    permission_required = 'core.add_cargo'
+    permission_required = 'add_cargo'
 
     def form_valid(self, form):
         messages.success(self.request, 'Cargo creado exitosamente.')
@@ -67,12 +55,12 @@ class CargoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         context['title1'] = 'Cargos'
         return context
 
-class CargoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class CargoUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
     model = Cargo
     form_class = CargoForm
     template_name = 'doctor/cargo/form.html'
     success_url = reverse_lazy('doctor:cargo_list')
-    permission_required = 'core.change_cargo'
+    permission_required = 'change_cargo'
 
     def form_valid(self, form):
         messages.success(self.request, 'Cargo actualizado exitosamente.')
@@ -88,10 +76,10 @@ class CargoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         context['title1'] = 'Cargos'
         return context
 
-class CargoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class CargoDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
     model = Cargo
     success_url = reverse_lazy('doctor:cargo_list')
-    permission_required = 'core.delete_cargo'
+    permission_required = 'delete_cargo'
 
     def post(self, request, *args, **kwargs):
         try:
@@ -99,4 +87,3 @@ class CargoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
             messages.success(self.request, 'Cargo eliminado exitosamente.')
         except Exception as e:
             messages.error(self.request, f'Error al eliminar el cargo: {e}')
-        return redirect(self.success_url)

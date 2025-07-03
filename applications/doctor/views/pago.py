@@ -2,7 +2,7 @@ from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-
+from django.db.models import Q
 from applications.doctor.models import Pago
 from applications.doctor.forms.pago import PagoForm
 from applications.security.components.mixin_crud import CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
@@ -18,7 +18,10 @@ class PagoListView(PermissionMixin, ListViewMixin, ListView):
         q = self.request.GET.get('q')
         queryset = self.model.objects.all()
         if q:
-            queryset = queryset.filter(nombre_pagador__icontains=q)
+            queryset = queryset.filter(
+                Q(nombre_pagador__icontains=q) |
+                Q(metodo_pago__icontains=q)
+            )
         return queryset.order_by('-fecha_creacion')
 
     def get_context_data(self, **kwargs):

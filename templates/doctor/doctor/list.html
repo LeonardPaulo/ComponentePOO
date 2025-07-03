@@ -684,11 +684,6 @@
     <!-- Acciones Adicionales -->
     <div class="actions-section">
         <div class="actions-buttons">
-            {% if permissions.add_doctor %}
-            <a href="{% url 'doctor:doctor_create' %}" class="btn btn-create">
-                <i class="fas fa-plus-circle"></i> Añadir Nuevo Doctor
-            </a>
-            {% endif %}
             <a href="{% url 'home' %}" class="btn btn-home">
                 <i class="fas fa-home"></i> Inicio
             </a>

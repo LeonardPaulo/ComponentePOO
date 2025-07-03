@@ -1,94 +1,111 @@
 # applications/doctor/views/tipomedicamento.py
 
-from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from applications.core.models import TipoMedicamento
-from applications.doctor.forms.tipomedicamento import TipoMedicamentoForm
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.urls import reverse_lazy
+from django.db.models import Q
 from django.contrib import messages
 from django.shortcuts import redirect
 
+from applications.core.models import TipoMedicamento
+from applications.doctor.forms.tipomedicamento import TipoMedicamentoForm
+from applications.security.components.mixin_crud import (
+    CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
+)
+
 # Vistas para TipoMedicamento
-class TipoMedicamentoListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class TipoMedicamentoListView(PermissionMixin, ListViewMixin, ListView):
     model = TipoMedicamento
     template_name = 'doctor/tipomedicamento/list.html'
-    context_object_name = 'tipos_medicamento' # Cambiado para ser más descriptivo
+    context_object_name = 'tipos_medicamento'
     paginate_by = 2
-    permission_required = ('core.view_tipomedicamento',)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Listado de Tipos de Medicamentos'
-        context['title1'] = 'Tipos de Medicamentos'
-        # Añadir permisos al contexto
-        user_permissions = self.request.user.get_all_permissions()
-        context['permissions'] = {
-            'add_tipomedicamento': 'core.add_tipomedicamento' in user_permissions,
-            'change_tipomedicamento': 'core.change_tipomedicamento' in user_permissions,
-            'delete_tipomedicamento': 'core.delete_tipomedicamento' in user_permissions,
-            'view_tipomedicamento': 'core.view_tipomedicamento' in user_permissions,
-        }
-        return context
+    permission_required = 'view_tipomedicamento'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        query = self.request.GET.get('q')
-        if query:
-            queryset = queryset.filter(nombre__icontains=query) | \
-                       queryset.filter(descripcion__icontains=query)
-        return queryset
-
-class TipoMedicamentoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    model = TipoMedicamento
-    form_class = TipoMedicamentoForm
-    template_name = 'doctor/tipomedicamento/form.html'
-    success_url = reverse_lazy('doctor:tiposmedicamento_list') # Asegúrate que esta URL sea correcta
-    permission_required = ('core.add_tipomedicamento',)
+        search_query = self.request.GET.get('q', '')
+        if search_query:
+            self.query.add(Q(nombre__icontains=search_query), Q.OR)
+            self.query.add(Q(descripcion__icontains=search_query), Q.OR)
+        return self.model.objects.filter(self.query).order_by('nombre')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Añadir Tipo de Medicamento'
+        context['title'] = 'Lista de Tipos de Medicamentos'
+        context['title1'] = 'Tipos de Medicamentos'
+        context['search_query'] = self.request.GET.get('q', '')
         return context
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Tipo de Medicamento creado exitosamente.')
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Error al crear el Tipo de Medicamento. Por favor, revisa los campos.')
-        return super().form_invalid(form)
-
-class TipoMedicamentoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class TipoMedicamentoCreateView(PermissionMixin, CreateViewMixin, CreateView):
     model = TipoMedicamento
     form_class = TipoMedicamentoForm
     template_name = 'doctor/tipomedicamento/form.html'
     success_url = reverse_lazy('doctor:tiposmedicamento_list')
-    permission_required = ('core.change_tipomedicamento',)
+    permission_required = 'add_tipomedicamento'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Tipo de medicamento creado exitosamente.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Hubo un error al crear el tipo de medicamento. Revisa los datos.')
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Añadir Nuevo Tipo de Medicamento'
+        context['title1'] = 'Tipos de Medicamentos'
+        context['action_url'] = 'doctor:tiposmedicamento_create'
+        context['btn_text'] = 'Guardar Tipo de Medicamento'
+        context['is_update'] = False
+        return context
+
+class TipoMedicamentoUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
+    model = TipoMedicamento
+    form_class = TipoMedicamentoForm
+    template_name = 'doctor/tipomedicamento/form.html'
+    success_url = reverse_lazy('doctor:tiposmedicamento_list')
+    permission_required = 'change_tipomedicamento'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Tipo de medicamento actualizado exitosamente.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Hubo un error al actualizar el tipo de medicamento. Revisa los datos.')
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Editar Tipo de Medicamento'
+        context['title1'] = f'Editar Tipo de Medicamento: {self.object.nombre}'
+        context['action_url'] = 'doctor:tiposmedicamento_update'
+        context['btn_text'] = 'Actualizar Tipo de Medicamento'
+        context['is_update'] = True
+        context['tipomedicamento'] = self.object
         return context
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Tipo de Medicamento actualizado exitosamente.')
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Error al actualizar el Tipo de Medicamento. Por favor, revisa los campos.')
-        return super().form_invalid(form)
-
-class TipoMedicamentoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class TipoMedicamentoDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
     model = TipoMedicamento
-    template_name = 'doctor/tipomedicamento/delete.html' # Puedes usar un template específico o el modal genérico
     success_url = reverse_lazy('doctor:tiposmedicamento_list')
-    permission_required = ('core.delete_tipomedicamento',)
+    permission_required = 'delete_tipomedicamento'
 
     def post(self, request, *args, **kwargs):
-        messages.success(self.request, 'Tipo de Medicamento eliminado exitosamente.')
-        return super().post(request, *args, **kwargs)
+        try:
+            tipomedicamento_nombre = self.get_object().nombre
+            self.get_object().delete()
+            messages.success(self.request, f'Tipo de medicamento "{tipomedicamento_nombre}" eliminado exitosamente.')
+        except Exception as e:
+            messages.error(self.request, f'Error al eliminar el tipo de medicamento: {e}')
+        return redirect(self.success_url)
 
-    def get(self, request, *args, **kwargs):
-        # Redirige para evitar que se acceda directamente a la vista de eliminación por GET
-        messages.warning(self.request, 'Acceso no permitido directamente a la eliminación.')
-        return redirect('doctor:tiposmedicamento_list')
+# Funciones wrapper para mantener compatibilidad con URLs existentes
+def tiposmedicamento_list(request):
+    return TipoMedicamentoListView.as_view()(request)
+
+def tiposmedicamento_create(request):
+    return TipoMedicamentoCreateView.as_view()(request)
+
+def tiposmedicamento_update(request, pk):
+    return TipoMedicamentoUpdateView.as_view()(request, pk=pk)
+
+def tiposmedicamento_delete(request, pk):
+    return TipoMedicamentoDeleteView.as_view()(request, pk=pk)

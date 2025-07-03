@@ -2,67 +2,92 @@
 
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.db.models import Q # ¡Importa Q para las búsquedas OR!
+from django.db.models import Q
+from django.contrib import messages
+from django.shortcuts import redirect
+
 from applications.core.models import Diagnostico
 from applications.doctor.forms.diagnostico import DiagnosticoForm
+from applications.security.components.mixin_crud import (
+    CreateViewMixin, DeleteViewMixin, ListViewMixin, PermissionMixin, UpdateViewMixin
+)
 
 # Vista para listar todos los diagnósticos
-class DiagnosticoListView(ListView):
+class DiagnosticoListView(PermissionMixin, ListViewMixin, ListView):
     model = Diagnostico
     template_name = 'doctor/diagnostico/list.html'
     context_object_name = 'diagnosticos'
     paginate_by = 2
+    permission_required = 'view_diagnostico'
 
-    # Sobreescribe el método get_queryset para añadir la lógica de búsqueda
     def get_queryset(self):
-        queryset = super().get_queryset() # Obtiene el queryset base (todos los Diagnosticos)
-        search_query = self.request.GET.get('q', '') # Obtiene el parámetro 'q' de la URL
-
+        search_query = self.request.GET.get('q', '')
         if search_query:
-            # Aplica el filtro al queryset si hay un término de búsqueda
-            queryset = queryset.filter(
-                Q(codigo__icontains=search_query) | # Busca en el campo 'codigo' (insensible a mayúsculas/minúsculas)
-                Q(descripcion__icontains=search_query) # Busca en el campo 'descripcion'
-            ).distinct() # Usa distinct() para evitar duplicados si un mismo objeto coincide con múltiples Qs
+            self.query.add(Q(codigo__icontains=search_query), Q.OR)
+            self.query.add(Q(descripcion__icontains=search_query), Q.OR)
+        return self.model.objects.filter(self.query).order_by('codigo')
 
-        # Opcional: Puedes añadir un ordenamiento por defecto
-        queryset = queryset.order_by('codigo') # Ordena por el campo 'codigo'
-
-        return queryset
-
-    # Opcional: Para pasar el search_query de vuelta a la plantilla y mantenerlo en el campo de búsqueda
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['search_query'] = self.request.GET.get('q', '')
-        # Agrega cualquier otro contexto que necesites, como 'title', 'title1', 'permissions'
         context['title'] = 'Lista de Diagnósticos'
         context['title1'] = 'Diagnósticos'
-        # Si tienes un método get_permissions_context en este mismo archivo, puedes llamarlo:
-        # context['permissions'] = self.get_permissions_context(self.request)
+        context['search_query'] = self.request.GET.get('q', '')
         return context
 
 # Vista para crear un nuevo diagnóstico
-class DiagnosticoCreateView(CreateView):
+class DiagnosticoCreateView(PermissionMixin, CreateViewMixin, CreateView):
     model = Diagnostico
     form_class = DiagnosticoForm
     template_name = 'doctor/diagnostico/form.html'
     success_url = reverse_lazy('doctor:diagnostico_list')
+    permission_required = 'add_diagnostico'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Diagnóstico creado exitosamente.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Hubo un error al crear el diagnóstico. Revisa los datos.')
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Añadir Nuevo Diagnóstico'
+        context['title1'] = 'Diagnósticos'
+        return context
 
 # Vista para actualizar un diagnóstico existente
-class DiagnosticoUpdateView(UpdateView):
+class DiagnosticoUpdateView(PermissionMixin, UpdateViewMixin, UpdateView):
     model = Diagnostico
     form_class = DiagnosticoForm
     template_name = 'doctor/diagnostico/form.html'
     success_url = reverse_lazy('doctor:diagnostico_list')
+    permission_required = 'change_diagnostico'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Diagnóstico actualizado exitosamente.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Hubo un error al actualizar el diagnóstico. Revisa los datos.')
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Editar Diagnóstico'
+        context['title1'] = 'Diagnósticos'
+        return context
 
 # Vista para eliminar un diagnóstico
-class DiagnosticoDeleteView(DeleteView):
+class DiagnosticoDeleteView(PermissionMixin, DeleteViewMixin, DeleteView):
     model = Diagnostico
-    # NO necesitas template_name si la eliminación se hace vía POST directamente sin confirmación HTML.
-    # Si Django te da un error de TemplateDoesNotExist, significa que espera una plantilla por defecto
-    # para GET (confirmación) o POST (si no está bien configurado el botón).
-    # La mejor práctica para DeleteView es tener un template_name con un formulario POST para confirmar.
-    # Si quieres una eliminación directa por POST desde el listado, asegúrate que tu botón de eliminar
-    # en el template sea un <form action="{% url 'doctor:diagnostico_delete' diagnostico.pk %}" method="post">
-    # y que incluya {% csrf_token %}.
     success_url = reverse_lazy('doctor:diagnostico_list')
+    permission_required = 'delete_diagnostico'
+
+    def post(self, request, *args, **kwargs):
+        try:
+            self.get_object().delete()
+            messages.success(self.request, 'Diagnóstico eliminado exitosamente.')
+        except Exception as e:
+            messages.error(self.request, f'Error al eliminar el diagnóstico: {e}')
+        return redirect(self.success_url)

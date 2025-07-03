@@ -502,8 +502,8 @@
                 </div>
                 
                 <div class="foto-photo">
-                    {% if foto.get_image_url %}
-                        <img src="{{ foto.get_image_url }}" alt="Foto de {{ foto.paciente.nombres }}">
+                    {% if foto.imagen %}
+                        <img src="{{ foto.imagen.url }}" alt="Foto de {{ foto.paciente.nombres }}">
                     {% else %}
                         <i class="fas fa-camera"></i>
                     {% endif %}
@@ -515,7 +515,7 @@
                         <strong>Cédula:</strong> {{ foto.paciente.cedula_ecuatoriana }}<br>
                         <strong>Fecha:</strong> {{ foto.fecha_subida|date:"d/m/Y H:i" }}<br>
                         <strong>Descripción:</strong> {{ foto.descripcion|default:"Sin descripción"|truncatechars:50 }}<br>
-                        <strong>Tamaño:</strong> {% if foto.get_image_size %}{{ foto.get_image_size|filesizeformat }}{% else %}N/A{% endif %}
+                        <strong>Tamaño:</strong> {{ foto.imagen.size|filesizeformat|default:"N/A" }}
                     </p>
                 </div>
                 

@@ -106,8 +106,8 @@ WSGI_APPLICATION = 'proy_clinico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Doctor',
-        'USER': 'Joseph',
+        'NAME': 'medicos',
+        'USER': 'postgres',  # usuario de la base de datos
         'PASSWORD': '123',
         'HOST': 'localhost',  # o la IP del servidor de base de datos
         'PORT': '5432',        # puerto por defecto de PostgreSQL

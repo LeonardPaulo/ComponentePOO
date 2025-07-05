@@ -525,26 +525,31 @@
 
     <!-- Controles -->
     <div class="controls-section">
-        <form method="GET" class="search-form">
-            <input type="text" 
-                   name="q" 
-                   id="table-search"
-                   class="search-input" 
-                   placeholder="Buscar por paciente, diagnóstico o motivo..." 
-                   value="{{ request.GET.q }}">
-            <button type="submit" class="btn btn-search">
-                <i class="fas fa-search"></i> Buscar
-            </button>
-            {% if permissions.add_atencion %}
-            <a href="{% url 'doctor:atencion_create' %}" class="btn btn-create">
+    <form method="GET" class="search-form">
+        <input type="text" 
+               name="q" 
+               id="table-search"
+               class="search-input" 
+               placeholder="Buscar por paciente, diagnóstico o motivo..." 
+               value="{{ request.GET.q }}">
+        <button type="submit" class="btn btn-search">
+            <i class="fas fa-search"></i> Buscar
+        </button>
+        {% if permissions.add_atencion %}
+        <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'doctor:atencion_create' %}" class="btn btn-create" style="white-space: nowrap;">
                 <i class="fas fa-plus"></i> Nueva Atención
             </a>
-            {% endif %}
-            <a href="{% url 'doctor:paciente_list' %}" class="btn btn-secondary">
-                <i class="fas fa-users"></i> Ver Pacientes
+            <a href="{% url 'doctor:cita_list' %}" class="btn btn-create" style="white-space: nowrap;">
+                <i class="fas fa-calendar-check"></i> Ver Citas Médicas
             </a>
-        </form>
-    </div>
+        </div>
+        {% endif %}
+        <a href="{% url 'doctor:paciente_list' %}" class="btn btn-secondary">
+            <i class="fas fa-users"></i> Ver Pacientes
+        </a>
+    </form>
+</div>
 
     <!-- Lista de Atenciones -->
     <div class="atenciones-grid">

@@ -29,8 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # settings.py
-PAYPAL_CLIENT_ID = '' # Reemplaza con tu Client ID de PayPal
-PAYPAL_CLIENT_SECRET = '' # Reemplaza con tu Client Secret de PayPal
+PAYPAL_CLIENT_ID = 'Reemplazar' # Reemplaza con tu Client ID de PayPal: AbB5xDUamfrBCvG70KpYGXO8Ii5Ob4DlvsDe6u-cBpqku4fsRRN2Pfninb11wurdtGZiSYU_2rC8NVY9
+PAYPAL_CLIENT_SECRET = 'Reemplazar' # Reemplaza con tu Client Secret de PayPal: EAW0Ke6Kdnc-haWlcVPrYaFCmc8XJU4cPCse4zSFdIQNd8jcQ5OfbNTGE7BaUqdhVPKtHM7fKvBjUQ0A
 PAYPAL_MODE = 'sandbox'  # Cambia a 'live' en producción
 
 # Application de djang

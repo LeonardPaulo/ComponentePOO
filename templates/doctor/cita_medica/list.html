@@ -379,18 +379,26 @@
     <div class="controls-section">
         <form method="GET" class="search-form">
             <input type="text" 
-                   name="q" 
-                   id="table-search"
-                   class="search-input" 
-                   placeholder="Buscar cita médica..." 
-                   value="{{ request.GET.q }}">
+                name="q" 
+                id="table-search"
+                class="search-input" 
+                placeholder="Buscar cita médica..." 
+                value="{{ request.GET.q }}">
             <button type="submit" class="btn btn-search">
                 <i class="fas fa-search"></i> Buscar
             </button>
             {% if permissions.add_citamedica %}
-            <a href="{% url 'doctor:agenda_calendario' %}" class="btn btn-create">
-                <i class="fas fa-plus-circle"></i> Agenda de Citas
-            </a>
+            <div style="display: flex; gap: 1rem;">
+                <a href="{% url 'doctor:agenda_calendario' %}" class="btn btn-create" style="white-space: nowrap;">
+                    <i class="fas fa-plus-circle"></i> Agenda de Citas
+                </a>
+                <a href="{% url 'doctor:atencion_list' %}" class="btn btn-create" style="white-space: nowrap;">
+                    <i class="fas fa-user-md"></i> Atenciones Médicas
+                </a>
+                <a href="{% url 'doctor:horario_atencion_list' %}" class="btn btn-create" style="white-space: nowrap;">
+                    <i class="fas fa-calendar"></i> Horarios
+                </a>
+            </div>
             {% endif %}
         </form>
     </div>

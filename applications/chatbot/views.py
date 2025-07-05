@@ -8,7 +8,7 @@ from deep_translator import GoogleTranslator
 
 
 # applications/chatbot/views.py
-COHERE_API_KEY = "Reemplazar"  # Reemplaza con tu API Key de Cohere
+COHERE_API_KEY = "Reemplazar"  # Reemplaza con tu API Key de Cohere: yqUHQlz3FxpRv1RQznIa1HjqpPg3WybtukhMx1jy
 
 
 co = cohere.Client(COHERE_API_KEY)
@@ -27,7 +27,7 @@ class ChatbotView(View):
             response = co.generate(
                 model="command",
                 prompt=user_message,
-                max_tokens=200
+                max_tokens=600
             )
             response_text = response.generations[0].text.strip()
 
